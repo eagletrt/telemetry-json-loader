@@ -1,0 +1,12 @@
+{
+  "Date": "Wed Feb 23 15:15:11 2022",
+  "Circuit": "Vadena",
+  "Pilot": "Mirco",
+  "Race": "Soft acceleration",
+  "Configuration": "#2",
+  "CAN": {
+      "Messages": 75307,
+      "Average_Frequency_Hz": 14493,
+      "Duration_seconds": 5.196050643920898
+  }
+}

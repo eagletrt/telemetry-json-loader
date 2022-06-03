@@ -1,0 +1,6 @@
+{
+  "subfolder_name": "Parsed",
+  "parse_candump": true,
+  "parse_gps": true,
+  "generate_report": true
+}

@@ -1,0 +1,11 @@
+{
+    "cpp_out_path": "out",
+    "in_json_models": [
+        "json_input/telemetry_config.json",
+        "json_input/session_config.json",
+        "json_input/csv_parser_config.json",
+        "json_input/can_stat_json.json",
+        "json_input/gps_stat_json.json",
+        "json_input/app_config.json"
+    ]
+}

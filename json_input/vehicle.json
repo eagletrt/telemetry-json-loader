@@ -1,0 +1,27 @@
+{
+    "Chimera":{
+        "accel": "Imu",
+        "gyro": "Imu",
+      
+        "encoder_left": "Encoder",
+        "encoder_right": "Encoder",
+      
+        "bms_lv": "Bms",
+        "bms_hv": "Bms",
+      
+        "inverter_left": "Inverter",
+        "inverter_right": "Inverter",
+      
+        "pedal": "Pedals",
+        "steer": "Steer",
+      
+        "ecu_state": "State",
+        "bms_hv_state": "State",
+        "steering_wheel_state": "State",
+      
+        "ecu": "Ecu",
+      
+        "gps1": "Gps",
+        "gps2": "Gps"
+      }
+}

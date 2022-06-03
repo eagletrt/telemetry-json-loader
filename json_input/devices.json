@@ -1,0 +1,69 @@
+{
+    "imu":{
+        "timestamp" : "double",
+        "x" : "double",
+        "y" : "double",
+        "z" : "double",
+        "scale" : "double"
+    },
+    "encoder":{
+        "timestamp": "double",
+        "rads": "double",
+        "km": "double",
+        "rotations": "double"
+    },
+    "steer":{
+        "timestamp": "double",
+        "angle": "double"
+    },
+    "pedals":{
+        "timestamp": "double",
+        "throttle1": "double",
+        "throttle2": "double",
+        "brake_front": "double",
+        "brake_rear": "double"
+    },
+    "inverter":{
+        "timestamp": "double",
+        "temperature": "double",
+        "motor_temp": "double",
+        "torque": "double",
+        "speed": "double"
+    },
+    "bms": {
+        "timestamp": "double",
+        "temperature": "double",
+        "max_temperature": "double",
+        "min_temperature": "double",
+        "current": "double",
+        "voltage": "double",
+        "max_voltage": "double",
+        "min_voltage": "double",
+        "power": "double"
+    },
+    "ecu":{
+        "timestamp": "double",
+        "power_request_left": "double",
+        "power_request_right": "double"
+    },
+    "state":{
+        "timestamp": "double",
+        "value": "string"
+    },
+    "gps":{
+        "timestamp": "double",
+        "msg_type": "string",
+        "time": "string",
+        "latitude": "double",
+        "longitude": "double",
+        "altitude": "double",
+        "fix": "uint32",
+        "satellites": "uint32",
+        "fix_state": "string",
+        "age_of_correction" : "double",
+        "course_over_ground_degrees" : "double",
+        "course_over_ground_degrees_magnetic" : "double",
+        "speed_kmh" : "double",
+        "mode": "string"
+    }
+}

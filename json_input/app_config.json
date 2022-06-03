@@ -1,0 +1,7 @@
+{
+  "ws_ip": "ws:blahblahblah:3000",
+  "csv_path": "path/to/file",
+  "csv_auto_save": false,
+  "telemetry_auto_get_config": false,
+  "last_login_time": 0.0
+}

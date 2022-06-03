@@ -1,0 +1,31 @@
+{
+  "can_device": "can0",
+
+  "gps_devices": ["/home/ttyACM1", "/home/gps3"],
+  "gps_mode":    ["port", "file"],
+  "gps_enabled": [true, true],
+  "vecTest": [[[[[
+    {
+      "hola": 10,
+      "rec2": [[[[[
+        {
+          "date": "",
+          "time": 0,
+          "ms": 0.0
+        }
+      ]]]]]
+    }
+  ]]]]],
+
+  
+  "generate_csv": true,
+
+  "camera_enable": true,
+
+  "ws_enabled": true,
+  "ws_send_sensor_data": false,
+  "ws_send_rate": 200,
+  "ws_downsample": false,
+  "ws_downsample_mps": 10,
+  "ws_server_url": "http://eagle-telemetry-server.herokuapp.com"
+}

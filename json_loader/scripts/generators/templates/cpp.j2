@@ -1,0 +1,10 @@
+{% for struct in schema.structs -%}
+{% if struct.is_main_struct -%}
+typedef struct{
+{% for field in struct.fields -%}
+    {{field.typename}} {{field.name}};
+{% endfor -%}
+}{{ struct.typename }};
+
+{% endif -%}
+{% endfor -%}

@@ -1,0 +1,21 @@
+#ifndef __JSON_LOADER__
+#define __JSON_LOADER__
+
+#include <string>
+#include <vector>
+
+{% for struct in schema.structs -%}
+typedef struct{
+{%- for field in struct.fields %}
+{%- if isinstance(field, Vector) %}
+    {{field.get_cpp_type()}} {{field.name}};
+{%- else %}
+    {{field.typename}} {{field.name}};
+{%- endif %}
+{%- endfor %}
+}{{ struct.typename }};
+
+{% endfor -%}
+
+
+#endif // __JSON_LOADER__
