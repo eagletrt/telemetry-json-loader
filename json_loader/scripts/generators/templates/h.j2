@@ -3,6 +3,12 @@
 
 #include <string>
 #include <vector>
+#include <fstream>
+#include <sstream>
+#include <iostream>
+
+#include "rapidjson/rapidjson.h"
+#include "rapidjson/document.h"
 
 {% for struct in schema.structs -%}
 typedef struct{
@@ -17,5 +23,20 @@ typedef struct{
 
 {% endfor -%}
 
+template<class T>
+void CheckJson(const T& obj, const rapidjson::Document& doc);
+
+template<class T>
+void Serialize(rapidjson::Document& out, const T& obj);
+template<class T>
+void Deserialize(T& obj, rapidjson::Document& doc);
+
+template<class T>
+void LoadStruct(T& out, const std::string& path);
+template<class T>
+void SaveStruct(const T& obj, const std::string& path);
+
+void LoadJSON(rapidjson::Document& out, const std::string& path);
+void SaveJSON(const rapidjson::Document& obj, const std::string& path);
 
 #endif // __JSON_LOADER__
