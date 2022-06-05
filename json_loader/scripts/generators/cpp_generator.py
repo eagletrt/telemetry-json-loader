@@ -1,6 +1,7 @@
 import jinja2 as j2
 from pathlib import Path
 
+from json_loader.scripts.utils.utils import vector_recursive_index
 from json_loader.scripts.utils.schema import BasicField, Schema, Struct, VectorField
 
 BASE_DIR = Path(__file__).parent
@@ -16,7 +17,8 @@ def generate(path: Path, schema: Schema)->None:
         isinstance=isinstance,
         Struct=Struct,
         Vector=VectorField,
-        BasicField=BasicField
+        BasicField=BasicField,
+        vec_rec_idx=vector_recursive_index
     ))
 
     h_path = path / "json_loader.h"

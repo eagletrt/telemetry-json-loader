@@ -11,30 +11,86 @@ void CheckJson(const {{struct.typename}}& obj, const rapidjson::Document& doc)
 }
 
 template<>
+{%- if struct.is_main_struct %}
 void Serialize(rapidjson::Document& out, const {{struct.typename}}& obj)
+{%- else %}
+void Serialize(rapidjson::Value& out, const {{struct.typename}}& obj, rapidjson::Document::AllocatorType& alloc)
+{%- endif%}
 {
-}
-template<>
-void Deserialize({{struct.typename}}& obj, rapidjson::Document& doc)
-{
+    out.SetObject();
+{%- if struct.is_main_struct %}
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+{%- endif%}
 {%- for field in struct.fields %}
 {%- if isinstance(field, Struct)%}
     {
-        rapidjson::Document new_doc;
-        new_doc.SetObject();
-        new_doc.GetObj() = doc["{{field.name}}"].GetObj();
-        Deserialize(obj.{{field.name}}, new_doc);
+        rapidjson::Value v;
+        Serialize(v, obj.{{field.name}}, alloc);
+        out.AddMember("{{field.name}}", v, alloc);
     }
+{%- endif %}
+{%- if isinstance(field, BasicField)%}
+{%- if field.get_rapidjson_type() == "String" %}
+    out.AddMember("{{field.name}}", rapidjson::Value().SetString(obj.{{field.name}}.c_str(), obj.{{field.name}}.size(), alloc), alloc);
+{%- else %}
+    out.AddMember("{{field.name}}", rapidjson::Value().Set{{field.get_rapidjson_type()}}(obj.{{field.name}}), alloc);
+{%- endif %}
+{%- endif %}
+{%- if isinstance(field, Vector)%}
+    {
+{%- for i in range(field.recursion_level)%}
+{%- set currIdx = "i"*(i+1) %}
+{%- set currVecIdx = vec_rec_idx("i",field.recursion_level-1, i)%}
+        {{"\t"*(i)}}rapidjson::Value v{{i}};
+        {{"\t"*(i)}}v{{i}}.SetArray();
+        {{"\t"*(i)}}for(size_t {{currIdx}} = 0; {{currIdx}} < obj.{{field.name}}{{currVecIdx}}.size(); {{currIdx}}++){
+{%- endfor%}
+{%- set VecIdx = vec_rec_idx("i",field.recursion_level, field.recursion_level)%}
+{%- if isinstance(field.typename, BasicField)%}
+{%- if field.typename.get_rapidjson_type() == "String" %}
+        {{"\t"*(field.recursion_level)}}v{{field.recursion_level-1}}.PushBack(rapidjson::Value().SetString(obj.{{field.name}}{{VecIdx}}.c_str(), obj.{{field.name}}{{v}}{{VecIdx}}.size(), alloc), alloc);
+{%- else %}
+        {{"\t"*(field.recursion_level)}}v{{field.recursion_level-1}}.PushBack(rapidjson::Value().Set{{field.typename.get_rapidjson_type()}}(obj.{{field.name}}{{VecIdx}}), alloc);
+{%- endif %}
+{%- endif %}
+{%- if isinstance(field.typename, Struct) %}
+        {{"\t"*(field.recursion_level)}}rapidjson::Value new_obj;
+        {{"\t"*(field.recursion_level)}}Serialize(new_obj, obj.{{field.name}}{{VecIdx}}, alloc);
+        {{"\t"*(field.recursion_level)}}v{{field.recursion_level-1}}.PushBack(new_obj, alloc);
+{%- endif %}
+{%- for i in range(field.recursion_level-1, -1, -1)%}
+    {{"\t"*(i+1)}}}
+{%- if i == 0 %}
+    {{"\t"*(i+1)}}out.AddMember("{{field.name}}", v0, alloc);
+{%- else %}
+    {{"\t"*(i+1)}}v{{i-1}}.PushBack(v{{i}}, alloc);
+{%- endif %}
+{%- endfor%}
+    }
+{%- endif %}
+{%- endfor %}
+}
+template<>
+{%- if struct.is_main_struct %}
+void Deserialize({{struct.typename}}& obj, rapidjson::Document& doc)
+{%- else %}
+void Deserialize({{struct.typename}}& obj, rapidjson::Value& doc)
+{%- endif%}
+{
+{%- for field in struct.fields %}
+{%- if isinstance(field, Struct)%}
+    Deserialize(obj.{{field.name}}, doc["{{field.name}}"]);
 {%- endif %}
 {%- if isinstance(field, BasicField)%}
     obj.{{field.name}} = doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}();
 {%- endif %}
 {%- if isinstance(field, Vector)%}
-{{field.get_cpp_loop()}}
+{{field.get_cpp_deserialize_loop()}}
 {%- endif %}
 {%- endfor %}
 }
 
+{%- if struct.is_main_struct %}
 template<>
 void LoadStruct({{struct.typename}}& out, const std::string& path)
 {
@@ -42,6 +98,14 @@ void LoadStruct({{struct.typename}}& out, const std::string& path)
     LoadJSON(doc, path);
     Deserialize(out, doc);
 }
+template<>
+void SaveStruct(const {{struct.typename}}& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+{%- endif %}
 
 {% endfor -%}
 
@@ -51,4 +115,16 @@ void LoadJSON(rapidjson::Document& out, const std::string& path)
     std::stringstream buffer;
     buffer << f.rdbuf();
     out.Parse(buffer.str().c_str());
+}
+void SaveJSON(const rapidjson::Document& doc, const std::string& path)
+{
+    FILE* fp = fopen(path.c_str(), "w");
+ 
+    char writeBuffer[65536];
+    rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
+    
+    rapidjson::Writer<rapidjson::FileWriteStream> writer(os);
+    doc.Accept(writer);
+    
+    fclose(fp);
 }

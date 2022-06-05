@@ -24,13 +24,21 @@ class VectorField:
         self.typename = typename
         self.recursion_level = recursion_level
         self.name = name
-    def set_name(self, name: str):
+    def set_name(self, name: str)->None:
+        '''set_name'''
         self.name = name
-    def set_type_name(self, typename: str):
+    def set_type_name(self, typename: str)->None:
+        '''set_type_name'''
         self.typename = typename
     def set_recursion_level(self, recursion_level: int):
+        '''set_recursion_level'''
         self.recursion_level = recursion_level
-    def get_cpp_loop(self):
+    def get_cpp_serialize_loop(self)->str:
+        '''get_cpp_serialize_loop'''
+        ret = ""
+        return ret
+    def get_cpp_deserialize_loop(self) -> str:
+        '''get_cpp_deserialize_loop'''
         ret = ""
         for i in range(self.recursion_level):
             index = "i" * (i+1)
@@ -42,10 +50,7 @@ class VectorField:
         if not isinstance(self.typename, Struct):
             ret += "\t"*(self.recursion_level+1) + f"obj.{self.name}{rec_index} = doc[\"{self.name}\"]{rec_index}.Get{self.typename.get_rapidjson_type()}();\n"
         else:
-            ret += "\t"*(self.recursion_level+1) + "rapidjson::Document new_doc;\n"
-            ret += "\t"*(self.recursion_level+1) + "new_doc.SetObject();\n"
-            ret += "\t"*(self.recursion_level+1) + f"new_doc.GetObj() = doc[\"{self.name}\"]{rec_index}.GetObj();\n"
-            ret += "\t"*(self.recursion_level+1) + f"Deserialize(obj.{self.name}{rec_index}, new_doc);\n"
+            ret += "\t"*(self.recursion_level+1) + f"Deserialize(obj.{self.name}{rec_index}, doc[\"{self.name}\"]{rec_index});\n"
         ret += "\t"+"}"*self.recursion_level
         return ret
 

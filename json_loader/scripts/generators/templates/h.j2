@@ -3,12 +3,15 @@
 
 #include <string>
 #include <vector>
+#include <cstdio>
 #include <fstream>
 #include <sstream>
 #include <iostream>
 
+#include "rapidjson/filewritestream.h"
 #include "rapidjson/rapidjson.h"
 #include "rapidjson/document.h"
+#include "rapidjson/writer.h"
 
 {% for struct in schema.structs -%}
 typedef struct{
@@ -23,14 +26,22 @@ typedef struct{
 
 {% endfor -%}
 
-template<class T>
-void CheckJson(const T& obj, const rapidjson::Document& doc);
+// T is a struct
+// J is a rapidjson::Document or a rapidjson::Value
+template<class T, class J>
+void CheckJson(const T& obj, const J& doc);
 
+// T is a struct
+// J is a rapidjson::Document or a rapidjson::Value
 template<class T>
 void Serialize(rapidjson::Document& out, const T& obj);
 template<class T>
-void Deserialize(T& obj, rapidjson::Document& doc);
+void Serialize(rapidjson::Value& out, const T& obj, rapidjson::Document::AllocatorType& alloc);
+template<class T, class J>
+void Deserialize(T& obj, J& doc);
 
+// T is a struct
+// J is a rapidjson::Document or a rapidjson::Value
 template<class T>
 void LoadStruct(T& out, const std::string& path);
 template<class T>
