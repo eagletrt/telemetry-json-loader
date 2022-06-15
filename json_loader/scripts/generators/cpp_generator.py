@@ -9,24 +9,27 @@ BASE_DIR = Path(__file__).parent
 CPP_TMPLT = j2.Template((BASE_DIR / "templates/cpp.j2").read_text())
 H_TMPLT = j2.Template((BASE_DIR / "templates/h.j2").read_text())
 
-def generate(path: Path, schema: Schema)->None:
+def generate(library_name: str, path: Path, schema: Schema)->None:
     '''generate'''
-    cpp_path = path / "json_loader.cpp"
-    cpp_path.write_text(CPP_TMPLT.render(
+    # cpp_path = path / (library_name + ".cpp")
+    # cpp_path.write_text(CPP_TMPLT.render(
+    #     schema=schema,
+    #     library_name=library_name,
+    #     isinstance=isinstance,
+    #     Struct=Struct,
+    #     Vector=VectorField,
+    #     BasicField=BasicField,
+    #     vec_rec_idx=vector_recursive_index
+    # ))
+
+    h_path = path / (library_name + ".h")
+    h_path.write_text(H_TMPLT.render(
         schema=schema,
+        library_name=library_name.upper(),
         isinstance=isinstance,
         Struct=Struct,
         Vector=VectorField,
         BasicField=BasicField,
         vec_rec_idx=vector_recursive_index
-    ))
-
-    h_path = path / "json_loader.h"
-    h_path.write_text(H_TMPLT.render(
-        schema=schema,
-        isinstance=isinstance,
-        Struct=Struct,
-        Vector=VectorField,
-        BasicField=BasicField
     ))
     

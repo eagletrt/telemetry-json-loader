@@ -89,6 +89,7 @@ def parse_dict(dct: dict)->list:
     ''' parse_dict '''
     new_fields = []
     for key, value in dct.items():
+        key = key.replace(" ", "_")
         inst = map_types[type(value)]
         if key == "ttt":
             print(inst)

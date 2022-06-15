@@ -1,11 +1,15 @@
 {
-    "cpp_out_path": "out",
+    "cpp_out_path": "/media/filippo/Data/Codes/Github/eagle-telemetry/json_models",
+    "library_name": "messages",
     "in_json_models": [
-        "json_input/telemetry_config.json",
-        "json_input/session_config.json",
-        "json_input/csv_parser_config.json",
-        "json_input/can_stat_json.json",
-        "json_input/gps_stat_json.json",
-        "json_input/app_config.json"
+        "json_input/messages/get_telemetry_config.json",
+        "json_input/messages/telemetry_status.json"
+    ],
+    "library_name1": "json_loader",
+    "in_json_models1": [
+        "json_input/tel/telemetry_config.json",
+        "json_input/tel/session_config.json",
+        "json_input/tel/csv_parser_config.json",
+        "json_input/tel/stat_json.json"
     ]
 }

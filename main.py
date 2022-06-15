@@ -21,4 +21,4 @@ for filename in config["in_json_models"]:
 schema = Schema(schema_models)
 out_path = config["cpp_out_path"]
 check_or_create_dir(out_path)
-generate(Path(out_path), schema)
+generate(config["library_name"], Path(out_path), schema)
