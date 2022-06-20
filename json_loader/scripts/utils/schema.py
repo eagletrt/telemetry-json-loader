@@ -19,6 +19,10 @@ class BasicField:
         return types_to_rapidjson[self.typename]
     def __str__(self):
         return f"Basic {self.name}: {self.typename}"
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, BasicField):
+            return False
+        return self.name == __o.name and self.typename == __o.typename
 class VectorField:
     def __init__(self, typename: str, recursion_level: int, name: str):
         self.typename = typename
@@ -62,6 +66,12 @@ class VectorField:
         return types_to_rapidjson["std::vector"]
     def __str__(self):
         return f"Vector {self.name}: {self.recursion_level} * {self.typename.typename}"
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, VectorField):
+            return False
+        return  self.name == __o.name and \
+                self.recursion_level == self.recursion_level and \
+                self.typename == self.typename
 
 class Struct:
     def __init__(self, typename: str, fields: list, is_main_struct = False,  name = ""):
@@ -76,6 +86,15 @@ class Struct:
         for field in self.fields:
             s += "\t" + str(field) + "\n"
         return s[:-1]
+    def __eq__(self, __o: object) -> bool:
+        if not isinstance(__o, Struct):
+            return False
+        if not len(self.fields) == len(__o.fields):
+            return False
+        for i, field in enumerate(self.fields):
+            if not field == __o.fields[i]:
+                return False
+        return True
 
 map_types = {
     bool: BasicField("bool", ""),

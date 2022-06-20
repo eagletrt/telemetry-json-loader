@@ -32,8 +32,6 @@ typedef struct {{ struct.typename }}{
 
 {% endfor -%}
 
-#ifndef __JSON_LOADER_DEFINITION__
-#define __JSON_LOADER_DEFINITION__
 
 // T is a struct
 // J is a rapidjson::Document or a rapidjson::Value
@@ -60,6 +58,10 @@ void SaveStruct(const T& obj, const std::string& path);
 template<class T>
 std::string JsonToString(const T& obj);
 
+
+#ifndef __JSON_LOADER_DEFINITION__
+#define __JSON_LOADER_DEFINITION__
+
 static void LoadJSON(rapidjson::Document& out, const std::string& path)
 {
     std::ifstream f(path);
@@ -79,6 +81,8 @@ static void SaveJSON(const rapidjson::Document& doc, const std::string& path)
 
 #endif // __JSON_LOADER_DEFINITION__
 
+
+#ifdef __{{library_name}}_IMPLEMENTATION__
 
 {% for struct in schema.structs -%}
 template <>
@@ -227,5 +231,6 @@ void SaveStruct(const {{struct.typename}}& obj, const std::string& path)
 {%- endif %}
 
 {% endfor -%}
+#endif //__{{library_name}}_IMPLEMENTATION__
 
 #endif // __JSON_LOADER__
