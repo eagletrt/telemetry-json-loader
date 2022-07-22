@@ -19,20 +19,6 @@
 #define JSON_LOG_FUNC(msg) std::cout << msg << std::endl;
 #endif
 
-{% for struct in schema.structs -%}
-typedef struct {{ struct.typename }}{
-{%- for field in struct.fields %}
-{%- if isinstance(field, Vector) %}
-    {{field.get_cpp_type()}} {{field.name}};
-{%- else %}
-    {{field.typename}} {{field.name}};
-{%- endif %}
-{%- endfor %}
-}{{ struct.typename }};
-
-{% endfor -%}
-
-
 // T is a struct
 // J is a rapidjson::Document or a rapidjson::Value
 template<class T, class J>
@@ -47,6 +33,8 @@ void Serialize(rapidjson::Document& out, const T& obj);
 template<class T>
 void Serialize(rapidjson::Value& out, const T& obj, rapidjson::Document::AllocatorType& alloc);
 
+
+// If this is a main struct:
 // T is a struct
 // J is a rapidjson::Document or a rapidjson::Value
 template<class T>
@@ -56,21 +44,20 @@ void SaveStruct(const T& obj, const std::string& path);
 
 // If main struct
 template<class T>
-std::string JsonToString(const T& obj);
+std::string StructToString(const T& obj);
+template<class T>
+bool StringToStruct(const std::string& obj_str, T& obj);
 
 
 #ifndef __JSON_LOADER_DEFINITION__
 #define __JSON_LOADER_DEFINITION__
-
-static void LoadJSON(rapidjson::Document& out, const std::string& path)
-{
+static void LoadJSON(rapidjson::Document& out, const std::string& path){
     std::ifstream f(path);
     std::stringstream buffer;
     buffer << f.rdbuf();
     out.Parse(buffer.str().c_str());
 }
-static void SaveJSON(const rapidjson::Document& doc, const std::string& path)
-{
+static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
     char writeBuffer[65536];
     FILE* fp = fopen(path.c_str(), "w");
     rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
@@ -78,9 +65,20 @@ static void SaveJSON(const rapidjson::Document& doc, const std::string& path)
     doc.Accept(writer);
     fclose(fp);
 }
-
 #endif // __JSON_LOADER_DEFINITION__
 
+{% for struct in schema.structs -%}
+typedef struct {{ struct.typename }}{
+{%- for field in struct.fields %}
+{%- if isinstance(field, Vector) %}
+    {{field.get_cpp_type()}} {{field.name}};
+{%- else %}
+    {{field.typename}} {{field.name}};
+{%- endif %}
+{%- endfor %}
+}{{ struct.typename }};
+
+{% endfor -%}
 
 #ifdef __{{library_name}}_IMPLEMENTATION__
 
@@ -170,7 +168,11 @@ void Deserialize({{struct.typename}}& obj, rapidjson::Document& doc)
         Deserialize(obj.{{field.name}}, doc["{{field.name}}"]);
 {%- endif %}
 {%- if isinstance(field, BasicField)%}
+{%- if field.get_rapidjson_type() == "String"%}
+    obj.{{field.name}} = std::string(doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}(), doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}Length());
+{%- else %}
         obj.{{field.name}} = doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}();
+{%- endif %}
 {%- endif %}
 {%- if isinstance(field, Vector)%}
 {{field.get_cpp_deserialize_loop()}}
@@ -190,7 +192,11 @@ void Deserialize({{struct.typename}}& obj, rapidjson::Value& doc)
         Deserialize(obj.{{field.name}}, doc["{{field.name}}"]);
 {%- endif %}
 {%- if isinstance(field, BasicField)%}
+{%- if field.get_rapidjson_type() == "String"%}
+    obj.{{field.name}} = std::string(doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}(), doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}Length());
+{%- else %}
         obj.{{field.name}} = doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}();
+{%- endif %}
 {%- endif %}
 {%- if isinstance(field, Vector)%}
 {{field.get_cpp_deserialize_loop()}}
@@ -202,7 +208,7 @@ void Deserialize({{struct.typename}}& obj, rapidjson::Value& doc)
 {%- if struct.is_main_struct %}
 
 template<>
-std::string JsonToString(const {{struct.typename}}& obj)
+std::string StructToString(const {{struct.typename}}& obj)
 {
     rapidjson::Document doc;
     rapidjson::StringBuffer sb;
@@ -210,6 +216,18 @@ std::string JsonToString(const {{struct.typename}}& obj)
     Serialize(doc, obj);
     doc.Accept(w);
     return sb.GetString();
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, {{struct.typename}}& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
 }
 
 template<>

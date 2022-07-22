@@ -4,7 +4,7 @@ from json_loader.scripts.utils.utils import vector_recursive_index
 types_to_rapidjson = {
     "bool": "Bool",
     "int": "Int",
-    "float": "Double",
+    "double": "Double",
     "std::string": "String",
     "std::vector": "Array",
 }
@@ -99,7 +99,7 @@ class Struct:
 map_types = {
     bool: BasicField("bool", ""),
     int:  BasicField("int", ""),
-    float:BasicField("float", ""),
+    float:BasicField("double", ""),
     str:  BasicField("std::string", ""),
     list: VectorField("std::vector", 0, ""),
     dict: Struct("", [])

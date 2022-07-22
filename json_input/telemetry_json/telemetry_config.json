@@ -1,0 +1,20 @@
+{
+  "camera_enable": true,
+  "can_devices": [{"sock": "can0", "name": "primary"}],
+  "generate_csv": true,
+  "gps_devices": [{
+    "addr": "/dev/ttyACM1",
+    "mode": "port",
+    "enabled": true
+  }],
+  "connection_downsample": false,
+  "connection_downsample_mps": 40,
+  "connection_enabled": true,
+  "connection_send_rate": 1000,
+  "connection_send_sensor_data": true,
+  "connection": {
+      "ip": "ws://eagle-telemetry-server.herokuapp.com/",
+      "port": "3000",
+      "mode": "ZMQ"
+  }
+}
