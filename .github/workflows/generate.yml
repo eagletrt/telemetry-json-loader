@@ -22,6 +22,7 @@ jobs:
         run: |
           pip install jinja2
           python3 main.py
+          mkdir -p /tmp/workspace
           cp -r out/* /tmp/workspace/
       - uses: actions/checkout@v2
         with:
