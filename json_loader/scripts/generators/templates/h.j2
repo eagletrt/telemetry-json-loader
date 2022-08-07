@@ -46,6 +46,8 @@ void SaveStruct(const T& obj, const std::string& path);
 template<class T>
 std::string StructToString(const T& obj);
 template<class T>
+std::string StructToStringPretty(const T& obj);
+template<class T>
 bool StringToStruct(const std::string& obj_str, T& obj);
 
 
@@ -212,10 +214,21 @@ std::string StructToString(const {{struct.typename}}& obj)
 {
     rapidjson::Document doc;
     rapidjson::StringBuffer sb;
-    rapidjson::Writer<rapidjson::StringBuffer> w(sb);
     Serialize(doc, obj);
-    doc.Accept(w);
-    return sb.GetString();
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const {{struct.typename}}& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
 }
 
 template<>

@@ -1,5 +1,0 @@
-title: Internal implementations
-nav:
-    - connection.md
-    - json_loading.md
-    - file_transmission.md

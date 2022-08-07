@@ -1,4 +1,4 @@
 {
-    "cpp_out_path": "/media/filippo/Data",
+    "cpp_out_path": "out",
     "input_folder": "json_input"
 }

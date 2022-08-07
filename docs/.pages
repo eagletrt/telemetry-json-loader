@@ -1,6 +1,3 @@
-title: Telemetry
+title: JSON Loader
 nav:
     - index.md
-    - Overview
-    - Setup and Installation
-    - Internal implementations

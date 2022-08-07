@@ -1,0 +1,36 @@
+name: Generate
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "networks/**"
+    branches:
+      - master
+
+jobs:
+  library:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v3
+        name: Set up Python 3.10
+        with:
+          python-version: "3.10"
+      - uses: actions/checkout@v2
+
+      - name: Run json loader generation
+        run: |
+          pip install jinja2
+          python3 main.py
+          cp -r out/* /tmp/workspace/
+      - uses: actions/checkout@v2
+        with:
+          ref: build
+      - name: Push generated code
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git rm -r --ignore-unmatch */*
+          cp -r /tmp/workspace/* .
+          git add .
+          if [[ $(git status --porcelain) ]]; then git commit -am "chore: automatically generated files" && git push; fi

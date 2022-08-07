@@ -1,7 +1,7 @@
 {
     "type": "telemetry_status",
-    "timestamp": 0.0,
-    "zero_timestamp": 0.0,
+    "timestamp": 0,
+    "zero_timestamp": 0,
     "data": 1,
     "msgs_per_second": [{
         "device": "name",

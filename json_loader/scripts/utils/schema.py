@@ -4,6 +4,7 @@ from json_loader.scripts.utils.utils import vector_recursive_index
 types_to_rapidjson = {
     "bool": "Bool",
     "int": "Int",
+    "uint64_t": "Uint64",
     "double": "Double",
     "std::string": "String",
     "std::vector": "Array",
@@ -99,6 +100,7 @@ class Struct:
 map_types = {
     bool: BasicField("bool", ""),
     int:  BasicField("int", ""),
+    int:  BasicField("uint64_t", ""),
     float:BasicField("double", ""),
     str:  BasicField("std::string", ""),
     list: VectorField("std::vector", 0, ""),
@@ -113,7 +115,14 @@ def parse_dict(dct: dict)->list:
         if key == "ttt":
             print(inst)
         if isinstance(inst, BasicField):
-            inst = BasicField(inst.typename, key)
+            if inst.typename == "int":
+                if value < 0:
+                    inst = BasicField(inst.typename, key)
+                else:
+                    inst = BasicField("uint64_t", key)
+            else:
+                inst = BasicField(inst.typename, key)
+            
             new_fields.append(inst)
         elif isinstance(inst, VectorField):
             curr = value
