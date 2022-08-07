@@ -74,10 +74,40 @@ typedef struct msgs_per_second_o{
     uint64_t count;
 }msgs_per_second_o;
 
-typedef struct basic_message{
-    std::string type;
+typedef struct file_response_transaction{
+    std::string identifier;
+    uint64_t transaction_hash;
+    std::string transaction_topic;
+}file_response_transaction;
+
+typedef struct file_chunk{
     std::string data;
-}basic_message;
+    uint64_t chunk_n;
+    uint64_t chunk_total;
+    uint64_t transaction_hash;
+}file_chunk;
+
+typedef struct file_begin_transaction{
+    std::string filename;
+    std::string dest_path;
+    uint64_t total_chunks;
+    uint64_t transaction_hash;
+}file_begin_transaction;
+
+typedef struct command_status{
+    std::string command;
+    std::string data;
+}command_status;
+
+typedef struct ping{
+    std::string type;
+    double time;
+}ping;
+
+typedef struct file_ask_transaction{
+    std::string identifier;
+    uint64_t transaction_hash;
+}file_ask_transaction;
 
 typedef struct car_data{
     uint64_t timestamp;
@@ -87,52 +117,17 @@ typedef struct car_data{
     std::string inverters;
 }car_data;
 
-typedef struct command_status{
-    std::string command;
-    std::string data;
-}command_status;
-
-typedef struct file_ask_transaction{
-    std::string identifier;
-    uint64_t transaction_hash;
-}file_ask_transaction;
-
-typedef struct file_begin_transaction{
-    std::string filename;
-    std::string dest_path;
-    uint64_t total_chunks;
-    uint64_t transaction_hash;
-}file_begin_transaction;
-
-typedef struct file_chunk{
-    std::string data;
-    uint64_t chunk_n;
-    uint64_t chunk_total;
-    uint64_t transaction_hash;
-}file_chunk;
-
-typedef struct file_end_transaction{
-    std::string filename;
-    std::string dest_path;
-    uint64_t transaction_hash;
-}file_end_transaction;
-
-typedef struct file_response_transaction{
-    std::string identifier;
-    uint64_t transaction_hash;
-    std::string transaction_topic;
-}file_response_transaction;
-
 typedef struct get_telemetry_config{
     std::string type;
     std::string telemetry_config;
     std::string session_config;
 }get_telemetry_config;
 
-typedef struct ping{
-    std::string type;
-    double time;
-}ping;
+typedef struct file_end_transaction{
+    std::string filename;
+    std::string dest_path;
+    uint64_t transaction_hash;
+}file_end_transaction;
 
 typedef struct telemetry_status{
     std::string type;
@@ -146,6 +141,11 @@ typedef struct telemetry_status{
     uint64_t cpu_process_load;
     uint64_t mem_process_load;
 }telemetry_status;
+
+typedef struct basic_message{
+    std::string type;
+    std::string data;
+}basic_message;
 
 #ifdef __MESSAGES_JSON_IMPLEMENTATION__
 
@@ -187,59 +187,74 @@ void Deserialize(msgs_per_second_o& obj, rapidjson::Value& doc)
 }
 
 template <>
-bool CheckJson(const basic_message& obj, const rapidjson::Document& doc)
+bool CheckJson(const file_response_transaction& obj, const rapidjson::Document& doc)
 {
     bool check = true;
-    if(!doc.HasMember("type")){
-        JSON_LOG_FUNC("basic_message MISSING FIELD: type"); 
+    if(!doc.HasMember("identifier")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: identifier"); 
         check = false;
     }
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("basic_message MISSING FIELD: data"); 
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_hash"); 
+        check = false;
+    }
+    if(!doc.HasMember("transaction_topic")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_topic"); 
         check = false;
     }
     return check;
 }
 
 template<>
-void Serialize(rapidjson::Document& out, const basic_message& obj)
+void Serialize(rapidjson::Document& out, const file_response_transaction& obj)
 {
     out.SetObject();
     rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("type", rapidjson::Value().SetString(obj.type.c_str(), obj.type.size(), alloc), alloc);
-    out.AddMember("data", rapidjson::Value().SetString(obj.data.c_str(), obj.data.size(), alloc), alloc);
+    out.AddMember("identifier", rapidjson::Value().SetString(obj.identifier.c_str(), obj.identifier.size(), alloc), alloc);
+    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
+    out.AddMember("transaction_topic", rapidjson::Value().SetString(obj.transaction_topic.c_str(), obj.transaction_topic.size(), alloc), alloc);
 }
 template<>
-void Deserialize(basic_message& obj, rapidjson::Document& doc)
+void Deserialize(file_response_transaction& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("type")){
-        JSON_LOG_FUNC("basic_message MISSING FIELD: type"); 
+    if(!doc.HasMember("identifier")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: identifier"); 
     }else{
-    obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
+    obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
     }
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("basic_message MISSING FIELD: data"); 
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_hash"); 
     }else{
-    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+    if(!doc.HasMember("transaction_topic")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_topic"); 
+    }else{
+    obj.transaction_topic = std::string(doc["transaction_topic"].GetString(), doc["transaction_topic"].GetStringLength());
     }
 }
 template<>
-void Deserialize(basic_message& obj, rapidjson::Value& doc)
+void Deserialize(file_response_transaction& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("type")){
-        JSON_LOG_FUNC("basic_message MISSING FIELD: type"); 
+    if(!doc.HasMember("identifier")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: identifier"); 
     }else{
-    obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
+    obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
     }
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("basic_message MISSING FIELD: data"); 
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_hash"); 
     }else{
-    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+    if(!doc.HasMember("transaction_topic")){
+        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_topic"); 
+    }else{
+    obj.transaction_topic = std::string(doc["transaction_topic"].GetString(), doc["transaction_topic"].GetStringLength());
     }
 }
 
 template<>
-std::string StructToString(const basic_message& obj)
+std::string StructToString(const file_response_transaction& obj)
 {
     rapidjson::Document doc;
     rapidjson::StringBuffer sb;
@@ -250,7 +265,7 @@ std::string StructToString(const basic_message& obj)
 }
 
 template<>
-std::string StructToStringPretty(const basic_message& obj)
+std::string StructToStringPretty(const file_response_transaction& obj)
 {
     rapidjson::Document doc;
     rapidjson::StringBuffer sb;
@@ -261,7 +276,7 @@ std::string StructToStringPretty(const basic_message& obj)
 }
 
 template<>
-bool StringToStruct(const std::string& obj_str, basic_message& out)
+bool StringToStruct(const std::string& obj_str, file_response_transaction& out)
 {
     rapidjson::Document doc;
     rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
@@ -273,7 +288,7 @@ bool StringToStruct(const std::string& obj_str, basic_message& out)
 }
 
 template<>
-bool LoadStruct(basic_message& out, const std::string& path)
+bool LoadStruct(file_response_transaction& out, const std::string& path)
 {
     rapidjson::Document doc;
     LoadJSON(doc, path);
@@ -282,7 +297,582 @@ bool LoadStruct(basic_message& out, const std::string& path)
     return check_passed;
 }
 template<>
-void SaveStruct(const basic_message& obj, const std::string& path)
+void SaveStruct(const file_response_transaction& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const file_chunk& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: data"); 
+        check = false;
+    }
+    if(!doc.HasMember("chunk_n")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_n"); 
+        check = false;
+    }
+    if(!doc.HasMember("chunk_total")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_total"); 
+        check = false;
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: transaction_hash"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const file_chunk& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("data", rapidjson::Value().SetString(obj.data.c_str(), obj.data.size(), alloc), alloc);
+    out.AddMember("chunk_n", rapidjson::Value().SetUint64(obj.chunk_n), alloc);
+    out.AddMember("chunk_total", rapidjson::Value().SetUint64(obj.chunk_total), alloc);
+    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
+}
+template<>
+void Deserialize(file_chunk& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: data"); 
+    }else{
+    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
+    }
+    if(!doc.HasMember("chunk_n")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_n"); 
+    }else{
+        obj.chunk_n = doc["chunk_n"].GetUint64();
+    }
+    if(!doc.HasMember("chunk_total")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_total"); 
+    }else{
+        obj.chunk_total = doc["chunk_total"].GetUint64();
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+}
+template<>
+void Deserialize(file_chunk& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: data"); 
+    }else{
+    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
+    }
+    if(!doc.HasMember("chunk_n")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_n"); 
+    }else{
+        obj.chunk_n = doc["chunk_n"].GetUint64();
+    }
+    if(!doc.HasMember("chunk_total")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_total"); 
+    }else{
+        obj.chunk_total = doc["chunk_total"].GetUint64();
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_chunk MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+}
+
+template<>
+std::string StructToString(const file_chunk& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const file_chunk& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, file_chunk& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(file_chunk& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const file_chunk& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const file_begin_transaction& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("filename")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: filename"); 
+        check = false;
+    }
+    if(!doc.HasMember("dest_path")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: dest_path"); 
+        check = false;
+    }
+    if(!doc.HasMember("total_chunks")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: total_chunks"); 
+        check = false;
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: transaction_hash"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const file_begin_transaction& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("filename", rapidjson::Value().SetString(obj.filename.c_str(), obj.filename.size(), alloc), alloc);
+    out.AddMember("dest_path", rapidjson::Value().SetString(obj.dest_path.c_str(), obj.dest_path.size(), alloc), alloc);
+    out.AddMember("total_chunks", rapidjson::Value().SetUint64(obj.total_chunks), alloc);
+    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
+}
+template<>
+void Deserialize(file_begin_transaction& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("filename")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: filename"); 
+    }else{
+    obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
+    }
+    if(!doc.HasMember("dest_path")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: dest_path"); 
+    }else{
+    obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
+    }
+    if(!doc.HasMember("total_chunks")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: total_chunks"); 
+    }else{
+        obj.total_chunks = doc["total_chunks"].GetUint64();
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+}
+template<>
+void Deserialize(file_begin_transaction& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("filename")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: filename"); 
+    }else{
+    obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
+    }
+    if(!doc.HasMember("dest_path")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: dest_path"); 
+    }else{
+    obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
+    }
+    if(!doc.HasMember("total_chunks")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: total_chunks"); 
+    }else{
+        obj.total_chunks = doc["total_chunks"].GetUint64();
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+}
+
+template<>
+std::string StructToString(const file_begin_transaction& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const file_begin_transaction& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, file_begin_transaction& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(file_begin_transaction& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const file_begin_transaction& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const command_status& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("command")){
+        JSON_LOG_FUNC("command_status MISSING FIELD: command"); 
+        check = false;
+    }
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("command_status MISSING FIELD: data"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const command_status& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("command", rapidjson::Value().SetString(obj.command.c_str(), obj.command.size(), alloc), alloc);
+    out.AddMember("data", rapidjson::Value().SetString(obj.data.c_str(), obj.data.size(), alloc), alloc);
+}
+template<>
+void Deserialize(command_status& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("command")){
+        JSON_LOG_FUNC("command_status MISSING FIELD: command"); 
+    }else{
+    obj.command = std::string(doc["command"].GetString(), doc["command"].GetStringLength());
+    }
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("command_status MISSING FIELD: data"); 
+    }else{
+    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
+    }
+}
+template<>
+void Deserialize(command_status& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("command")){
+        JSON_LOG_FUNC("command_status MISSING FIELD: command"); 
+    }else{
+    obj.command = std::string(doc["command"].GetString(), doc["command"].GetStringLength());
+    }
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("command_status MISSING FIELD: data"); 
+    }else{
+    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
+    }
+}
+
+template<>
+std::string StructToString(const command_status& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const command_status& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, command_status& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(command_status& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const command_status& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const ping& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("type")){
+        JSON_LOG_FUNC("ping MISSING FIELD: type"); 
+        check = false;
+    }
+    if(!doc.HasMember("time")){
+        JSON_LOG_FUNC("ping MISSING FIELD: time"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const ping& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("type", rapidjson::Value().SetString(obj.type.c_str(), obj.type.size(), alloc), alloc);
+    out.AddMember("time", rapidjson::Value().SetDouble(obj.time), alloc);
+}
+template<>
+void Deserialize(ping& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("type")){
+        JSON_LOG_FUNC("ping MISSING FIELD: type"); 
+    }else{
+    obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
+    }
+    if(!doc.HasMember("time")){
+        JSON_LOG_FUNC("ping MISSING FIELD: time"); 
+    }else{
+        obj.time = doc["time"].GetDouble();
+    }
+}
+template<>
+void Deserialize(ping& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("type")){
+        JSON_LOG_FUNC("ping MISSING FIELD: type"); 
+    }else{
+    obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
+    }
+    if(!doc.HasMember("time")){
+        JSON_LOG_FUNC("ping MISSING FIELD: time"); 
+    }else{
+        obj.time = doc["time"].GetDouble();
+    }
+}
+
+template<>
+std::string StructToString(const ping& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const ping& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, ping& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(ping& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const ping& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const file_ask_transaction& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("identifier")){
+        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: identifier"); 
+        check = false;
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: transaction_hash"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const file_ask_transaction& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("identifier", rapidjson::Value().SetString(obj.identifier.c_str(), obj.identifier.size(), alloc), alloc);
+    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
+}
+template<>
+void Deserialize(file_ask_transaction& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("identifier")){
+        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: identifier"); 
+    }else{
+    obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+}
+template<>
+void Deserialize(file_ask_transaction& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("identifier")){
+        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: identifier"); 
+    }else{
+    obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+}
+
+template<>
+std::string StructToString(const file_ask_transaction& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const file_ask_transaction& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, file_ask_transaction& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(file_ask_transaction& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const file_ask_transaction& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
@@ -438,714 +1028,6 @@ void SaveStruct(const car_data& obj, const std::string& path)
 }
 
 template <>
-bool CheckJson(const command_status& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("command")){
-        JSON_LOG_FUNC("command_status MISSING FIELD: command"); 
-        check = false;
-    }
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("command_status MISSING FIELD: data"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const command_status& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("command", rapidjson::Value().SetString(obj.command.c_str(), obj.command.size(), alloc), alloc);
-    out.AddMember("data", rapidjson::Value().SetString(obj.data.c_str(), obj.data.size(), alloc), alloc);
-}
-template<>
-void Deserialize(command_status& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("command")){
-        JSON_LOG_FUNC("command_status MISSING FIELD: command"); 
-    }else{
-    obj.command = std::string(doc["command"].GetString(), doc["command"].GetStringLength());
-    }
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("command_status MISSING FIELD: data"); 
-    }else{
-    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
-    }
-}
-template<>
-void Deserialize(command_status& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("command")){
-        JSON_LOG_FUNC("command_status MISSING FIELD: command"); 
-    }else{
-    obj.command = std::string(doc["command"].GetString(), doc["command"].GetStringLength());
-    }
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("command_status MISSING FIELD: data"); 
-    }else{
-    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
-    }
-}
-
-template<>
-std::string StructToString(const command_status& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const command_status& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, command_status& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(command_status& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const command_status& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const file_ask_transaction& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("identifier")){
-        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: identifier"); 
-        check = false;
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: transaction_hash"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const file_ask_transaction& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("identifier", rapidjson::Value().SetString(obj.identifier.c_str(), obj.identifier.size(), alloc), alloc);
-    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
-}
-template<>
-void Deserialize(file_ask_transaction& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("identifier")){
-        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: identifier"); 
-    }else{
-    obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-}
-template<>
-void Deserialize(file_ask_transaction& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("identifier")){
-        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: identifier"); 
-    }else{
-    obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_ask_transaction MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-}
-
-template<>
-std::string StructToString(const file_ask_transaction& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const file_ask_transaction& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, file_ask_transaction& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(file_ask_transaction& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const file_ask_transaction& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const file_begin_transaction& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("filename")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: filename"); 
-        check = false;
-    }
-    if(!doc.HasMember("dest_path")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: dest_path"); 
-        check = false;
-    }
-    if(!doc.HasMember("total_chunks")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: total_chunks"); 
-        check = false;
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: transaction_hash"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const file_begin_transaction& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("filename", rapidjson::Value().SetString(obj.filename.c_str(), obj.filename.size(), alloc), alloc);
-    out.AddMember("dest_path", rapidjson::Value().SetString(obj.dest_path.c_str(), obj.dest_path.size(), alloc), alloc);
-    out.AddMember("total_chunks", rapidjson::Value().SetUint64(obj.total_chunks), alloc);
-    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
-}
-template<>
-void Deserialize(file_begin_transaction& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("filename")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: filename"); 
-    }else{
-    obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
-    }
-    if(!doc.HasMember("dest_path")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: dest_path"); 
-    }else{
-    obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
-    }
-    if(!doc.HasMember("total_chunks")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: total_chunks"); 
-    }else{
-        obj.total_chunks = doc["total_chunks"].GetUint64();
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-}
-template<>
-void Deserialize(file_begin_transaction& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("filename")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: filename"); 
-    }else{
-    obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
-    }
-    if(!doc.HasMember("dest_path")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: dest_path"); 
-    }else{
-    obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
-    }
-    if(!doc.HasMember("total_chunks")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: total_chunks"); 
-    }else{
-        obj.total_chunks = doc["total_chunks"].GetUint64();
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_begin_transaction MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-}
-
-template<>
-std::string StructToString(const file_begin_transaction& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const file_begin_transaction& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, file_begin_transaction& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(file_begin_transaction& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const file_begin_transaction& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const file_chunk& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: data"); 
-        check = false;
-    }
-    if(!doc.HasMember("chunk_n")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_n"); 
-        check = false;
-    }
-    if(!doc.HasMember("chunk_total")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_total"); 
-        check = false;
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: transaction_hash"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const file_chunk& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("data", rapidjson::Value().SetString(obj.data.c_str(), obj.data.size(), alloc), alloc);
-    out.AddMember("chunk_n", rapidjson::Value().SetUint64(obj.chunk_n), alloc);
-    out.AddMember("chunk_total", rapidjson::Value().SetUint64(obj.chunk_total), alloc);
-    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
-}
-template<>
-void Deserialize(file_chunk& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: data"); 
-    }else{
-    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
-    }
-    if(!doc.HasMember("chunk_n")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_n"); 
-    }else{
-        obj.chunk_n = doc["chunk_n"].GetUint64();
-    }
-    if(!doc.HasMember("chunk_total")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_total"); 
-    }else{
-        obj.chunk_total = doc["chunk_total"].GetUint64();
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-}
-template<>
-void Deserialize(file_chunk& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("data")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: data"); 
-    }else{
-    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
-    }
-    if(!doc.HasMember("chunk_n")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_n"); 
-    }else{
-        obj.chunk_n = doc["chunk_n"].GetUint64();
-    }
-    if(!doc.HasMember("chunk_total")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_total"); 
-    }else{
-        obj.chunk_total = doc["chunk_total"].GetUint64();
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_chunk MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-}
-
-template<>
-std::string StructToString(const file_chunk& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const file_chunk& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, file_chunk& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(file_chunk& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const file_chunk& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const file_end_transaction& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("filename")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: filename"); 
-        check = false;
-    }
-    if(!doc.HasMember("dest_path")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: dest_path"); 
-        check = false;
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: transaction_hash"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const file_end_transaction& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("filename", rapidjson::Value().SetString(obj.filename.c_str(), obj.filename.size(), alloc), alloc);
-    out.AddMember("dest_path", rapidjson::Value().SetString(obj.dest_path.c_str(), obj.dest_path.size(), alloc), alloc);
-    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
-}
-template<>
-void Deserialize(file_end_transaction& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("filename")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: filename"); 
-    }else{
-    obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
-    }
-    if(!doc.HasMember("dest_path")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: dest_path"); 
-    }else{
-    obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-}
-template<>
-void Deserialize(file_end_transaction& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("filename")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: filename"); 
-    }else{
-    obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
-    }
-    if(!doc.HasMember("dest_path")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: dest_path"); 
-    }else{
-    obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-}
-
-template<>
-std::string StructToString(const file_end_transaction& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const file_end_transaction& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, file_end_transaction& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(file_end_transaction& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const file_end_transaction& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const file_response_transaction& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("identifier")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: identifier"); 
-        check = false;
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_hash"); 
-        check = false;
-    }
-    if(!doc.HasMember("transaction_topic")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_topic"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const file_response_transaction& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("identifier", rapidjson::Value().SetString(obj.identifier.c_str(), obj.identifier.size(), alloc), alloc);
-    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
-    out.AddMember("transaction_topic", rapidjson::Value().SetString(obj.transaction_topic.c_str(), obj.transaction_topic.size(), alloc), alloc);
-}
-template<>
-void Deserialize(file_response_transaction& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("identifier")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: identifier"); 
-    }else{
-    obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-    if(!doc.HasMember("transaction_topic")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_topic"); 
-    }else{
-    obj.transaction_topic = std::string(doc["transaction_topic"].GetString(), doc["transaction_topic"].GetStringLength());
-    }
-}
-template<>
-void Deserialize(file_response_transaction& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("identifier")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: identifier"); 
-    }else{
-    obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
-    }
-    if(!doc.HasMember("transaction_hash")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_hash"); 
-    }else{
-        obj.transaction_hash = doc["transaction_hash"].GetUint64();
-    }
-    if(!doc.HasMember("transaction_topic")){
-        JSON_LOG_FUNC("file_response_transaction MISSING FIELD: transaction_topic"); 
-    }else{
-    obj.transaction_topic = std::string(doc["transaction_topic"].GetString(), doc["transaction_topic"].GetStringLength());
-    }
-}
-
-template<>
-std::string StructToString(const file_response_transaction& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const file_response_transaction& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, file_response_transaction& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(file_response_transaction& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const file_response_transaction& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
 bool CheckJson(const get_telemetry_config& obj, const rapidjson::Document& doc)
 {
     bool check = true;
@@ -1264,59 +1146,74 @@ void SaveStruct(const get_telemetry_config& obj, const std::string& path)
 }
 
 template <>
-bool CheckJson(const ping& obj, const rapidjson::Document& doc)
+bool CheckJson(const file_end_transaction& obj, const rapidjson::Document& doc)
 {
     bool check = true;
-    if(!doc.HasMember("type")){
-        JSON_LOG_FUNC("ping MISSING FIELD: type"); 
+    if(!doc.HasMember("filename")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: filename"); 
         check = false;
     }
-    if(!doc.HasMember("time")){
-        JSON_LOG_FUNC("ping MISSING FIELD: time"); 
+    if(!doc.HasMember("dest_path")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: dest_path"); 
+        check = false;
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: transaction_hash"); 
         check = false;
     }
     return check;
 }
 
 template<>
-void Serialize(rapidjson::Document& out, const ping& obj)
+void Serialize(rapidjson::Document& out, const file_end_transaction& obj)
 {
     out.SetObject();
     rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("type", rapidjson::Value().SetString(obj.type.c_str(), obj.type.size(), alloc), alloc);
-    out.AddMember("time", rapidjson::Value().SetDouble(obj.time), alloc);
+    out.AddMember("filename", rapidjson::Value().SetString(obj.filename.c_str(), obj.filename.size(), alloc), alloc);
+    out.AddMember("dest_path", rapidjson::Value().SetString(obj.dest_path.c_str(), obj.dest_path.size(), alloc), alloc);
+    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
 }
 template<>
-void Deserialize(ping& obj, rapidjson::Document& doc)
+void Deserialize(file_end_transaction& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("type")){
-        JSON_LOG_FUNC("ping MISSING FIELD: type"); 
+    if(!doc.HasMember("filename")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: filename"); 
     }else{
-    obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
+    obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
     }
-    if(!doc.HasMember("time")){
-        JSON_LOG_FUNC("ping MISSING FIELD: time"); 
+    if(!doc.HasMember("dest_path")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: dest_path"); 
     }else{
-        obj.time = doc["time"].GetDouble();
+    obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
     }
 }
 template<>
-void Deserialize(ping& obj, rapidjson::Value& doc)
+void Deserialize(file_end_transaction& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("type")){
-        JSON_LOG_FUNC("ping MISSING FIELD: type"); 
+    if(!doc.HasMember("filename")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: filename"); 
     }else{
-    obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
+    obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
     }
-    if(!doc.HasMember("time")){
-        JSON_LOG_FUNC("ping MISSING FIELD: time"); 
+    if(!doc.HasMember("dest_path")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: dest_path"); 
     }else{
-        obj.time = doc["time"].GetDouble();
+    obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
+    }
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_end_transaction MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
     }
 }
 
 template<>
-std::string StructToString(const ping& obj)
+std::string StructToString(const file_end_transaction& obj)
 {
     rapidjson::Document doc;
     rapidjson::StringBuffer sb;
@@ -1327,7 +1224,7 @@ std::string StructToString(const ping& obj)
 }
 
 template<>
-std::string StructToStringPretty(const ping& obj)
+std::string StructToStringPretty(const file_end_transaction& obj)
 {
     rapidjson::Document doc;
     rapidjson::StringBuffer sb;
@@ -1338,7 +1235,7 @@ std::string StructToStringPretty(const ping& obj)
 }
 
 template<>
-bool StringToStruct(const std::string& obj_str, ping& out)
+bool StringToStruct(const std::string& obj_str, file_end_transaction& out)
 {
     rapidjson::Document doc;
     rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
@@ -1350,7 +1247,7 @@ bool StringToStruct(const std::string& obj_str, ping& out)
 }
 
 template<>
-bool LoadStruct(ping& out, const std::string& path)
+bool LoadStruct(file_end_transaction& out, const std::string& path)
 {
     rapidjson::Document doc;
     LoadJSON(doc, path);
@@ -1359,7 +1256,7 @@ bool LoadStruct(ping& out, const std::string& path)
     return check_passed;
 }
 template<>
-void SaveStruct(const ping& obj, const std::string& path)
+void SaveStruct(const file_end_transaction& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
@@ -1598,6 +1495,109 @@ bool LoadStruct(telemetry_status& out, const std::string& path)
 }
 template<>
 void SaveStruct(const telemetry_status& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const basic_message& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("type")){
+        JSON_LOG_FUNC("basic_message MISSING FIELD: type"); 
+        check = false;
+    }
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("basic_message MISSING FIELD: data"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const basic_message& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("type", rapidjson::Value().SetString(obj.type.c_str(), obj.type.size(), alloc), alloc);
+    out.AddMember("data", rapidjson::Value().SetString(obj.data.c_str(), obj.data.size(), alloc), alloc);
+}
+template<>
+void Deserialize(basic_message& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("type")){
+        JSON_LOG_FUNC("basic_message MISSING FIELD: type"); 
+    }else{
+    obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
+    }
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("basic_message MISSING FIELD: data"); 
+    }else{
+    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
+    }
+}
+template<>
+void Deserialize(basic_message& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("type")){
+        JSON_LOG_FUNC("basic_message MISSING FIELD: type"); 
+    }else{
+    obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
+    }
+    if(!doc.HasMember("data")){
+        JSON_LOG_FUNC("basic_message MISSING FIELD: data"); 
+    }else{
+    obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
+    }
+}
+
+template<>
+std::string StructToString(const basic_message& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const basic_message& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, basic_message& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(basic_message& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const basic_message& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
