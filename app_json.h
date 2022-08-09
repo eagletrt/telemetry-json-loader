@@ -82,6 +82,7 @@ typedef struct app_config{
     double last_login_time;
     app_connection_t app_connection;
     std::vector<std::string> activeTabs;
+    std::vector<std::string> last_connection_ips;
 }app_config;
 
 #ifdef __APP_JSON_IMPLEMENTATION__
@@ -161,6 +162,10 @@ bool CheckJson(const app_config& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("app_config MISSING FIELD: activeTabs"); 
         check = false;
     }
+    if(!doc.HasMember("last_connection_ips")){
+        JSON_LOG_FUNC("app_config MISSING FIELD: last_connection_ips"); 
+        check = false;
+    }
     return check;
 }
 
@@ -185,6 +190,14 @@ void Serialize(rapidjson::Document& out, const app_config& obj)
         	v0.PushBack(rapidjson::Value().SetString(obj.activeTabs[i].c_str(), obj.activeTabs[i].size(), alloc), alloc);
     	}
     	out.AddMember("activeTabs", v0, alloc);
+    }
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.last_connection_ips.size(); i++){
+        	v0.PushBack(rapidjson::Value().SetString(obj.last_connection_ips[i].c_str(), obj.last_connection_ips[i].size(), alloc), alloc);
+    	}
+    	out.AddMember("last_connection_ips", v0, alloc);
     }
 }
 template<>
@@ -223,6 +236,14 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 		obj.activeTabs[i] = doc["activeTabs"][i].GetString();
 	}
     }
+    if(!doc.HasMember("last_connection_ips")){
+        JSON_LOG_FUNC("app_config MISSING FIELD: last_connection_ips"); 
+    }else{
+	obj.last_connection_ips.resize(doc["last_connection_ips"].Size());
+	for(rapidjson::SizeType i = 0; i < doc["last_connection_ips"].Size(); i++){
+		obj.last_connection_ips[i] = doc["last_connection_ips"][i].GetString();
+	}
+    }
 }
 template<>
 void Deserialize(app_config& obj, rapidjson::Value& doc)
@@ -258,6 +279,14 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 	obj.activeTabs.resize(doc["activeTabs"].Size());
 	for(rapidjson::SizeType i = 0; i < doc["activeTabs"].Size(); i++){
 		obj.activeTabs[i] = doc["activeTabs"][i].GetString();
+	}
+    }
+    if(!doc.HasMember("last_connection_ips")){
+        JSON_LOG_FUNC("app_config MISSING FIELD: last_connection_ips"); 
+    }else{
+	obj.last_connection_ips.resize(doc["last_connection_ips"].Size());
+	for(rapidjson::SizeType i = 0; i < doc["last_connection_ips"].Size(); i++){
+		obj.last_connection_ips[i] = doc["last_connection_ips"][i].GetString();
 	}
     }
 }

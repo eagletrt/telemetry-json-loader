@@ -109,6 +109,12 @@ typedef struct file_ask_transaction{
     uint64_t transaction_hash;
 }file_ask_transaction;
 
+typedef struct telemetry_error{
+    uint64_t timestamp;
+    std::string function;
+    std::string error;
+}telemetry_error;
+
 typedef struct car_data{
     uint64_t timestamp;
     std::string primary;
@@ -873,6 +879,124 @@ bool LoadStruct(file_ask_transaction& out, const std::string& path)
 }
 template<>
 void SaveStruct(const file_ask_transaction& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const telemetry_error& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("timestamp")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: timestamp"); 
+        check = false;
+    }
+    if(!doc.HasMember("function")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: function"); 
+        check = false;
+    }
+    if(!doc.HasMember("error")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: error"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const telemetry_error& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("timestamp", rapidjson::Value().SetUint64(obj.timestamp), alloc);
+    out.AddMember("function", rapidjson::Value().SetString(obj.function.c_str(), obj.function.size(), alloc), alloc);
+    out.AddMember("error", rapidjson::Value().SetString(obj.error.c_str(), obj.error.size(), alloc), alloc);
+}
+template<>
+void Deserialize(telemetry_error& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("timestamp")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: timestamp"); 
+    }else{
+        obj.timestamp = doc["timestamp"].GetUint64();
+    }
+    if(!doc.HasMember("function")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: function"); 
+    }else{
+    obj.function = std::string(doc["function"].GetString(), doc["function"].GetStringLength());
+    }
+    if(!doc.HasMember("error")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: error"); 
+    }else{
+    obj.error = std::string(doc["error"].GetString(), doc["error"].GetStringLength());
+    }
+}
+template<>
+void Deserialize(telemetry_error& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("timestamp")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: timestamp"); 
+    }else{
+        obj.timestamp = doc["timestamp"].GetUint64();
+    }
+    if(!doc.HasMember("function")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: function"); 
+    }else{
+    obj.function = std::string(doc["function"].GetString(), doc["function"].GetStringLength());
+    }
+    if(!doc.HasMember("error")){
+        JSON_LOG_FUNC("telemetry_error MISSING FIELD: error"); 
+    }else{
+    obj.error = std::string(doc["error"].GetString(), doc["error"].GetStringLength());
+    }
+}
+
+template<>
+std::string StructToString(const telemetry_error& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const telemetry_error& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, telemetry_error& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(telemetry_error& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const telemetry_error& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
