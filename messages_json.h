@@ -153,6 +153,12 @@ typedef struct basic_message{
     std::string data;
 }basic_message;
 
+typedef struct file_chunk_ack{
+    uint64_t transaction_hash;
+    uint64_t chunk_n;
+    uint64_t chunk_total;
+}file_chunk_ack;
+
 #ifdef __MESSAGES_JSON_IMPLEMENTATION__
 
 template <>
@@ -1722,6 +1728,124 @@ bool LoadStruct(basic_message& out, const std::string& path)
 }
 template<>
 void SaveStruct(const basic_message& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const file_chunk_ack& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: transaction_hash"); 
+        check = false;
+    }
+    if(!doc.HasMember("chunk_n")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: chunk_n"); 
+        check = false;
+    }
+    if(!doc.HasMember("chunk_total")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: chunk_total"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const file_chunk_ack& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("transaction_hash", rapidjson::Value().SetUint64(obj.transaction_hash), alloc);
+    out.AddMember("chunk_n", rapidjson::Value().SetUint64(obj.chunk_n), alloc);
+    out.AddMember("chunk_total", rapidjson::Value().SetUint64(obj.chunk_total), alloc);
+}
+template<>
+void Deserialize(file_chunk_ack& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+    if(!doc.HasMember("chunk_n")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: chunk_n"); 
+    }else{
+        obj.chunk_n = doc["chunk_n"].GetUint64();
+    }
+    if(!doc.HasMember("chunk_total")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: chunk_total"); 
+    }else{
+        obj.chunk_total = doc["chunk_total"].GetUint64();
+    }
+}
+template<>
+void Deserialize(file_chunk_ack& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("transaction_hash")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: transaction_hash"); 
+    }else{
+        obj.transaction_hash = doc["transaction_hash"].GetUint64();
+    }
+    if(!doc.HasMember("chunk_n")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: chunk_n"); 
+    }else{
+        obj.chunk_n = doc["chunk_n"].GetUint64();
+    }
+    if(!doc.HasMember("chunk_total")){
+        JSON_LOG_FUNC("file_chunk_ack MISSING FIELD: chunk_total"); 
+    }else{
+        obj.chunk_total = doc["chunk_total"].GetUint64();
+    }
+}
+
+template<>
+std::string StructToString(const file_chunk_ack& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const file_chunk_ack& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, file_chunk_ack& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(file_chunk_ack& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const file_chunk_ack& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
