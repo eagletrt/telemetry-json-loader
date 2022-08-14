@@ -121,6 +121,7 @@ typedef struct car_data{
     std::string secondary;
     std::string gps;
     std::string inverters;
+    std::string can_frequencies;
 }car_data;
 
 typedef struct get_telemetry_config{
@@ -1033,6 +1034,10 @@ bool CheckJson(const car_data& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("car_data MISSING FIELD: inverters"); 
         check = false;
     }
+    if(!doc.HasMember("can_frequencies")){
+        JSON_LOG_FUNC("car_data MISSING FIELD: can_frequencies"); 
+        check = false;
+    }
     return check;
 }
 
@@ -1046,6 +1051,7 @@ void Serialize(rapidjson::Document& out, const car_data& obj)
     out.AddMember("secondary", rapidjson::Value().SetString(obj.secondary.c_str(), obj.secondary.size(), alloc), alloc);
     out.AddMember("gps", rapidjson::Value().SetString(obj.gps.c_str(), obj.gps.size(), alloc), alloc);
     out.AddMember("inverters", rapidjson::Value().SetString(obj.inverters.c_str(), obj.inverters.size(), alloc), alloc);
+    out.AddMember("can_frequencies", rapidjson::Value().SetString(obj.can_frequencies.c_str(), obj.can_frequencies.size(), alloc), alloc);
 }
 template<>
 void Deserialize(car_data& obj, rapidjson::Document& doc)
@@ -1075,6 +1081,11 @@ void Deserialize(car_data& obj, rapidjson::Document& doc)
     }else{
     obj.inverters = std::string(doc["inverters"].GetString(), doc["inverters"].GetStringLength());
     }
+    if(!doc.HasMember("can_frequencies")){
+        JSON_LOG_FUNC("car_data MISSING FIELD: can_frequencies"); 
+    }else{
+    obj.can_frequencies = std::string(doc["can_frequencies"].GetString(), doc["can_frequencies"].GetStringLength());
+    }
 }
 template<>
 void Deserialize(car_data& obj, rapidjson::Value& doc)
@@ -1103,6 +1114,11 @@ void Deserialize(car_data& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("car_data MISSING FIELD: inverters"); 
     }else{
     obj.inverters = std::string(doc["inverters"].GetString(), doc["inverters"].GetStringLength());
+    }
+    if(!doc.HasMember("can_frequencies")){
+        JSON_LOG_FUNC("car_data MISSING FIELD: can_frequencies"); 
+    }else{
+    obj.can_frequencies = std::string(doc["can_frequencies"].GetString(), doc["can_frequencies"].GetStringLength());
     }
 }
 
