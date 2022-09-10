@@ -163,7 +163,11 @@ template<>
 void Deserialize({{struct.typename}}& obj, rapidjson::Document& doc)
 {
 {%- for field in struct.fields %}
-    if(!doc.HasMember("{{field.name}}")){
+{%- if isinstance(field, BasicField)%}
+    if(!doc.HasMember("{{field.name}}") && doc["{{field.name}}"].Is{{field.get_rapidjson_type()}}()){
+{%- else%}
+    if(!doc.HasMember("{{field.name}}") && doc["{{field.name}}"].IsObject()){
+{%- endif%}
         JSON_LOG_FUNC("{{struct.typename}} MISSING FIELD: {{field.name}}"); 
     }else{
 {%- if isinstance(field, Struct)%}
@@ -171,7 +175,7 @@ void Deserialize({{struct.typename}}& obj, rapidjson::Document& doc)
 {%- endif %}
 {%- if isinstance(field, BasicField)%}
 {%- if field.get_rapidjson_type() == "String"%}
-    obj.{{field.name}} = std::string(doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}(), doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}Length());
+        obj.{{field.name}} = std::string(doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}(), doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}Length());
 {%- else %}
         obj.{{field.name}} = doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}();
 {%- endif %}
@@ -187,7 +191,11 @@ template<>
 void Deserialize({{struct.typename}}& obj, rapidjson::Value& doc)
 {
 {%- for field in struct.fields %}
-    if(!doc.HasMember("{{field.name}}")){
+{%- if isinstance(field, BasicField)%}
+    if(!doc.HasMember("{{field.name}}") && doc["{{field.name}}"].Is{{field.get_rapidjson_type()}}()){
+{%- else%}
+    if(!doc.HasMember("{{field.name}}") && doc["{{field.name}}"].IsObject()){
+{%- endif%}
         JSON_LOG_FUNC("{{struct.typename}} MISSING FIELD: {{field.name}}"); 
     }else{
 {%- if isinstance(field, Struct)%}
@@ -195,7 +203,7 @@ void Deserialize({{struct.typename}}& obj, rapidjson::Value& doc)
 {%- endif %}
 {%- if isinstance(field, BasicField)%}
 {%- if field.get_rapidjson_type() == "String"%}
-    obj.{{field.name}} = std::string(doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}(), doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}Length());
+        obj.{{field.name}} = std::string(doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}(), doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}Length());
 {%- else %}
         obj.{{field.name}} = doc["{{field.name}}"].Get{{field.get_rapidjson_type()}}();
 {%- endif %}
