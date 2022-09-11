@@ -27,5 +27,11 @@
         "duration": 1
       }
     }
-  ]
+  ],
+  "last_open_mode": "REALTIME",
+  "post_processing": {
+    "last_path": "",
+    "last_sample_freq": 10,
+    "no_resample_fields": [""]
+  }
 }
