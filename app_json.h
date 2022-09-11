@@ -69,6 +69,12 @@ static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
 }
 #endif // __JSON_LOADER_DEFINITION__
 
+typedef struct post_processing_t{
+    std::string last_path;
+    uint64_t last_sample_freq;
+    std::vector<std::string> no_resample_fields;
+}post_processing_t;
+
 typedef struct popup_t{
     std::string id;
     std::string cause;
@@ -105,9 +111,68 @@ typedef struct app_config{
     std::vector<std::string> activeTabs;
     std::vector<std::string> last_connection_ips;
     std::vector<events_o> events;
+    std::string last_open_mode;
+    post_processing_t post_processing;
 }app_config;
 
 #ifdef __APP_JSON_IMPLEMENTATION__
+
+template <>
+bool CheckJson(const post_processing_t& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("last_path")){
+        JSON_LOG_FUNC("post_processing_t MISSING FIELD: last_path"); 
+        check = false;
+    }
+    if(!doc.HasMember("last_sample_freq")){
+        JSON_LOG_FUNC("post_processing_t MISSING FIELD: last_sample_freq"); 
+        check = false;
+    }
+    if(!doc.HasMember("no_resample_fields")){
+        JSON_LOG_FUNC("post_processing_t MISSING FIELD: no_resample_fields"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Value& out, const post_processing_t& obj, rapidjson::Document::AllocatorType& alloc)
+{
+    out.SetObject();
+    out.AddMember("last_path", rapidjson::Value().SetString(obj.last_path.c_str(), obj.last_path.size(), alloc), alloc);
+    out.AddMember("last_sample_freq", rapidjson::Value().SetUint64(obj.last_sample_freq), alloc);
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.no_resample_fields.size(); i++){
+        	v0.PushBack(rapidjson::Value().SetString(obj.no_resample_fields[i].c_str(), obj.no_resample_fields[i].size(), alloc), alloc);
+    	}
+    	out.AddMember("no_resample_fields", v0, alloc);
+    }
+}
+template<>
+void Deserialize(post_processing_t& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("last_path") && doc["last_path"].IsString()){
+        JSON_LOG_FUNC("post_processing_t MISSING FIELD: last_path"); 
+    }else{
+        obj.last_path = std::string(doc["last_path"].GetString(), doc["last_path"].GetStringLength());
+    }
+    if(!doc.HasMember("last_sample_freq") && doc["last_sample_freq"].IsUint64()){
+        JSON_LOG_FUNC("post_processing_t MISSING FIELD: last_sample_freq"); 
+    }else{
+        obj.last_sample_freq = doc["last_sample_freq"].GetUint64();
+    }
+    if(!doc.HasMember("no_resample_fields") && doc["no_resample_fields"].IsObject()){
+        JSON_LOG_FUNC("post_processing_t MISSING FIELD: no_resample_fields"); 
+    }else{
+		obj.no_resample_fields.resize(doc["no_resample_fields"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["no_resample_fields"].Size(); i++){
+				obj.no_resample_fields[i] = doc["no_resample_fields"][i].GetString();
+		}
+    }
+}
 
 template <>
 bool CheckJson(const popup_t& obj, const rapidjson::Document& doc)
@@ -371,6 +436,14 @@ bool CheckJson(const app_config& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("app_config MISSING FIELD: events"); 
         check = false;
     }
+    if(!doc.HasMember("last_open_mode")){
+        JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
+        check = false;
+    }
+    if(!doc.HasMember("post_processing")){
+        JSON_LOG_FUNC("app_config MISSING FIELD: post_processing"); 
+        check = false;
+    }
     return check;
 }
 
@@ -413,6 +486,12 @@ void Serialize(rapidjson::Document& out, const app_config& obj)
         	v0.PushBack(new_obj, alloc);
     	}
     	out.AddMember("events", v0, alloc);
+    }
+    out.AddMember("last_open_mode", rapidjson::Value().SetString(obj.last_open_mode.c_str(), obj.last_open_mode.size(), alloc), alloc);
+    {
+        rapidjson::Value v;
+        Serialize(v, obj.post_processing, alloc);
+        out.AddMember("post_processing", v, alloc);
     }
 }
 template<>
@@ -467,6 +546,16 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 				Deserialize(obj.events[i], doc["events"][i]);
 		}
     }
+    if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsString()){
+        JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
+    }else{
+        obj.last_open_mode = std::string(doc["last_open_mode"].GetString(), doc["last_open_mode"].GetStringLength());
+    }
+    if(!doc.HasMember("post_processing") && doc["post_processing"].IsObject()){
+        JSON_LOG_FUNC("app_config MISSING FIELD: post_processing"); 
+    }else{
+        Deserialize(obj.post_processing, doc["post_processing"]);
+    }
 }
 template<>
 void Deserialize(app_config& obj, rapidjson::Value& doc)
@@ -519,6 +608,16 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 		for(rapidjson::SizeType i = 0; i < doc["events"].Size(); i++){
 				Deserialize(obj.events[i], doc["events"][i]);
 		}
+    }
+    if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsString()){
+        JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
+    }else{
+        obj.last_open_mode = std::string(doc["last_open_mode"].GetString(), doc["last_open_mode"].GetStringLength());
+    }
+    if(!doc.HasMember("post_processing") && doc["post_processing"].IsObject()){
+        JSON_LOG_FUNC("app_config MISSING FIELD: post_processing"); 
+    }else{
+        Deserialize(obj.post_processing, doc["post_processing"]);
     }
 }
 
