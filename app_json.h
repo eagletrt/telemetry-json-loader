@@ -111,7 +111,7 @@ typedef struct app_config{
     std::vector<std::string> activeTabs;
     std::vector<std::string> last_connection_ips;
     std::vector<events_o> events;
-    std::string last_open_mode;
+    uint64_t last_open_mode;
     post_processing_t post_processing;
 }app_config;
 
@@ -487,7 +487,7 @@ void Serialize(rapidjson::Document& out, const app_config& obj)
     	}
     	out.AddMember("events", v0, alloc);
     }
-    out.AddMember("last_open_mode", rapidjson::Value().SetString(obj.last_open_mode.c_str(), obj.last_open_mode.size(), alloc), alloc);
+    out.AddMember("last_open_mode", rapidjson::Value().SetUint64(obj.last_open_mode), alloc);
     {
         rapidjson::Value v;
         Serialize(v, obj.post_processing, alloc);
@@ -546,10 +546,10 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 				Deserialize(obj.events[i], doc["events"][i]);
 		}
     }
-    if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsString()){
+    if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsUint64()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
     }else{
-        obj.last_open_mode = std::string(doc["last_open_mode"].GetString(), doc["last_open_mode"].GetStringLength());
+        obj.last_open_mode = doc["last_open_mode"].GetUint64();
     }
     if(!doc.HasMember("post_processing") && doc["post_processing"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: post_processing"); 
@@ -609,10 +609,10 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 				Deserialize(obj.events[i], doc["events"][i]);
 		}
     }
-    if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsString()){
+    if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsUint64()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
     }else{
-        obj.last_open_mode = std::string(doc["last_open_mode"].GetString(), doc["last_open_mode"].GetStringLength());
+        obj.last_open_mode = doc["last_open_mode"].GetUint64();
     }
     if(!doc.HasMember("post_processing") && doc["post_processing"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: post_processing"); 
