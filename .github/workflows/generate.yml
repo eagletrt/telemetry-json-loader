@@ -1,10 +1,7 @@
 name: Generate
 
 on:
-  workflow_dispatch:
   push:
-    paths:
-      - "networks/**"
     branches:
       - master
 
