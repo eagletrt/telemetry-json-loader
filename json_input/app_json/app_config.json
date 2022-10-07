@@ -10,19 +10,19 @@
   },
   "activeTabs": [""],
   "last_connection_ips": [""],
-  "post_proc":{
+  "post_proc": {
     "include_items": [
       {
         "message": "",
-        "field", "",
-      },
+        "field": ""
+      }
     ],
     "exlude_items": [
       {
         "message": "",
-        "field", "",
-      },
-    ],
+        "field": ""
+      }
+    ]
   },
   "events": [
     {
