@@ -10,6 +10,20 @@
   },
   "activeTabs": [""],
   "last_connection_ips": [""],
+  "post_proc":{
+    "include_items": [
+      {
+        "message": "",
+        "field", "",
+      },
+    ],
+    "exlude_items": [
+      {
+        "message": "",
+        "field", "",
+      },
+    ],
+  },
   "events": [
     {
       "filter": {
