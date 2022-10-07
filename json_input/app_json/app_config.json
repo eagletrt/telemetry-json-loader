@@ -2,7 +2,7 @@
   "paths": [
     {
       "id": "",
-      "path": "path/to/file"
+      "value": "path/to/file"
     }
   ],
   "csv_auto_save": false,
@@ -17,18 +17,8 @@
   "last_connection_ips": [""],
   "post_proc": {
     "last_sample_freq": 10,
-    "include_items": [
-      {
-        "message": "",
-        "field": ""
-      }
-    ],
-    "exlude_items": [
-      {
-        "message": "",
-        "field": ""
-      }
-    ]
+    "include_items": [""],
+    "exlude_items": [""]
   },
   "events": [
     {
