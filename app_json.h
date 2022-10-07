@@ -90,20 +90,10 @@ typedef struct events_o{
     popup_t popup;
 }events_o;
 
-typedef struct exlude_items_o{
-    std::string message;
-    std::string field;
-}exlude_items_o;
-
-typedef struct include_items_o{
-    std::string message;
-    std::string field;
-}include_items_o;
-
 typedef struct post_proc_t{
     uint64_t last_sample_freq;
-    std::vector<include_items_o> include_items;
-    std::vector<exlude_items_o> exlude_items;
+    std::vector<std::string> include_items;
+    std::vector<std::string> exlude_items;
 }post_proc_t;
 
 typedef struct app_connection_t{
@@ -114,7 +104,7 @@ typedef struct app_connection_t{
 
 typedef struct paths_o{
     std::string id;
-    std::string path;
+    std::string value;
 }paths_o;
 
 typedef struct app_config{
@@ -312,80 +302,6 @@ void Deserialize(events_o& obj, rapidjson::Value& doc)
 }
 
 template <>
-bool CheckJson(const exlude_items_o& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("message")){
-        JSON_LOG_FUNC("exlude_items_o MISSING FIELD: message"); 
-        check = false;
-    }
-    if(!doc.HasMember("field")){
-        JSON_LOG_FUNC("exlude_items_o MISSING FIELD: field"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Value& out, const exlude_items_o& obj, rapidjson::Document::AllocatorType& alloc)
-{
-    out.SetObject();
-    out.AddMember("message", rapidjson::Value().SetString(obj.message.c_str(), obj.message.size(), alloc), alloc);
-    out.AddMember("field", rapidjson::Value().SetString(obj.field.c_str(), obj.field.size(), alloc), alloc);
-}
-template<>
-void Deserialize(exlude_items_o& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("message") && doc["message"].IsString()){
-        JSON_LOG_FUNC("exlude_items_o MISSING FIELD: message"); 
-    }else{
-        obj.message = std::string(doc["message"].GetString(), doc["message"].GetStringLength());
-    }
-    if(!doc.HasMember("field") && doc["field"].IsString()){
-        JSON_LOG_FUNC("exlude_items_o MISSING FIELD: field"); 
-    }else{
-        obj.field = std::string(doc["field"].GetString(), doc["field"].GetStringLength());
-    }
-}
-
-template <>
-bool CheckJson(const include_items_o& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("message")){
-        JSON_LOG_FUNC("include_items_o MISSING FIELD: message"); 
-        check = false;
-    }
-    if(!doc.HasMember("field")){
-        JSON_LOG_FUNC("include_items_o MISSING FIELD: field"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Value& out, const include_items_o& obj, rapidjson::Document::AllocatorType& alloc)
-{
-    out.SetObject();
-    out.AddMember("message", rapidjson::Value().SetString(obj.message.c_str(), obj.message.size(), alloc), alloc);
-    out.AddMember("field", rapidjson::Value().SetString(obj.field.c_str(), obj.field.size(), alloc), alloc);
-}
-template<>
-void Deserialize(include_items_o& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("message") && doc["message"].IsString()){
-        JSON_LOG_FUNC("include_items_o MISSING FIELD: message"); 
-    }else{
-        obj.message = std::string(doc["message"].GetString(), doc["message"].GetStringLength());
-    }
-    if(!doc.HasMember("field") && doc["field"].IsString()){
-        JSON_LOG_FUNC("include_items_o MISSING FIELD: field"); 
-    }else{
-        obj.field = std::string(doc["field"].GetString(), doc["field"].GetStringLength());
-    }
-}
-
-template <>
 bool CheckJson(const post_proc_t& obj, const rapidjson::Document& doc)
 {
     bool check = true;
@@ -413,9 +329,7 @@ void Serialize(rapidjson::Value& out, const post_proc_t& obj, rapidjson::Documen
         rapidjson::Value v0;
         v0.SetArray();
         for(size_t i = 0; i < obj.include_items.size(); i++){
-        	rapidjson::Value new_obj;
-        	Serialize(new_obj, obj.include_items[i], alloc);
-        	v0.PushBack(new_obj, alloc);
+        	v0.PushBack(rapidjson::Value().SetString(obj.include_items[i].c_str(), obj.include_items[i].size(), alloc), alloc);
     	}
     	out.AddMember("include_items", v0, alloc);
     }
@@ -423,9 +337,7 @@ void Serialize(rapidjson::Value& out, const post_proc_t& obj, rapidjson::Documen
         rapidjson::Value v0;
         v0.SetArray();
         for(size_t i = 0; i < obj.exlude_items.size(); i++){
-        	rapidjson::Value new_obj;
-        	Serialize(new_obj, obj.exlude_items[i], alloc);
-        	v0.PushBack(new_obj, alloc);
+        	v0.PushBack(rapidjson::Value().SetString(obj.exlude_items[i].c_str(), obj.exlude_items[i].size(), alloc), alloc);
     	}
     	out.AddMember("exlude_items", v0, alloc);
     }
@@ -443,7 +355,7 @@ void Deserialize(post_proc_t& obj, rapidjson::Value& doc)
     }else{
 		obj.include_items.resize(doc["include_items"].Size());
 		for(rapidjson::SizeType i = 0; i < doc["include_items"].Size(); i++){
-				Deserialize(obj.include_items[i], doc["include_items"][i]);
+				obj.include_items[i] = doc["include_items"][i].GetString();
 		}
     }
     if(!doc.HasMember("exlude_items") && doc["exlude_items"].IsObject()){
@@ -451,7 +363,7 @@ void Deserialize(post_proc_t& obj, rapidjson::Value& doc)
     }else{
 		obj.exlude_items.resize(doc["exlude_items"].Size());
 		for(rapidjson::SizeType i = 0; i < doc["exlude_items"].Size(); i++){
-				Deserialize(obj.exlude_items[i], doc["exlude_items"][i]);
+				obj.exlude_items[i] = doc["exlude_items"][i].GetString();
 		}
     }
 }
@@ -511,8 +423,8 @@ bool CheckJson(const paths_o& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("paths_o MISSING FIELD: id"); 
         check = false;
     }
-    if(!doc.HasMember("path")){
-        JSON_LOG_FUNC("paths_o MISSING FIELD: path"); 
+    if(!doc.HasMember("value")){
+        JSON_LOG_FUNC("paths_o MISSING FIELD: value"); 
         check = false;
     }
     return check;
@@ -523,7 +435,7 @@ void Serialize(rapidjson::Value& out, const paths_o& obj, rapidjson::Document::A
 {
     out.SetObject();
     out.AddMember("id", rapidjson::Value().SetString(obj.id.c_str(), obj.id.size(), alloc), alloc);
-    out.AddMember("path", rapidjson::Value().SetString(obj.path.c_str(), obj.path.size(), alloc), alloc);
+    out.AddMember("value", rapidjson::Value().SetString(obj.value.c_str(), obj.value.size(), alloc), alloc);
 }
 template<>
 void Deserialize(paths_o& obj, rapidjson::Value& doc)
@@ -533,10 +445,10 @@ void Deserialize(paths_o& obj, rapidjson::Value& doc)
     }else{
         obj.id = std::string(doc["id"].GetString(), doc["id"].GetStringLength());
     }
-    if(!doc.HasMember("path") && doc["path"].IsString()){
-        JSON_LOG_FUNC("paths_o MISSING FIELD: path"); 
+    if(!doc.HasMember("value") && doc["value"].IsString()){
+        JSON_LOG_FUNC("paths_o MISSING FIELD: value"); 
     }else{
-        obj.path = std::string(doc["path"].GetString(), doc["path"].GetStringLength());
+        obj.value = std::string(doc["value"].GetString(), doc["value"].GetStringLength());
     }
 }
 
