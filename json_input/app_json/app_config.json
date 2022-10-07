@@ -1,5 +1,10 @@
 {
-  "csv_path": "path/to/file",
+  "paths": [
+    {
+      "id": "",
+      "path": "path/to/file"
+    }
+  ],
   "csv_auto_save": false,
   "telemetry_auto_get_config": false,
   "last_login_time": 0.0,
@@ -11,6 +16,7 @@
   "activeTabs": [""],
   "last_connection_ips": [""],
   "post_proc": {
+    "last_sample_freq": 10,
     "include_items": [
       {
         "message": "",
@@ -42,10 +48,5 @@
       }
     }
   ],
-  "last_open_mode": 1,
-  "post_processing": {
-    "last_path": "",
-    "last_sample_freq": 10,
-    "no_resample_fields": [""]
-  }
+  "last_open_mode": 1
 }
