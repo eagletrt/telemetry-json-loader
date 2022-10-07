@@ -102,13 +102,6 @@ typedef struct stat_json{
     double Duration_seconds;
 }stat_json;
 
-typedef struct csv_parser_config{
-    std::string subfolder_name;
-    bool parse_candump;
-    bool parse_gps;
-    bool generate_report;
-}csv_parser_config;
-
 typedef struct telemetry_config{
     bool camera_enable;
     std::vector<can_devices_o> can_devices;
@@ -121,6 +114,13 @@ typedef struct telemetry_config{
     bool connection_send_sensor_data;
     connection_t connection;
 }telemetry_config;
+
+typedef struct csv_parser_config{
+    std::string subfolder_name;
+    bool parse_candump;
+    bool parse_gps;
+    bool generate_report;
+}csv_parser_config;
 
 #ifdef __TELEMETRY_JSON_IMPLEMENTATION__
 
@@ -552,139 +552,6 @@ void SaveStruct(const stat_json& obj, const std::string& path)
 }
 
 template <>
-bool CheckJson(const csv_parser_config& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("subfolder_name")){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: subfolder_name"); 
-        check = false;
-    }
-    if(!doc.HasMember("parse_candump")){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_candump"); 
-        check = false;
-    }
-    if(!doc.HasMember("parse_gps")){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_gps"); 
-        check = false;
-    }
-    if(!doc.HasMember("generate_report")){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: generate_report"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const csv_parser_config& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("subfolder_name", rapidjson::Value().SetString(obj.subfolder_name.c_str(), obj.subfolder_name.size(), alloc), alloc);
-    out.AddMember("parse_candump", rapidjson::Value().SetBool(obj.parse_candump), alloc);
-    out.AddMember("parse_gps", rapidjson::Value().SetBool(obj.parse_gps), alloc);
-    out.AddMember("generate_report", rapidjson::Value().SetBool(obj.generate_report), alloc);
-}
-template<>
-void Deserialize(csv_parser_config& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("subfolder_name") && doc["subfolder_name"].IsString()){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: subfolder_name"); 
-    }else{
-        obj.subfolder_name = std::string(doc["subfolder_name"].GetString(), doc["subfolder_name"].GetStringLength());
-    }
-    if(!doc.HasMember("parse_candump") && doc["parse_candump"].IsBool()){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_candump"); 
-    }else{
-        obj.parse_candump = doc["parse_candump"].GetBool();
-    }
-    if(!doc.HasMember("parse_gps") && doc["parse_gps"].IsBool()){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_gps"); 
-    }else{
-        obj.parse_gps = doc["parse_gps"].GetBool();
-    }
-    if(!doc.HasMember("generate_report") && doc["generate_report"].IsBool()){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: generate_report"); 
-    }else{
-        obj.generate_report = doc["generate_report"].GetBool();
-    }
-}
-template<>
-void Deserialize(csv_parser_config& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("subfolder_name") && doc["subfolder_name"].IsString()){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: subfolder_name"); 
-    }else{
-        obj.subfolder_name = std::string(doc["subfolder_name"].GetString(), doc["subfolder_name"].GetStringLength());
-    }
-    if(!doc.HasMember("parse_candump") && doc["parse_candump"].IsBool()){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_candump"); 
-    }else{
-        obj.parse_candump = doc["parse_candump"].GetBool();
-    }
-    if(!doc.HasMember("parse_gps") && doc["parse_gps"].IsBool()){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_gps"); 
-    }else{
-        obj.parse_gps = doc["parse_gps"].GetBool();
-    }
-    if(!doc.HasMember("generate_report") && doc["generate_report"].IsBool()){
-        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: generate_report"); 
-    }else{
-        obj.generate_report = doc["generate_report"].GetBool();
-    }
-}
-
-template<>
-std::string StructToString(const csv_parser_config& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const csv_parser_config& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, csv_parser_config& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(csv_parser_config& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const csv_parser_config& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
 bool CheckJson(const telemetry_config& obj, const rapidjson::Document& doc)
 {
     bool check = true;
@@ -935,6 +802,139 @@ bool LoadStruct(telemetry_config& out, const std::string& path)
 }
 template<>
 void SaveStruct(const telemetry_config& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const csv_parser_config& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("subfolder_name")){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: subfolder_name"); 
+        check = false;
+    }
+    if(!doc.HasMember("parse_candump")){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_candump"); 
+        check = false;
+    }
+    if(!doc.HasMember("parse_gps")){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_gps"); 
+        check = false;
+    }
+    if(!doc.HasMember("generate_report")){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: generate_report"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const csv_parser_config& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("subfolder_name", rapidjson::Value().SetString(obj.subfolder_name.c_str(), obj.subfolder_name.size(), alloc), alloc);
+    out.AddMember("parse_candump", rapidjson::Value().SetBool(obj.parse_candump), alloc);
+    out.AddMember("parse_gps", rapidjson::Value().SetBool(obj.parse_gps), alloc);
+    out.AddMember("generate_report", rapidjson::Value().SetBool(obj.generate_report), alloc);
+}
+template<>
+void Deserialize(csv_parser_config& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("subfolder_name") && doc["subfolder_name"].IsString()){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: subfolder_name"); 
+    }else{
+        obj.subfolder_name = std::string(doc["subfolder_name"].GetString(), doc["subfolder_name"].GetStringLength());
+    }
+    if(!doc.HasMember("parse_candump") && doc["parse_candump"].IsBool()){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_candump"); 
+    }else{
+        obj.parse_candump = doc["parse_candump"].GetBool();
+    }
+    if(!doc.HasMember("parse_gps") && doc["parse_gps"].IsBool()){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_gps"); 
+    }else{
+        obj.parse_gps = doc["parse_gps"].GetBool();
+    }
+    if(!doc.HasMember("generate_report") && doc["generate_report"].IsBool()){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: generate_report"); 
+    }else{
+        obj.generate_report = doc["generate_report"].GetBool();
+    }
+}
+template<>
+void Deserialize(csv_parser_config& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("subfolder_name") && doc["subfolder_name"].IsString()){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: subfolder_name"); 
+    }else{
+        obj.subfolder_name = std::string(doc["subfolder_name"].GetString(), doc["subfolder_name"].GetStringLength());
+    }
+    if(!doc.HasMember("parse_candump") && doc["parse_candump"].IsBool()){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_candump"); 
+    }else{
+        obj.parse_candump = doc["parse_candump"].GetBool();
+    }
+    if(!doc.HasMember("parse_gps") && doc["parse_gps"].IsBool()){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: parse_gps"); 
+    }else{
+        obj.parse_gps = doc["parse_gps"].GetBool();
+    }
+    if(!doc.HasMember("generate_report") && doc["generate_report"].IsBool()){
+        JSON_LOG_FUNC("csv_parser_config MISSING FIELD: generate_report"); 
+    }else{
+        obj.generate_report = doc["generate_report"].GetBool();
+    }
+}
+
+template<>
+std::string StructToString(const csv_parser_config& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const csv_parser_config& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, csv_parser_config& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(csv_parser_config& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const csv_parser_config& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
