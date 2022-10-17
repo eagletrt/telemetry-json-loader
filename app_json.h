@@ -69,6 +69,21 @@ static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
 }
 #endif // __JSON_LOADER_DEFINITION__
 
+typedef struct fields_o{
+    std::string message;
+    std::string field;
+}fields_o;
+
+typedef struct axis_o{
+    std::string axis_name;
+    std::vector<fields_o> fields;
+}axis_o;
+
+typedef struct custom_plots_o{
+    std::string plot_name;
+    std::vector<axis_o> axis;
+}custom_plots_o;
+
 typedef struct popup_t{
     std::string id;
     std::string cause;
@@ -93,7 +108,7 @@ typedef struct events_o{
 typedef struct post_proc_t{
     uint64_t last_sample_freq;
     std::vector<std::string> include_items;
-    std::vector<std::string> exlude_items;
+    std::vector<std::string> exclude_items;
 }post_proc_t;
 
 typedef struct app_connection_t{
@@ -117,10 +132,146 @@ typedef struct app_config{
     std::vector<std::string> last_connection_ips;
     post_proc_t post_proc;
     std::vector<events_o> events;
+    std::vector<custom_plots_o> custom_plots;
     uint64_t last_open_mode;
 }app_config;
 
 #ifdef __APP_JSON_IMPLEMENTATION__
+
+template <>
+bool CheckJson(const fields_o& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("message")){
+        JSON_LOG_FUNC("fields_o MISSING FIELD: message"); 
+        check = false;
+    }
+    if(!doc.HasMember("field")){
+        JSON_LOG_FUNC("fields_o MISSING FIELD: field"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Value& out, const fields_o& obj, rapidjson::Document::AllocatorType& alloc)
+{
+    out.SetObject();
+    out.AddMember("message", rapidjson::Value().SetString(obj.message.c_str(), obj.message.size(), alloc), alloc);
+    out.AddMember("field", rapidjson::Value().SetString(obj.field.c_str(), obj.field.size(), alloc), alloc);
+}
+template<>
+void Deserialize(fields_o& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("message") && doc["message"].IsString()){
+        JSON_LOG_FUNC("fields_o MISSING FIELD: message"); 
+    }else{
+        obj.message = std::string(doc["message"].GetString(), doc["message"].GetStringLength());
+    }
+    if(!doc.HasMember("field") && doc["field"].IsString()){
+        JSON_LOG_FUNC("fields_o MISSING FIELD: field"); 
+    }else{
+        obj.field = std::string(doc["field"].GetString(), doc["field"].GetStringLength());
+    }
+}
+
+template <>
+bool CheckJson(const axis_o& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("axis_name")){
+        JSON_LOG_FUNC("axis_o MISSING FIELD: axis_name"); 
+        check = false;
+    }
+    if(!doc.HasMember("fields")){
+        JSON_LOG_FUNC("axis_o MISSING FIELD: fields"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Value& out, const axis_o& obj, rapidjson::Document::AllocatorType& alloc)
+{
+    out.SetObject();
+    out.AddMember("axis_name", rapidjson::Value().SetString(obj.axis_name.c_str(), obj.axis_name.size(), alloc), alloc);
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.fields.size(); i++){
+        	rapidjson::Value new_obj;
+        	Serialize(new_obj, obj.fields[i], alloc);
+        	v0.PushBack(new_obj, alloc);
+    	}
+    	out.AddMember("fields", v0, alloc);
+    }
+}
+template<>
+void Deserialize(axis_o& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("axis_name") && doc["axis_name"].IsString()){
+        JSON_LOG_FUNC("axis_o MISSING FIELD: axis_name"); 
+    }else{
+        obj.axis_name = std::string(doc["axis_name"].GetString(), doc["axis_name"].GetStringLength());
+    }
+    if(!doc.HasMember("fields") && doc["fields"].IsObject()){
+        JSON_LOG_FUNC("axis_o MISSING FIELD: fields"); 
+    }else{
+		obj.fields.resize(doc["fields"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["fields"].Size(); i++){
+				Deserialize(obj.fields[i], doc["fields"][i]);
+		}
+    }
+}
+
+template <>
+bool CheckJson(const custom_plots_o& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("plot_name")){
+        JSON_LOG_FUNC("custom_plots_o MISSING FIELD: plot_name"); 
+        check = false;
+    }
+    if(!doc.HasMember("axis")){
+        JSON_LOG_FUNC("custom_plots_o MISSING FIELD: axis"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Value& out, const custom_plots_o& obj, rapidjson::Document::AllocatorType& alloc)
+{
+    out.SetObject();
+    out.AddMember("plot_name", rapidjson::Value().SetString(obj.plot_name.c_str(), obj.plot_name.size(), alloc), alloc);
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.axis.size(); i++){
+        	rapidjson::Value new_obj;
+        	Serialize(new_obj, obj.axis[i], alloc);
+        	v0.PushBack(new_obj, alloc);
+    	}
+    	out.AddMember("axis", v0, alloc);
+    }
+}
+template<>
+void Deserialize(custom_plots_o& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("plot_name") && doc["plot_name"].IsString()){
+        JSON_LOG_FUNC("custom_plots_o MISSING FIELD: plot_name"); 
+    }else{
+        obj.plot_name = std::string(doc["plot_name"].GetString(), doc["plot_name"].GetStringLength());
+    }
+    if(!doc.HasMember("axis") && doc["axis"].IsObject()){
+        JSON_LOG_FUNC("custom_plots_o MISSING FIELD: axis"); 
+    }else{
+		obj.axis.resize(doc["axis"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["axis"].Size(); i++){
+				Deserialize(obj.axis[i], doc["axis"][i]);
+		}
+    }
+}
 
 template <>
 bool CheckJson(const popup_t& obj, const rapidjson::Document& doc)
@@ -313,8 +464,8 @@ bool CheckJson(const post_proc_t& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("post_proc_t MISSING FIELD: include_items"); 
         check = false;
     }
-    if(!doc.HasMember("exlude_items")){
-        JSON_LOG_FUNC("post_proc_t MISSING FIELD: exlude_items"); 
+    if(!doc.HasMember("exclude_items")){
+        JSON_LOG_FUNC("post_proc_t MISSING FIELD: exclude_items"); 
         check = false;
     }
     return check;
@@ -336,10 +487,10 @@ void Serialize(rapidjson::Value& out, const post_proc_t& obj, rapidjson::Documen
     {
         rapidjson::Value v0;
         v0.SetArray();
-        for(size_t i = 0; i < obj.exlude_items.size(); i++){
-        	v0.PushBack(rapidjson::Value().SetString(obj.exlude_items[i].c_str(), obj.exlude_items[i].size(), alloc), alloc);
+        for(size_t i = 0; i < obj.exclude_items.size(); i++){
+        	v0.PushBack(rapidjson::Value().SetString(obj.exclude_items[i].c_str(), obj.exclude_items[i].size(), alloc), alloc);
     	}
-    	out.AddMember("exlude_items", v0, alloc);
+    	out.AddMember("exclude_items", v0, alloc);
     }
 }
 template<>
@@ -358,12 +509,12 @@ void Deserialize(post_proc_t& obj, rapidjson::Value& doc)
 				obj.include_items[i] = doc["include_items"][i].GetString();
 		}
     }
-    if(!doc.HasMember("exlude_items") && doc["exlude_items"].IsObject()){
-        JSON_LOG_FUNC("post_proc_t MISSING FIELD: exlude_items"); 
+    if(!doc.HasMember("exclude_items") && doc["exclude_items"].IsObject()){
+        JSON_LOG_FUNC("post_proc_t MISSING FIELD: exclude_items"); 
     }else{
-		obj.exlude_items.resize(doc["exlude_items"].Size());
-		for(rapidjson::SizeType i = 0; i < doc["exlude_items"].Size(); i++){
-				obj.exlude_items[i] = doc["exlude_items"][i].GetString();
+		obj.exclude_items.resize(doc["exclude_items"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["exclude_items"].Size(); i++){
+				obj.exclude_items[i] = doc["exclude_items"][i].GetString();
 		}
     }
 }
@@ -492,6 +643,10 @@ bool CheckJson(const app_config& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("app_config MISSING FIELD: events"); 
         check = false;
     }
+    if(!doc.HasMember("custom_plots")){
+        JSON_LOG_FUNC("app_config MISSING FIELD: custom_plots"); 
+        check = false;
+    }
     if(!doc.HasMember("last_open_mode")){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
         check = false;
@@ -553,6 +708,16 @@ void Serialize(rapidjson::Document& out, const app_config& obj)
     	}
     	out.AddMember("events", v0, alloc);
     }
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.custom_plots.size(); i++){
+        	rapidjson::Value new_obj;
+        	Serialize(new_obj, obj.custom_plots[i], alloc);
+        	v0.PushBack(new_obj, alloc);
+    	}
+    	out.AddMember("custom_plots", v0, alloc);
+    }
     out.AddMember("last_open_mode", rapidjson::Value().SetUint64(obj.last_open_mode), alloc);
 }
 template<>
@@ -613,6 +778,14 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 		obj.events.resize(doc["events"].Size());
 		for(rapidjson::SizeType i = 0; i < doc["events"].Size(); i++){
 				Deserialize(obj.events[i], doc["events"][i]);
+		}
+    }
+    if(!doc.HasMember("custom_plots") && doc["custom_plots"].IsObject()){
+        JSON_LOG_FUNC("app_config MISSING FIELD: custom_plots"); 
+    }else{
+		obj.custom_plots.resize(doc["custom_plots"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["custom_plots"].Size(); i++){
+				Deserialize(obj.custom_plots[i], doc["custom_plots"][i]);
 		}
     }
     if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsUint64()){
@@ -679,6 +852,14 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 		obj.events.resize(doc["events"].Size());
 		for(rapidjson::SizeType i = 0; i < doc["events"].Size(); i++){
 				Deserialize(obj.events[i], doc["events"][i]);
+		}
+    }
+    if(!doc.HasMember("custom_plots") && doc["custom_plots"].IsObject()){
+        JSON_LOG_FUNC("app_config MISSING FIELD: custom_plots"); 
+    }else{
+		obj.custom_plots.resize(doc["custom_plots"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["custom_plots"].Size(); i++){
+				Deserialize(obj.custom_plots[i], doc["custom_plots"][i]);
 		}
     }
     if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsUint64()){
