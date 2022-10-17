@@ -18,7 +18,7 @@
   "post_proc": {
     "last_sample_freq": 10,
     "include_items": [""],
-    "exlude_items": [""]
+    "exclude_items": [""]
   },
   "events": [
     {
@@ -37,6 +37,22 @@
         "duration": 1
       }
     }
+  ],
+  "custom_plots": [
+      {
+          "plot_name": "",
+          "axis": [
+              {
+                  "axis_name": "",
+                  "fields": [
+                      {
+                          "message": "",
+                          "field": ""
+                      }
+                  ]
+              }
+          ]
+      }
   ],
   "last_open_mode": 1
 }
