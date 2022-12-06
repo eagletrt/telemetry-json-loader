@@ -111,10 +111,17 @@ typedef struct post_proc_t{
     std::vector<std::string> exclude_items;
 }post_proc_t;
 
+typedef struct saved_confs_o{
+    std::string ip;
+    std::string port;
+    std::string mode;
+}saved_confs_o;
+
 typedef struct app_connection_t{
     std::string ip;
     std::string port;
     std::string mode;
+    std::vector<saved_confs_o> saved_confs;
 }app_connection_t;
 
 typedef struct paths_o{
@@ -520,6 +527,53 @@ void Deserialize(post_proc_t& obj, rapidjson::Value& doc)
 }
 
 template <>
+bool CheckJson(const saved_confs_o& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("ip")){
+        JSON_LOG_FUNC("saved_confs_o MISSING FIELD: ip"); 
+        check = false;
+    }
+    if(!doc.HasMember("port")){
+        JSON_LOG_FUNC("saved_confs_o MISSING FIELD: port"); 
+        check = false;
+    }
+    if(!doc.HasMember("mode")){
+        JSON_LOG_FUNC("saved_confs_o MISSING FIELD: mode"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Value& out, const saved_confs_o& obj, rapidjson::Document::AllocatorType& alloc)
+{
+    out.SetObject();
+    out.AddMember("ip", rapidjson::Value().SetString(obj.ip.c_str(), obj.ip.size(), alloc), alloc);
+    out.AddMember("port", rapidjson::Value().SetString(obj.port.c_str(), obj.port.size(), alloc), alloc);
+    out.AddMember("mode", rapidjson::Value().SetString(obj.mode.c_str(), obj.mode.size(), alloc), alloc);
+}
+template<>
+void Deserialize(saved_confs_o& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("ip") && doc["ip"].IsString()){
+        JSON_LOG_FUNC("saved_confs_o MISSING FIELD: ip"); 
+    }else{
+        obj.ip = std::string(doc["ip"].GetString(), doc["ip"].GetStringLength());
+    }
+    if(!doc.HasMember("port") && doc["port"].IsString()){
+        JSON_LOG_FUNC("saved_confs_o MISSING FIELD: port"); 
+    }else{
+        obj.port = std::string(doc["port"].GetString(), doc["port"].GetStringLength());
+    }
+    if(!doc.HasMember("mode") && doc["mode"].IsString()){
+        JSON_LOG_FUNC("saved_confs_o MISSING FIELD: mode"); 
+    }else{
+        obj.mode = std::string(doc["mode"].GetString(), doc["mode"].GetStringLength());
+    }
+}
+
+template <>
 bool CheckJson(const app_connection_t& obj, const rapidjson::Document& doc)
 {
     bool check = true;
@@ -535,6 +589,10 @@ bool CheckJson(const app_connection_t& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("app_connection_t MISSING FIELD: mode"); 
         check = false;
     }
+    if(!doc.HasMember("saved_confs")){
+        JSON_LOG_FUNC("app_connection_t MISSING FIELD: saved_confs"); 
+        check = false;
+    }
     return check;
 }
 
@@ -545,6 +603,16 @@ void Serialize(rapidjson::Value& out, const app_connection_t& obj, rapidjson::Do
     out.AddMember("ip", rapidjson::Value().SetString(obj.ip.c_str(), obj.ip.size(), alloc), alloc);
     out.AddMember("port", rapidjson::Value().SetString(obj.port.c_str(), obj.port.size(), alloc), alloc);
     out.AddMember("mode", rapidjson::Value().SetString(obj.mode.c_str(), obj.mode.size(), alloc), alloc);
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.saved_confs.size(); i++){
+        	rapidjson::Value new_obj;
+        	Serialize(new_obj, obj.saved_confs[i], alloc);
+        	v0.PushBack(new_obj, alloc);
+    	}
+    	out.AddMember("saved_confs", v0, alloc);
+    }
 }
 template<>
 void Deserialize(app_connection_t& obj, rapidjson::Value& doc)
@@ -563,6 +631,14 @@ void Deserialize(app_connection_t& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("app_connection_t MISSING FIELD: mode"); 
     }else{
         obj.mode = std::string(doc["mode"].GetString(), doc["mode"].GetStringLength());
+    }
+    if(!doc.HasMember("saved_confs") && doc["saved_confs"].IsObject()){
+        JSON_LOG_FUNC("app_connection_t MISSING FIELD: saved_confs"); 
+    }else{
+		obj.saved_confs.resize(doc["saved_confs"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["saved_confs"].Size(); i++){
+				Deserialize(obj.saved_confs[i], doc["saved_confs"][i]);
+		}
     }
 }
 
