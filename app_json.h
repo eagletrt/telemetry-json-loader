@@ -112,6 +112,7 @@ typedef struct post_proc_t{
 }post_proc_t;
 
 typedef struct saved_confs_o{
+    std::string name;
     std::string ip;
     std::string port;
     std::string mode;
@@ -530,6 +531,10 @@ template <>
 bool CheckJson(const saved_confs_o& obj, const rapidjson::Document& doc)
 {
     bool check = true;
+    if(!doc.HasMember("name")){
+        JSON_LOG_FUNC("saved_confs_o MISSING FIELD: name"); 
+        check = false;
+    }
     if(!doc.HasMember("ip")){
         JSON_LOG_FUNC("saved_confs_o MISSING FIELD: ip"); 
         check = false;
@@ -549,6 +554,7 @@ template<>
 void Serialize(rapidjson::Value& out, const saved_confs_o& obj, rapidjson::Document::AllocatorType& alloc)
 {
     out.SetObject();
+    out.AddMember("name", rapidjson::Value().SetString(obj.name.c_str(), obj.name.size(), alloc), alloc);
     out.AddMember("ip", rapidjson::Value().SetString(obj.ip.c_str(), obj.ip.size(), alloc), alloc);
     out.AddMember("port", rapidjson::Value().SetString(obj.port.c_str(), obj.port.size(), alloc), alloc);
     out.AddMember("mode", rapidjson::Value().SetString(obj.mode.c_str(), obj.mode.size(), alloc), alloc);
@@ -556,6 +562,11 @@ void Serialize(rapidjson::Value& out, const saved_confs_o& obj, rapidjson::Docum
 template<>
 void Deserialize(saved_confs_o& obj, rapidjson::Value& doc)
 {
+    if(!doc.HasMember("name") && doc["name"].IsString()){
+        JSON_LOG_FUNC("saved_confs_o MISSING FIELD: name"); 
+    }else{
+        obj.name = std::string(doc["name"].GetString(), doc["name"].GetStringLength());
+    }
     if(!doc.HasMember("ip") && doc["ip"].IsString()){
         JSON_LOG_FUNC("saved_confs_o MISSING FIELD: ip"); 
     }else{
