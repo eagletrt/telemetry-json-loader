@@ -11,7 +11,14 @@
   "app_connection": {
     "ip": "ws://eagle-telemetry-server.herokuapp.com/",
     "port": "3000",
-    "mode": "ZMQ"
+    "mode": "ZMQ",
+    "saved_confs": [
+      {
+        "ip": "",
+        "port": "",
+        "mode": ""
+      }
+    ]
   },
   "activeTabs": [""],
   "last_connection_ips": [""],
