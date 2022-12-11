@@ -71,6 +71,8 @@ static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
 
 typedef struct msgs_per_second_o{
     std::string device;
+    uint64_t bits_per_second;
+    double bus_load;
     uint64_t count;
 }msgs_per_second_o;
 
@@ -101,6 +103,7 @@ typedef struct telemetry_status{
     uint64_t cpu_total_load;
     uint64_t cpu_process_load;
     uint64_t mem_process_load;
+    uint64_t canlib_build_time;
 }telemetry_status;
 
 typedef struct telemetry_error{
@@ -170,6 +173,14 @@ bool CheckJson(const msgs_per_second_o& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: device"); 
         check = false;
     }
+    if(!doc.HasMember("bits_per_second")){
+        JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: bits_per_second"); 
+        check = false;
+    }
+    if(!doc.HasMember("bus_load")){
+        JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: bus_load"); 
+        check = false;
+    }
     if(!doc.HasMember("count")){
         JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: count"); 
         check = false;
@@ -182,6 +193,8 @@ void Serialize(rapidjson::Value& out, const msgs_per_second_o& obj, rapidjson::D
 {
     out.SetObject();
     out.AddMember("device", rapidjson::Value().SetString(obj.device.c_str(), obj.device.size(), alloc), alloc);
+    out.AddMember("bits_per_second", rapidjson::Value().SetUint64(obj.bits_per_second), alloc);
+    out.AddMember("bus_load", rapidjson::Value().SetDouble(obj.bus_load), alloc);
     out.AddMember("count", rapidjson::Value().SetUint64(obj.count), alloc);
 }
 template<>
@@ -191,6 +204,16 @@ void Deserialize(msgs_per_second_o& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: device"); 
     }else{
         obj.device = std::string(doc["device"].GetString(), doc["device"].GetStringLength());
+    }
+    if(!doc.HasMember("bits_per_second") && doc["bits_per_second"].IsUint64()){
+        JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: bits_per_second"); 
+    }else{
+        obj.bits_per_second = doc["bits_per_second"].GetUint64();
+    }
+    if(!doc.HasMember("bus_load") && doc["bus_load"].IsDouble()){
+        JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: bus_load"); 
+    }else{
+        obj.bus_load = doc["bus_load"].GetDouble();
     }
     if(!doc.HasMember("count") && doc["count"].IsUint64()){
         JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: count"); 
@@ -567,6 +590,10 @@ bool CheckJson(const telemetry_status& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: mem_process_load"); 
         check = false;
     }
+    if(!doc.HasMember("canlib_build_time")){
+        JSON_LOG_FUNC("telemetry_status MISSING FIELD: canlib_build_time"); 
+        check = false;
+    }
     return check;
 }
 
@@ -594,6 +621,7 @@ void Serialize(rapidjson::Document& out, const telemetry_status& obj)
     out.AddMember("cpu_total_load", rapidjson::Value().SetUint64(obj.cpu_total_load), alloc);
     out.AddMember("cpu_process_load", rapidjson::Value().SetUint64(obj.cpu_process_load), alloc);
     out.AddMember("mem_process_load", rapidjson::Value().SetUint64(obj.mem_process_load), alloc);
+    out.AddMember("canlib_build_time", rapidjson::Value().SetUint64(obj.canlib_build_time), alloc);
 }
 template<>
 void Deserialize(telemetry_status& obj, rapidjson::Document& doc)
@@ -651,6 +679,11 @@ void Deserialize(telemetry_status& obj, rapidjson::Document& doc)
     }else{
         obj.mem_process_load = doc["mem_process_load"].GetUint64();
     }
+    if(!doc.HasMember("canlib_build_time") && doc["canlib_build_time"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_status MISSING FIELD: canlib_build_time"); 
+    }else{
+        obj.canlib_build_time = doc["canlib_build_time"].GetUint64();
+    }
 }
 template<>
 void Deserialize(telemetry_status& obj, rapidjson::Value& doc)
@@ -707,6 +740,11 @@ void Deserialize(telemetry_status& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: mem_process_load"); 
     }else{
         obj.mem_process_load = doc["mem_process_load"].GetUint64();
+    }
+    if(!doc.HasMember("canlib_build_time") && doc["canlib_build_time"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_status MISSING FIELD: canlib_build_time"); 
+    }else{
+        obj.canlib_build_time = doc["canlib_build_time"].GetUint64();
     }
 }
 
