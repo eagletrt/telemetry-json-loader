@@ -5,11 +5,14 @@
     "data": 1,
     "msgs_per_second": [{
         "device": "name",
+        "bits_per_second": 1,
+        "bus_load": 1.0,
         "count": 1
-        }],
+    }],
     "camera_status": "fail",
     "camera_error": "error",
     "cpu_total_load": 10,
     "cpu_process_load": 10,
-    "mem_process_load": 10
+    "mem_process_load": 10,
+    "canlib_build_time": 0
 }
