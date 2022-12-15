@@ -141,6 +141,7 @@ typedef struct app_config{
     post_proc_t post_proc;
     std::vector<events_o> events;
     std::vector<custom_plots_o> custom_plots;
+    uint64_t theme;
     uint64_t last_open_mode;
 }app_config;
 
@@ -734,6 +735,10 @@ bool CheckJson(const app_config& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("app_config MISSING FIELD: custom_plots"); 
         check = false;
     }
+    if(!doc.HasMember("theme")){
+        JSON_LOG_FUNC("app_config MISSING FIELD: theme"); 
+        check = false;
+    }
     if(!doc.HasMember("last_open_mode")){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
         check = false;
@@ -805,6 +810,7 @@ void Serialize(rapidjson::Document& out, const app_config& obj)
     	}
     	out.AddMember("custom_plots", v0, alloc);
     }
+    out.AddMember("theme", rapidjson::Value().SetUint64(obj.theme), alloc);
     out.AddMember("last_open_mode", rapidjson::Value().SetUint64(obj.last_open_mode), alloc);
 }
 template<>
@@ -874,6 +880,11 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 		for(rapidjson::SizeType i = 0; i < doc["custom_plots"].Size(); i++){
 				Deserialize(obj.custom_plots[i], doc["custom_plots"][i]);
 		}
+    }
+    if(!doc.HasMember("theme") && doc["theme"].IsUint64()){
+        JSON_LOG_FUNC("app_config MISSING FIELD: theme"); 
+    }else{
+        obj.theme = doc["theme"].GetUint64();
     }
     if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsUint64()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
@@ -948,6 +959,11 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 		for(rapidjson::SizeType i = 0; i < doc["custom_plots"].Size(); i++){
 				Deserialize(obj.custom_plots[i], doc["custom_plots"][i]);
 		}
+    }
+    if(!doc.HasMember("theme") && doc["theme"].IsUint64()){
+        JSON_LOG_FUNC("app_config MISSING FIELD: theme"); 
+    }else{
+        obj.theme = doc["theme"].GetUint64();
     }
     if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsUint64()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
