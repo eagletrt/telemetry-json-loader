@@ -94,7 +94,7 @@ typedef struct color_t{
 typedef struct trigger_t{
     std::string message;
     std::string field;
-    uint64_t operator;
+    uint64_t comparator;
     double value;
     color_t color;
 }trigger_t;
@@ -356,8 +356,8 @@ bool CheckJson(const trigger_t& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("trigger_t MISSING FIELD: field"); 
         check = false;
     }
-    if(!doc.HasMember("operator")){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: operator"); 
+    if(!doc.HasMember("comparator")){
+        JSON_LOG_FUNC("trigger_t MISSING FIELD: comparator"); 
         check = false;
     }
     if(!doc.HasMember("value")){
@@ -377,7 +377,7 @@ void Serialize(rapidjson::Value& out, const trigger_t& obj, rapidjson::Document:
     out.SetObject();
     out.AddMember("message", rapidjson::Value().SetString(obj.message.c_str(), obj.message.size(), alloc), alloc);
     out.AddMember("field", rapidjson::Value().SetString(obj.field.c_str(), obj.field.size(), alloc), alloc);
-    out.AddMember("operator", rapidjson::Value().SetUint64(obj.operator), alloc);
+    out.AddMember("comparator", rapidjson::Value().SetUint64(obj.comparator), alloc);
     out.AddMember("value", rapidjson::Value().SetDouble(obj.value), alloc);
     {
         rapidjson::Value v;
@@ -398,10 +398,10 @@ void Deserialize(trigger_t& obj, rapidjson::Value& doc)
     }else{
         obj.field = std::string(doc["field"].GetString(), doc["field"].GetStringLength());
     }
-    if(!doc.HasMember("operator") && doc["operator"].IsUint64()){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: operator"); 
+    if(!doc.HasMember("comparator") && doc["comparator"].IsUint64()){
+        JSON_LOG_FUNC("trigger_t MISSING FIELD: comparator"); 
     }else{
-        obj.operator = doc["operator"].GetUint64();
+        obj.comparator = doc["comparator"].GetUint64();
     }
     if(!doc.HasMember("value") && doc["value"].IsDouble()){
         JSON_LOG_FUNC("trigger_t MISSING FIELD: value"); 
