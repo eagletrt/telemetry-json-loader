@@ -86,18 +86,18 @@ typedef struct can_devices_o{
     std::string name;
 }can_devices_o;
 
-typedef struct stat_json{
-    uint64_t Messages;
-    uint64_t Average_Frequency_Hz;
-    double Duration_seconds;
-}stat_json;
-
 typedef struct csv_parser_config{
     std::string subfolder_name;
     bool parse_candump;
     bool parse_gps;
     bool generate_report;
 }csv_parser_config;
+
+typedef struct stat_json{
+    uint64_t Messages;
+    uint64_t Average_Frequency_Hz;
+    double Duration_seconds;
+}stat_json;
 
 typedef struct session_config{
     std::string Circuit;
@@ -256,124 +256,6 @@ void Deserialize(can_devices_o& obj, rapidjson::Value& doc)
 }
 
 template <>
-bool CheckJson(const stat_json& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("Messages")){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Messages"); 
-        check = false;
-    }
-    if(!doc.HasMember("Average_Frequency_Hz")){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Average_Frequency_Hz"); 
-        check = false;
-    }
-    if(!doc.HasMember("Duration_seconds")){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Duration_seconds"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const stat_json& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("Messages", rapidjson::Value().SetUint64(obj.Messages), alloc);
-    out.AddMember("Average_Frequency_Hz", rapidjson::Value().SetUint64(obj.Average_Frequency_Hz), alloc);
-    out.AddMember("Duration_seconds", rapidjson::Value().SetDouble(obj.Duration_seconds), alloc);
-}
-template<>
-void Deserialize(stat_json& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("Messages") && doc["Messages"].IsUint64()){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Messages"); 
-    }else{
-        obj.Messages = doc["Messages"].GetUint64();
-    }
-    if(!doc.HasMember("Average_Frequency_Hz") && doc["Average_Frequency_Hz"].IsUint64()){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Average_Frequency_Hz"); 
-    }else{
-        obj.Average_Frequency_Hz = doc["Average_Frequency_Hz"].GetUint64();
-    }
-    if(!doc.HasMember("Duration_seconds") && doc["Duration_seconds"].IsDouble()){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Duration_seconds"); 
-    }else{
-        obj.Duration_seconds = doc["Duration_seconds"].GetDouble();
-    }
-}
-template<>
-void Deserialize(stat_json& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("Messages") && doc["Messages"].IsUint64()){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Messages"); 
-    }else{
-        obj.Messages = doc["Messages"].GetUint64();
-    }
-    if(!doc.HasMember("Average_Frequency_Hz") && doc["Average_Frequency_Hz"].IsUint64()){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Average_Frequency_Hz"); 
-    }else{
-        obj.Average_Frequency_Hz = doc["Average_Frequency_Hz"].GetUint64();
-    }
-    if(!doc.HasMember("Duration_seconds") && doc["Duration_seconds"].IsDouble()){
-        JSON_LOG_FUNC("stat_json MISSING FIELD: Duration_seconds"); 
-    }else{
-        obj.Duration_seconds = doc["Duration_seconds"].GetDouble();
-    }
-}
-
-template<>
-std::string StructToString(const stat_json& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const stat_json& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, stat_json& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(stat_json& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const stat_json& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
 bool CheckJson(const csv_parser_config& obj, const rapidjson::Document& doc)
 {
     bool check = true;
@@ -500,6 +382,124 @@ bool LoadStruct(csv_parser_config& out, const std::string& path)
 }
 template<>
 void SaveStruct(const csv_parser_config& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const stat_json& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("Messages")){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Messages"); 
+        check = false;
+    }
+    if(!doc.HasMember("Average_Frequency_Hz")){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Average_Frequency_Hz"); 
+        check = false;
+    }
+    if(!doc.HasMember("Duration_seconds")){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Duration_seconds"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const stat_json& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("Messages", rapidjson::Value().SetUint64(obj.Messages), alloc);
+    out.AddMember("Average_Frequency_Hz", rapidjson::Value().SetUint64(obj.Average_Frequency_Hz), alloc);
+    out.AddMember("Duration_seconds", rapidjson::Value().SetDouble(obj.Duration_seconds), alloc);
+}
+template<>
+void Deserialize(stat_json& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("Messages") && doc["Messages"].IsUint64()){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Messages"); 
+    }else{
+        obj.Messages = doc["Messages"].GetUint64();
+    }
+    if(!doc.HasMember("Average_Frequency_Hz") && doc["Average_Frequency_Hz"].IsUint64()){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Average_Frequency_Hz"); 
+    }else{
+        obj.Average_Frequency_Hz = doc["Average_Frequency_Hz"].GetUint64();
+    }
+    if(!doc.HasMember("Duration_seconds") && doc["Duration_seconds"].IsDouble()){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Duration_seconds"); 
+    }else{
+        obj.Duration_seconds = doc["Duration_seconds"].GetDouble();
+    }
+}
+template<>
+void Deserialize(stat_json& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("Messages") && doc["Messages"].IsUint64()){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Messages"); 
+    }else{
+        obj.Messages = doc["Messages"].GetUint64();
+    }
+    if(!doc.HasMember("Average_Frequency_Hz") && doc["Average_Frequency_Hz"].IsUint64()){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Average_Frequency_Hz"); 
+    }else{
+        obj.Average_Frequency_Hz = doc["Average_Frequency_Hz"].GetUint64();
+    }
+    if(!doc.HasMember("Duration_seconds") && doc["Duration_seconds"].IsDouble()){
+        JSON_LOG_FUNC("stat_json MISSING FIELD: Duration_seconds"); 
+    }else{
+        obj.Duration_seconds = doc["Duration_seconds"].GetDouble();
+    }
+}
+
+template<>
+std::string StructToString(const stat_json& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const stat_json& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, stat_json& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(stat_json& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const stat_json& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
