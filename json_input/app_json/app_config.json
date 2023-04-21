@@ -33,7 +33,7 @@
       "trigger": {
         "message": "",
         "field": "",
-        "operator": 0,
+        "comparator": 0,
         "value": 0.0,
         "color": {
           "r": 0.0,
