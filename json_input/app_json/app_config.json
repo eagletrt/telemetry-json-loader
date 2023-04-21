@@ -30,7 +30,7 @@
   },
   "events": [
     {
-      "trigger": {
+      "json_trigger": {
         "message": "",
         "field": "",
         "comparator": 0,
