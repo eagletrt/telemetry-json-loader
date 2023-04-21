@@ -91,16 +91,16 @@ typedef struct color_t{
     double a;
 }color_t;
 
-typedef struct trigger_t{
+typedef struct json_trigger_t{
     std::string message;
     std::string field;
     uint64_t comparator;
     double value;
     color_t color;
-}trigger_t;
+}json_trigger_t;
 
 typedef struct events_o{
-    trigger_t trigger;
+    json_trigger_t json_trigger;
 }events_o;
 
 typedef struct post_proc_t{
@@ -345,34 +345,34 @@ void Deserialize(color_t& obj, rapidjson::Value& doc)
 }
 
 template <>
-bool CheckJson(const trigger_t& obj, const rapidjson::Document& doc)
+bool CheckJson(const json_trigger_t& obj, const rapidjson::Document& doc)
 {
     bool check = true;
     if(!doc.HasMember("message")){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: message"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: message"); 
         check = false;
     }
     if(!doc.HasMember("field")){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: field"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: field"); 
         check = false;
     }
     if(!doc.HasMember("comparator")){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: comparator"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: comparator"); 
         check = false;
     }
     if(!doc.HasMember("value")){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: value"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: value"); 
         check = false;
     }
     if(!doc.HasMember("color")){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: color"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: color"); 
         check = false;
     }
     return check;
 }
 
 template<>
-void Serialize(rapidjson::Value& out, const trigger_t& obj, rapidjson::Document::AllocatorType& alloc)
+void Serialize(rapidjson::Value& out, const json_trigger_t& obj, rapidjson::Document::AllocatorType& alloc)
 {
     out.SetObject();
     out.AddMember("message", rapidjson::Value().SetString(obj.message.c_str(), obj.message.size(), alloc), alloc);
@@ -386,30 +386,30 @@ void Serialize(rapidjson::Value& out, const trigger_t& obj, rapidjson::Document:
     }
 }
 template<>
-void Deserialize(trigger_t& obj, rapidjson::Value& doc)
+void Deserialize(json_trigger_t& obj, rapidjson::Value& doc)
 {
     if(!doc.HasMember("message") && doc["message"].IsString()){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: message"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: message"); 
     }else{
         obj.message = std::string(doc["message"].GetString(), doc["message"].GetStringLength());
     }
     if(!doc.HasMember("field") && doc["field"].IsString()){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: field"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: field"); 
     }else{
         obj.field = std::string(doc["field"].GetString(), doc["field"].GetStringLength());
     }
     if(!doc.HasMember("comparator") && doc["comparator"].IsUint64()){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: comparator"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: comparator"); 
     }else{
         obj.comparator = doc["comparator"].GetUint64();
     }
     if(!doc.HasMember("value") && doc["value"].IsDouble()){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: value"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: value"); 
     }else{
         obj.value = doc["value"].GetDouble();
     }
     if(!doc.HasMember("color") && doc["color"].IsObject()){
-        JSON_LOG_FUNC("trigger_t MISSING FIELD: color"); 
+        JSON_LOG_FUNC("json_trigger_t MISSING FIELD: color"); 
     }else{
         Deserialize(obj.color, doc["color"]);
     }
@@ -419,8 +419,8 @@ template <>
 bool CheckJson(const events_o& obj, const rapidjson::Document& doc)
 {
     bool check = true;
-    if(!doc.HasMember("trigger")){
-        JSON_LOG_FUNC("events_o MISSING FIELD: trigger"); 
+    if(!doc.HasMember("json_trigger")){
+        JSON_LOG_FUNC("events_o MISSING FIELD: json_trigger"); 
         check = false;
     }
     return check;
@@ -432,17 +432,17 @@ void Serialize(rapidjson::Value& out, const events_o& obj, rapidjson::Document::
     out.SetObject();
     {
         rapidjson::Value v;
-        Serialize(v, obj.trigger, alloc);
-        out.AddMember("trigger", v, alloc);
+        Serialize(v, obj.json_trigger, alloc);
+        out.AddMember("json_trigger", v, alloc);
     }
 }
 template<>
 void Deserialize(events_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("trigger") && doc["trigger"].IsObject()){
-        JSON_LOG_FUNC("events_o MISSING FIELD: trigger"); 
+    if(!doc.HasMember("json_trigger") && doc["json_trigger"].IsObject()){
+        JSON_LOG_FUNC("events_o MISSING FIELD: json_trigger"); 
     }else{
-        Deserialize(obj.trigger, doc["trigger"]);
+        Deserialize(obj.json_trigger, doc["json_trigger"]);
     }
 }
 
