@@ -30,19 +30,17 @@
   },
   "events": [
     {
-      "filter": {
-        "message_str": "",
-        "field_str": "",
-        "operator_": "",
-        "value": 0.0
-      },
-      "popup": {
-        "id": "",
-        "cause": "",
-        "open": true,
-        "threshold": -1,
-        "count": 1,
-        "duration": 1
+      "trigger": {
+        "message": "",
+        "field": "",
+        "operator": 0,
+        "value": 0.0,
+        "color": {
+          "r": 0.0,
+          "g": 0.0,
+          "b": 0.0,
+          "a": 0.0
+        }
       }
     }
   ],
