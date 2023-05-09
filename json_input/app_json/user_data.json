@@ -2,5 +2,6 @@
     "username": "",
     "token": "",
     "refresh_token": "",
-    "expiry": 0.0
+    "expiry": 0.0,
+    "role": 1
 }
