@@ -15,6 +15,13 @@
   "connection": {
       "ip": "ws://eagle-telemetry-server.herokuapp.com/",
       "port": "3000",
-      "mode": "ZMQ"
+      "mode": "ZMQ",
+      
+      "tls": true,
+
+      "cafile": "",
+      "capath": "",
+      "certfile": "",
+      "keyfile": ""
   }
 }
