@@ -1,0 +1,33 @@
+{
+  "aero": {
+    "angle_of_incidence_front": 0.0,
+    "angle_of_incidence_rear": 0.0
+  },
+  "wheel_front": {
+    "camber": 0.0,
+    "toe": 0.0,
+    "bound": 0.0,
+    "rebound": 0.0,
+    "preload": 0.0
+  },
+  "wheel_rear": {
+    "camber": 0.0,
+    "toe": 0.0,
+    "bound": 0.0,
+    "rebound": 0.0,
+    "preload": 0.0
+  },
+  "pilot": {
+    "name": "",
+    "weight": 0.0
+  },
+  "track_conditions": {
+    "temperature": 0.0,
+    "humidity": 0.0,
+    "other": ""
+  },
+  "wheel_compound": "",
+  "ride_height": 0.0,
+  "balancing": "",
+  "other": ""
+}
