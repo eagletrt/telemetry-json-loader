@@ -73,6 +73,11 @@ typedef struct connection_t{
     std::string ip;
     std::string port;
     std::string mode;
+    bool tls;
+    std::string cafile;
+    std::string capath;
+    std::string certfile;
+    std::string keyfile;
 }connection_t;
 
 typedef struct gps_devices_o{
@@ -156,6 +161,11 @@ typedef struct telemetry_config{
     connection_t connection;
 }telemetry_config;
 
+typedef struct telemetry_login_data{
+    std::string username;
+    std::string password;
+}telemetry_login_data;
+
 typedef struct session_config{
     std::string Circuit;
     std::string Pilot;
@@ -184,6 +194,26 @@ bool CheckJson(const connection_t& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("connection_t MISSING FIELD: mode"); 
         check = false;
     }
+    if(!doc.HasMember("tls")){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: tls"); 
+        check = false;
+    }
+    if(!doc.HasMember("cafile")){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: cafile"); 
+        check = false;
+    }
+    if(!doc.HasMember("capath")){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: capath"); 
+        check = false;
+    }
+    if(!doc.HasMember("certfile")){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: certfile"); 
+        check = false;
+    }
+    if(!doc.HasMember("keyfile")){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: keyfile"); 
+        check = false;
+    }
     return check;
 }
 
@@ -194,6 +224,11 @@ void Serialize(rapidjson::Value& out, const connection_t& obj, rapidjson::Docume
     out.AddMember("ip", rapidjson::Value().SetString(obj.ip.c_str(), obj.ip.size(), alloc), alloc);
     out.AddMember("port", rapidjson::Value().SetString(obj.port.c_str(), obj.port.size(), alloc), alloc);
     out.AddMember("mode", rapidjson::Value().SetString(obj.mode.c_str(), obj.mode.size(), alloc), alloc);
+    out.AddMember("tls", rapidjson::Value().SetBool(obj.tls), alloc);
+    out.AddMember("cafile", rapidjson::Value().SetString(obj.cafile.c_str(), obj.cafile.size(), alloc), alloc);
+    out.AddMember("capath", rapidjson::Value().SetString(obj.capath.c_str(), obj.capath.size(), alloc), alloc);
+    out.AddMember("certfile", rapidjson::Value().SetString(obj.certfile.c_str(), obj.certfile.size(), alloc), alloc);
+    out.AddMember("keyfile", rapidjson::Value().SetString(obj.keyfile.c_str(), obj.keyfile.size(), alloc), alloc);
 }
 template<>
 void Deserialize(connection_t& obj, rapidjson::Value& doc)
@@ -212,6 +247,31 @@ void Deserialize(connection_t& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("connection_t MISSING FIELD: mode"); 
     }else{
         obj.mode = std::string(doc["mode"].GetString(), doc["mode"].GetStringLength());
+    }
+    if(!doc.HasMember("tls") && doc["tls"].IsBool()){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: tls"); 
+    }else{
+        obj.tls = doc["tls"].GetBool();
+    }
+    if(!doc.HasMember("cafile") && doc["cafile"].IsString()){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: cafile"); 
+    }else{
+        obj.cafile = std::string(doc["cafile"].GetString(), doc["cafile"].GetStringLength());
+    }
+    if(!doc.HasMember("capath") && doc["capath"].IsString()){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: capath"); 
+    }else{
+        obj.capath = std::string(doc["capath"].GetString(), doc["capath"].GetStringLength());
+    }
+    if(!doc.HasMember("certfile") && doc["certfile"].IsString()){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: certfile"); 
+    }else{
+        obj.certfile = std::string(doc["certfile"].GetString(), doc["certfile"].GetStringLength());
+    }
+    if(!doc.HasMember("keyfile") && doc["keyfile"].IsString()){
+        JSON_LOG_FUNC("connection_t MISSING FIELD: keyfile"); 
+    }else{
+        obj.keyfile = std::string(doc["keyfile"].GetString(), doc["keyfile"].GetStringLength());
     }
 }
 
@@ -1284,6 +1344,109 @@ bool LoadStruct(telemetry_config& out, const std::string& path)
 }
 template<>
 void SaveStruct(const telemetry_config& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const telemetry_login_data& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("username")){
+        JSON_LOG_FUNC("telemetry_login_data MISSING FIELD: username"); 
+        check = false;
+    }
+    if(!doc.HasMember("password")){
+        JSON_LOG_FUNC("telemetry_login_data MISSING FIELD: password"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const telemetry_login_data& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("username", rapidjson::Value().SetString(obj.username.c_str(), obj.username.size(), alloc), alloc);
+    out.AddMember("password", rapidjson::Value().SetString(obj.password.c_str(), obj.password.size(), alloc), alloc);
+}
+template<>
+void Deserialize(telemetry_login_data& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("username") && doc["username"].IsString()){
+        JSON_LOG_FUNC("telemetry_login_data MISSING FIELD: username"); 
+    }else{
+        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
+    }
+    if(!doc.HasMember("password") && doc["password"].IsString()){
+        JSON_LOG_FUNC("telemetry_login_data MISSING FIELD: password"); 
+    }else{
+        obj.password = std::string(doc["password"].GetString(), doc["password"].GetStringLength());
+    }
+}
+template<>
+void Deserialize(telemetry_login_data& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("username") && doc["username"].IsString()){
+        JSON_LOG_FUNC("telemetry_login_data MISSING FIELD: username"); 
+    }else{
+        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
+    }
+    if(!doc.HasMember("password") && doc["password"].IsString()){
+        JSON_LOG_FUNC("telemetry_login_data MISSING FIELD: password"); 
+    }else{
+        obj.password = std::string(doc["password"].GetString(), doc["password"].GetStringLength());
+    }
+}
+
+template<>
+std::string StructToString(const telemetry_login_data& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const telemetry_login_data& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, telemetry_login_data& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(telemetry_login_data& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const telemetry_login_data& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
