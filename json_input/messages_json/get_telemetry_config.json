@@ -1,5 +1,6 @@
 {
     "type": "telemetry_config",
     "telemetry_config": "",
-    "session_config": ""
+    "session_config": "",
+    "car_setup": ""
 }
