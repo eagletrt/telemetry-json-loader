@@ -130,6 +130,7 @@ typedef struct get_telemetry_config{
     std::string type;
     std::string telemetry_config;
     std::string session_config;
+    std::string car_setup;
 }get_telemetry_config;
 
 typedef struct telemetry_status{
@@ -1195,6 +1196,10 @@ bool CheckJson(const get_telemetry_config& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: session_config"); 
         check = false;
     }
+    if(!doc.HasMember("car_setup")){
+        JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: car_setup"); 
+        check = false;
+    }
     return check;
 }
 
@@ -1206,6 +1211,7 @@ void Serialize(rapidjson::Document& out, const get_telemetry_config& obj)
     out.AddMember("type", rapidjson::Value().SetString(obj.type.c_str(), obj.type.size(), alloc), alloc);
     out.AddMember("telemetry_config", rapidjson::Value().SetString(obj.telemetry_config.c_str(), obj.telemetry_config.size(), alloc), alloc);
     out.AddMember("session_config", rapidjson::Value().SetString(obj.session_config.c_str(), obj.session_config.size(), alloc), alloc);
+    out.AddMember("car_setup", rapidjson::Value().SetString(obj.car_setup.c_str(), obj.car_setup.size(), alloc), alloc);
 }
 template<>
 void Deserialize(get_telemetry_config& obj, rapidjson::Document& doc)
@@ -1225,6 +1231,11 @@ void Deserialize(get_telemetry_config& obj, rapidjson::Document& doc)
     }else{
         obj.session_config = std::string(doc["session_config"].GetString(), doc["session_config"].GetStringLength());
     }
+    if(!doc.HasMember("car_setup") && doc["car_setup"].IsString()){
+        JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: car_setup"); 
+    }else{
+        obj.car_setup = std::string(doc["car_setup"].GetString(), doc["car_setup"].GetStringLength());
+    }
 }
 template<>
 void Deserialize(get_telemetry_config& obj, rapidjson::Value& doc)
@@ -1243,6 +1254,11 @@ void Deserialize(get_telemetry_config& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: session_config"); 
     }else{
         obj.session_config = std::string(doc["session_config"].GetString(), doc["session_config"].GetStringLength());
+    }
+    if(!doc.HasMember("car_setup") && doc["car_setup"].IsString()){
+        JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: car_setup"); 
+    }else{
+        obj.car_setup = std::string(doc["car_setup"].GetString(), doc["car_setup"].GetStringLength());
     }
 }
 
