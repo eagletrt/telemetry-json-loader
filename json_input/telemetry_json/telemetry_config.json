@@ -1,4 +1,5 @@
 {
+  "device_id": "telemetry",
   "camera_enable": true,
   "can_devices": [{"sock": "can0", "name": "primary"}],
   "generate_csv": true,
@@ -16,7 +17,7 @@
       "ip": "ws://eagle-telemetry-server.herokuapp.com/",
       "port": "3000",
       "mode": "ZMQ",
-      
+
       "tls": true,
 
       "cafile": "",
