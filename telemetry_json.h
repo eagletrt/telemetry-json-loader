@@ -149,6 +149,7 @@ typedef struct car_setup{
 }car_setup;
 
 typedef struct telemetry_config{
+    std::string device_id;
     bool camera_enable;
     std::vector<can_devices_o> can_devices;
     bool generate_csv;
@@ -1097,6 +1098,10 @@ template <>
 bool CheckJson(const telemetry_config& obj, const rapidjson::Document& doc)
 {
     bool check = true;
+    if(!doc.HasMember("device_id")){
+        JSON_LOG_FUNC("telemetry_config MISSING FIELD: device_id"); 
+        check = false;
+    }
     if(!doc.HasMember("camera_enable")){
         JSON_LOG_FUNC("telemetry_config MISSING FIELD: camera_enable"); 
         check = false;
@@ -1145,6 +1150,7 @@ void Serialize(rapidjson::Document& out, const telemetry_config& obj)
 {
     out.SetObject();
     rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("device_id", rapidjson::Value().SetString(obj.device_id.c_str(), obj.device_id.size(), alloc), alloc);
     out.AddMember("camera_enable", rapidjson::Value().SetBool(obj.camera_enable), alloc);
     {
         rapidjson::Value v0;
@@ -1181,6 +1187,11 @@ void Serialize(rapidjson::Document& out, const telemetry_config& obj)
 template<>
 void Deserialize(telemetry_config& obj, rapidjson::Document& doc)
 {
+    if(!doc.HasMember("device_id") && doc["device_id"].IsString()){
+        JSON_LOG_FUNC("telemetry_config MISSING FIELD: device_id"); 
+    }else{
+        obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
+    }
     if(!doc.HasMember("camera_enable") && doc["camera_enable"].IsBool()){
         JSON_LOG_FUNC("telemetry_config MISSING FIELD: camera_enable"); 
     }else{
@@ -1241,6 +1252,11 @@ void Deserialize(telemetry_config& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(telemetry_config& obj, rapidjson::Value& doc)
 {
+    if(!doc.HasMember("device_id") && doc["device_id"].IsString()){
+        JSON_LOG_FUNC("telemetry_config MISSING FIELD: device_id"); 
+    }else{
+        obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
+    }
     if(!doc.HasMember("camera_enable") && doc["camera_enable"].IsBool()){
         JSON_LOG_FUNC("telemetry_config MISSING FIELD: camera_enable"); 
     }else{
