@@ -164,9 +164,9 @@ void Deserialize({{struct.typename}}& obj, rapidjson::Document& doc)
 {
 {%- for field in struct.fields %}
 {%- if isinstance(field, BasicField)%}
-    if(!doc.HasMember("{{field.name}}") && doc["{{field.name}}"].Is{{field.get_rapidjson_type()}}()){
+    if(!doc.HasMember("{{field.name}}") || !doc["{{field.name}}"].Is{{field.get_rapidjson_type()}}()){
 {%- else%}
-    if(!doc.HasMember("{{field.name}}") && doc["{{field.name}}"].IsObject()){
+    if(!doc.HasMember("{{field.name}}") || !doc["{{field.name}}"].IsObject()){
 {%- endif%}
         JSON_LOG_FUNC("{{struct.typename}} MISSING FIELD: {{field.name}}"); 
     }else{
@@ -192,9 +192,9 @@ void Deserialize({{struct.typename}}& obj, rapidjson::Value& doc)
 {
 {%- for field in struct.fields %}
 {%- if isinstance(field, BasicField)%}
-    if(!doc.HasMember("{{field.name}}") && doc["{{field.name}}"].Is{{field.get_rapidjson_type()}}()){
+    if(!doc.HasMember("{{field.name}}") || !doc["{{field.name}}"].Is{{field.get_rapidjson_type()}}()){
 {%- else%}
-    if(!doc.HasMember("{{field.name}}") && doc["{{field.name}}"].IsObject()){
+    if(!doc.HasMember("{{field.name}}") || !doc["{{field.name}}"].IsObject()){
 {%- endif%}
         JSON_LOG_FUNC("{{struct.typename}} MISSING FIELD: {{field.name}}"); 
     }else{
