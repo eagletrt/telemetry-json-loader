@@ -5,5 +5,5 @@
   "test": "default",
   "date": "01/01/2022",
   "time": "00:01:00,001001",
-  "canlib Version": 1.0
+  "canlib_version": 1.0
 }
