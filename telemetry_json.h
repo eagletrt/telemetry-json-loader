@@ -130,7 +130,7 @@ typedef struct session_config{
     std::string test;
     std::string date;
     std::string time;
-    double canlib_Version;
+    double canlib_version;
 }session_config;
 
 typedef struct telemetry_config{
@@ -643,8 +643,8 @@ bool CheckJson(const session_config& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("session_config MISSING FIELD: time"); 
         check = false;
     }
-    if(!doc.HasMember("canlib_Version")){
-        JSON_LOG_FUNC("session_config MISSING FIELD: canlib_Version"); 
+    if(!doc.HasMember("canlib_version")){
+        JSON_LOG_FUNC("session_config MISSING FIELD: canlib_version"); 
         check = false;
     }
     return check;
@@ -661,7 +661,7 @@ void Serialize(rapidjson::Document& out, const session_config& obj)
     out.AddMember("test", rapidjson::Value().SetString(obj.test.c_str(), obj.test.size(), alloc), alloc);
     out.AddMember("date", rapidjson::Value().SetString(obj.date.c_str(), obj.date.size(), alloc), alloc);
     out.AddMember("time", rapidjson::Value().SetString(obj.time.c_str(), obj.time.size(), alloc), alloc);
-    out.AddMember("canlib_Version", rapidjson::Value().SetDouble(obj.canlib_Version), alloc);
+    out.AddMember("canlib_version", rapidjson::Value().SetDouble(obj.canlib_version), alloc);
 }
 template<>
 void Deserialize(session_config& obj, rapidjson::Document& doc)
@@ -696,10 +696,10 @@ void Deserialize(session_config& obj, rapidjson::Document& doc)
     }else{
         obj.time = std::string(doc["time"].GetString(), doc["time"].GetStringLength());
     }
-    if(!doc.HasMember("canlib_Version") && doc["canlib_Version"].IsDouble()){
-        JSON_LOG_FUNC("session_config MISSING FIELD: canlib_Version"); 
+    if(!doc.HasMember("canlib_version") && doc["canlib_version"].IsDouble()){
+        JSON_LOG_FUNC("session_config MISSING FIELD: canlib_version"); 
     }else{
-        obj.canlib_Version = doc["canlib_Version"].GetDouble();
+        obj.canlib_version = doc["canlib_version"].GetDouble();
     }
 }
 template<>
@@ -735,10 +735,10 @@ void Deserialize(session_config& obj, rapidjson::Value& doc)
     }else{
         obj.time = std::string(doc["time"].GetString(), doc["time"].GetStringLength());
     }
-    if(!doc.HasMember("canlib_Version") && doc["canlib_Version"].IsDouble()){
-        JSON_LOG_FUNC("session_config MISSING FIELD: canlib_Version"); 
+    if(!doc.HasMember("canlib_version") && doc["canlib_version"].IsDouble()){
+        JSON_LOG_FUNC("session_config MISSING FIELD: canlib_version"); 
     }else{
-        obj.canlib_Version = doc["canlib_Version"].GetDouble();
+        obj.canlib_version = doc["canlib_version"].GetDouble();
     }
 }
 
