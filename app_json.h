@@ -184,12 +184,12 @@ void Serialize(rapidjson::Value& out, const fields_o& obj, rapidjson::Document::
 template<>
 void Deserialize(fields_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("message") && doc["message"].IsString()){
+    if(!doc.HasMember("message") || !doc["message"].IsString()){
         JSON_LOG_FUNC("fields_o MISSING FIELD: message"); 
     }else{
         obj.message = std::string(doc["message"].GetString(), doc["message"].GetStringLength());
     }
-    if(!doc.HasMember("field") && doc["field"].IsString()){
+    if(!doc.HasMember("field") || !doc["field"].IsString()){
         JSON_LOG_FUNC("fields_o MISSING FIELD: field"); 
     }else{
         obj.field = std::string(doc["field"].GetString(), doc["field"].GetStringLength());
@@ -230,12 +230,12 @@ void Serialize(rapidjson::Value& out, const axis_o& obj, rapidjson::Document::Al
 template<>
 void Deserialize(axis_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("axis_name") && doc["axis_name"].IsString()){
+    if(!doc.HasMember("axis_name") || !doc["axis_name"].IsString()){
         JSON_LOG_FUNC("axis_o MISSING FIELD: axis_name"); 
     }else{
         obj.axis_name = std::string(doc["axis_name"].GetString(), doc["axis_name"].GetStringLength());
     }
-    if(!doc.HasMember("fields") && doc["fields"].IsObject()){
+    if(!doc.HasMember("fields") || !doc["fields"].IsObject()){
         JSON_LOG_FUNC("axis_o MISSING FIELD: fields"); 
     }else{
 		obj.fields.resize(doc["fields"].Size());
@@ -279,12 +279,12 @@ void Serialize(rapidjson::Value& out, const custom_plots_o& obj, rapidjson::Docu
 template<>
 void Deserialize(custom_plots_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("plot_name") && doc["plot_name"].IsString()){
+    if(!doc.HasMember("plot_name") || !doc["plot_name"].IsString()){
         JSON_LOG_FUNC("custom_plots_o MISSING FIELD: plot_name"); 
     }else{
         obj.plot_name = std::string(doc["plot_name"].GetString(), doc["plot_name"].GetStringLength());
     }
-    if(!doc.HasMember("axis") && doc["axis"].IsObject()){
+    if(!doc.HasMember("axis") || !doc["axis"].IsObject()){
         JSON_LOG_FUNC("custom_plots_o MISSING FIELD: axis"); 
     }else{
 		obj.axis.resize(doc["axis"].Size());
@@ -329,22 +329,22 @@ void Serialize(rapidjson::Value& out, const color_t& obj, rapidjson::Document::A
 template<>
 void Deserialize(color_t& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("r") && doc["r"].IsDouble()){
+    if(!doc.HasMember("r") || !doc["r"].IsDouble()){
         JSON_LOG_FUNC("color_t MISSING FIELD: r"); 
     }else{
         obj.r = doc["r"].GetDouble();
     }
-    if(!doc.HasMember("g") && doc["g"].IsDouble()){
+    if(!doc.HasMember("g") || !doc["g"].IsDouble()){
         JSON_LOG_FUNC("color_t MISSING FIELD: g"); 
     }else{
         obj.g = doc["g"].GetDouble();
     }
-    if(!doc.HasMember("b") && doc["b"].IsDouble()){
+    if(!doc.HasMember("b") || !doc["b"].IsDouble()){
         JSON_LOG_FUNC("color_t MISSING FIELD: b"); 
     }else{
         obj.b = doc["b"].GetDouble();
     }
-    if(!doc.HasMember("a") && doc["a"].IsDouble()){
+    if(!doc.HasMember("a") || !doc["a"].IsDouble()){
         JSON_LOG_FUNC("color_t MISSING FIELD: a"); 
     }else{
         obj.a = doc["a"].GetDouble();
@@ -395,27 +395,27 @@ void Serialize(rapidjson::Value& out, const json_trigger_t& obj, rapidjson::Docu
 template<>
 void Deserialize(json_trigger_t& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("message") && doc["message"].IsString()){
+    if(!doc.HasMember("message") || !doc["message"].IsString()){
         JSON_LOG_FUNC("json_trigger_t MISSING FIELD: message"); 
     }else{
         obj.message = std::string(doc["message"].GetString(), doc["message"].GetStringLength());
     }
-    if(!doc.HasMember("field") && doc["field"].IsString()){
+    if(!doc.HasMember("field") || !doc["field"].IsString()){
         JSON_LOG_FUNC("json_trigger_t MISSING FIELD: field"); 
     }else{
         obj.field = std::string(doc["field"].GetString(), doc["field"].GetStringLength());
     }
-    if(!doc.HasMember("comparator") && doc["comparator"].IsUint64()){
+    if(!doc.HasMember("comparator") || !doc["comparator"].IsUint64()){
         JSON_LOG_FUNC("json_trigger_t MISSING FIELD: comparator"); 
     }else{
         obj.comparator = doc["comparator"].GetUint64();
     }
-    if(!doc.HasMember("value") && doc["value"].IsDouble()){
+    if(!doc.HasMember("value") || !doc["value"].IsDouble()){
         JSON_LOG_FUNC("json_trigger_t MISSING FIELD: value"); 
     }else{
         obj.value = doc["value"].GetDouble();
     }
-    if(!doc.HasMember("color") && doc["color"].IsObject()){
+    if(!doc.HasMember("color") || !doc["color"].IsObject()){
         JSON_LOG_FUNC("json_trigger_t MISSING FIELD: color"); 
     }else{
         Deserialize(obj.color, doc["color"]);
@@ -446,7 +446,7 @@ void Serialize(rapidjson::Value& out, const events_o& obj, rapidjson::Document::
 template<>
 void Deserialize(events_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("json_trigger") && doc["json_trigger"].IsObject()){
+    if(!doc.HasMember("json_trigger") || !doc["json_trigger"].IsObject()){
         JSON_LOG_FUNC("events_o MISSING FIELD: json_trigger"); 
     }else{
         Deserialize(obj.json_trigger, doc["json_trigger"]);
@@ -497,12 +497,12 @@ void Serialize(rapidjson::Value& out, const post_proc_t& obj, rapidjson::Documen
 template<>
 void Deserialize(post_proc_t& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("last_sample_freq") && doc["last_sample_freq"].IsUint64()){
+    if(!doc.HasMember("last_sample_freq") || !doc["last_sample_freq"].IsUint64()){
         JSON_LOG_FUNC("post_proc_t MISSING FIELD: last_sample_freq"); 
     }else{
         obj.last_sample_freq = doc["last_sample_freq"].GetUint64();
     }
-    if(!doc.HasMember("include_items") && doc["include_items"].IsObject()){
+    if(!doc.HasMember("include_items") || !doc["include_items"].IsObject()){
         JSON_LOG_FUNC("post_proc_t MISSING FIELD: include_items"); 
     }else{
 		obj.include_items.resize(doc["include_items"].Size());
@@ -510,7 +510,7 @@ void Deserialize(post_proc_t& obj, rapidjson::Value& doc)
 				obj.include_items[i] = doc["include_items"][i].GetString();
 		}
     }
-    if(!doc.HasMember("exclude_items") && doc["exclude_items"].IsObject()){
+    if(!doc.HasMember("exclude_items") || !doc["exclude_items"].IsObject()){
         JSON_LOG_FUNC("post_proc_t MISSING FIELD: exclude_items"); 
     }else{
 		obj.exclude_items.resize(doc["exclude_items"].Size());
@@ -555,22 +555,22 @@ void Serialize(rapidjson::Value& out, const saved_confs_o& obj, rapidjson::Docum
 template<>
 void Deserialize(saved_confs_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("name") && doc["name"].IsString()){
+    if(!doc.HasMember("name") || !doc["name"].IsString()){
         JSON_LOG_FUNC("saved_confs_o MISSING FIELD: name"); 
     }else{
         obj.name = std::string(doc["name"].GetString(), doc["name"].GetStringLength());
     }
-    if(!doc.HasMember("ip") && doc["ip"].IsString()){
+    if(!doc.HasMember("ip") || !doc["ip"].IsString()){
         JSON_LOG_FUNC("saved_confs_o MISSING FIELD: ip"); 
     }else{
         obj.ip = std::string(doc["ip"].GetString(), doc["ip"].GetStringLength());
     }
-    if(!doc.HasMember("port") && doc["port"].IsString()){
+    if(!doc.HasMember("port") || !doc["port"].IsString()){
         JSON_LOG_FUNC("saved_confs_o MISSING FIELD: port"); 
     }else{
         obj.port = std::string(doc["port"].GetString(), doc["port"].GetStringLength());
     }
-    if(!doc.HasMember("mode") && doc["mode"].IsString()){
+    if(!doc.HasMember("mode") || !doc["mode"].IsString()){
         JSON_LOG_FUNC("saved_confs_o MISSING FIELD: mode"); 
     }else{
         obj.mode = std::string(doc["mode"].GetString(), doc["mode"].GetStringLength());
@@ -621,22 +621,22 @@ void Serialize(rapidjson::Value& out, const app_connection_t& obj, rapidjson::Do
 template<>
 void Deserialize(app_connection_t& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("ip") && doc["ip"].IsString()){
+    if(!doc.HasMember("ip") || !doc["ip"].IsString()){
         JSON_LOG_FUNC("app_connection_t MISSING FIELD: ip"); 
     }else{
         obj.ip = std::string(doc["ip"].GetString(), doc["ip"].GetStringLength());
     }
-    if(!doc.HasMember("port") && doc["port"].IsString()){
+    if(!doc.HasMember("port") || !doc["port"].IsString()){
         JSON_LOG_FUNC("app_connection_t MISSING FIELD: port"); 
     }else{
         obj.port = std::string(doc["port"].GetString(), doc["port"].GetStringLength());
     }
-    if(!doc.HasMember("mode") && doc["mode"].IsString()){
+    if(!doc.HasMember("mode") || !doc["mode"].IsString()){
         JSON_LOG_FUNC("app_connection_t MISSING FIELD: mode"); 
     }else{
         obj.mode = std::string(doc["mode"].GetString(), doc["mode"].GetStringLength());
     }
-    if(!doc.HasMember("saved_confs") && doc["saved_confs"].IsObject()){
+    if(!doc.HasMember("saved_confs") || !doc["saved_confs"].IsObject()){
         JSON_LOG_FUNC("app_connection_t MISSING FIELD: saved_confs"); 
     }else{
 		obj.saved_confs.resize(doc["saved_confs"].Size());
@@ -671,12 +671,12 @@ void Serialize(rapidjson::Value& out, const paths_o& obj, rapidjson::Document::A
 template<>
 void Deserialize(paths_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("id") && doc["id"].IsString()){
+    if(!doc.HasMember("id") || !doc["id"].IsString()){
         JSON_LOG_FUNC("paths_o MISSING FIELD: id"); 
     }else{
         obj.id = std::string(doc["id"].GetString(), doc["id"].GetStringLength());
     }
-    if(!doc.HasMember("value") && doc["value"].IsString()){
+    if(!doc.HasMember("value") || !doc["value"].IsString()){
         JSON_LOG_FUNC("paths_o MISSING FIELD: value"); 
     }else{
         obj.value = std::string(doc["value"].GetString(), doc["value"].GetStringLength());
@@ -708,12 +708,12 @@ void Serialize(rapidjson::Value& out, const generic_key_value_o& obj, rapidjson:
 template<>
 void Deserialize(generic_key_value_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("key") && doc["key"].IsString()){
+    if(!doc.HasMember("key") || !doc["key"].IsString()){
         JSON_LOG_FUNC("generic_key_value_o MISSING FIELD: key"); 
     }else{
         obj.key = std::string(doc["key"].GetString(), doc["key"].GetStringLength());
     }
-    if(!doc.HasMember("value") && doc["value"].IsString()){
+    if(!doc.HasMember("value") || !doc["value"].IsString()){
         JSON_LOG_FUNC("generic_key_value_o MISSING FIELD: value"); 
     }else{
         obj.value = std::string(doc["value"].GetString(), doc["value"].GetStringLength());
@@ -859,7 +859,7 @@ void Serialize(rapidjson::Document& out, const app_config& obj)
 template<>
 void Deserialize(app_config& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("generic_key_value") && doc["generic_key_value"].IsObject()){
+    if(!doc.HasMember("generic_key_value") || !doc["generic_key_value"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: generic_key_value"); 
     }else{
 		obj.generic_key_value.resize(doc["generic_key_value"].Size());
@@ -867,7 +867,7 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 				Deserialize(obj.generic_key_value[i], doc["generic_key_value"][i]);
 		}
     }
-    if(!doc.HasMember("paths") && doc["paths"].IsObject()){
+    if(!doc.HasMember("paths") || !doc["paths"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: paths"); 
     }else{
 		obj.paths.resize(doc["paths"].Size());
@@ -875,27 +875,27 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 				Deserialize(obj.paths[i], doc["paths"][i]);
 		}
     }
-    if(!doc.HasMember("csv_auto_save") && doc["csv_auto_save"].IsBool()){
+    if(!doc.HasMember("csv_auto_save") || !doc["csv_auto_save"].IsBool()){
         JSON_LOG_FUNC("app_config MISSING FIELD: csv_auto_save"); 
     }else{
         obj.csv_auto_save = doc["csv_auto_save"].GetBool();
     }
-    if(!doc.HasMember("telemetry_auto_get_config") && doc["telemetry_auto_get_config"].IsBool()){
+    if(!doc.HasMember("telemetry_auto_get_config") || !doc["telemetry_auto_get_config"].IsBool()){
         JSON_LOG_FUNC("app_config MISSING FIELD: telemetry_auto_get_config"); 
     }else{
         obj.telemetry_auto_get_config = doc["telemetry_auto_get_config"].GetBool();
     }
-    if(!doc.HasMember("last_login_time") && doc["last_login_time"].IsDouble()){
+    if(!doc.HasMember("last_login_time") || !doc["last_login_time"].IsDouble()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_login_time"); 
     }else{
         obj.last_login_time = doc["last_login_time"].GetDouble();
     }
-    if(!doc.HasMember("app_connection") && doc["app_connection"].IsObject()){
+    if(!doc.HasMember("app_connection") || !doc["app_connection"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: app_connection"); 
     }else{
         Deserialize(obj.app_connection, doc["app_connection"]);
     }
-    if(!doc.HasMember("activeTabs") && doc["activeTabs"].IsObject()){
+    if(!doc.HasMember("activeTabs") || !doc["activeTabs"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: activeTabs"); 
     }else{
 		obj.activeTabs.resize(doc["activeTabs"].Size());
@@ -903,7 +903,7 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 				obj.activeTabs[i] = doc["activeTabs"][i].GetString();
 		}
     }
-    if(!doc.HasMember("last_connection_ips") && doc["last_connection_ips"].IsObject()){
+    if(!doc.HasMember("last_connection_ips") || !doc["last_connection_ips"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_connection_ips"); 
     }else{
 		obj.last_connection_ips.resize(doc["last_connection_ips"].Size());
@@ -911,12 +911,12 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 				obj.last_connection_ips[i] = doc["last_connection_ips"][i].GetString();
 		}
     }
-    if(!doc.HasMember("post_proc") && doc["post_proc"].IsObject()){
+    if(!doc.HasMember("post_proc") || !doc["post_proc"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: post_proc"); 
     }else{
         Deserialize(obj.post_proc, doc["post_proc"]);
     }
-    if(!doc.HasMember("events") && doc["events"].IsObject()){
+    if(!doc.HasMember("events") || !doc["events"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: events"); 
     }else{
 		obj.events.resize(doc["events"].Size());
@@ -924,7 +924,7 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 				Deserialize(obj.events[i], doc["events"][i]);
 		}
     }
-    if(!doc.HasMember("custom_plots") && doc["custom_plots"].IsObject()){
+    if(!doc.HasMember("custom_plots") || !doc["custom_plots"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: custom_plots"); 
     }else{
 		obj.custom_plots.resize(doc["custom_plots"].Size());
@@ -932,12 +932,12 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 				Deserialize(obj.custom_plots[i], doc["custom_plots"][i]);
 		}
     }
-    if(!doc.HasMember("theme") && doc["theme"].IsUint64()){
+    if(!doc.HasMember("theme") || !doc["theme"].IsUint64()){
         JSON_LOG_FUNC("app_config MISSING FIELD: theme"); 
     }else{
         obj.theme = doc["theme"].GetUint64();
     }
-    if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsUint64()){
+    if(!doc.HasMember("last_open_mode") || !doc["last_open_mode"].IsUint64()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
     }else{
         obj.last_open_mode = doc["last_open_mode"].GetUint64();
@@ -946,7 +946,7 @@ void Deserialize(app_config& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(app_config& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("generic_key_value") && doc["generic_key_value"].IsObject()){
+    if(!doc.HasMember("generic_key_value") || !doc["generic_key_value"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: generic_key_value"); 
     }else{
 		obj.generic_key_value.resize(doc["generic_key_value"].Size());
@@ -954,7 +954,7 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 				Deserialize(obj.generic_key_value[i], doc["generic_key_value"][i]);
 		}
     }
-    if(!doc.HasMember("paths") && doc["paths"].IsObject()){
+    if(!doc.HasMember("paths") || !doc["paths"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: paths"); 
     }else{
 		obj.paths.resize(doc["paths"].Size());
@@ -962,27 +962,27 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 				Deserialize(obj.paths[i], doc["paths"][i]);
 		}
     }
-    if(!doc.HasMember("csv_auto_save") && doc["csv_auto_save"].IsBool()){
+    if(!doc.HasMember("csv_auto_save") || !doc["csv_auto_save"].IsBool()){
         JSON_LOG_FUNC("app_config MISSING FIELD: csv_auto_save"); 
     }else{
         obj.csv_auto_save = doc["csv_auto_save"].GetBool();
     }
-    if(!doc.HasMember("telemetry_auto_get_config") && doc["telemetry_auto_get_config"].IsBool()){
+    if(!doc.HasMember("telemetry_auto_get_config") || !doc["telemetry_auto_get_config"].IsBool()){
         JSON_LOG_FUNC("app_config MISSING FIELD: telemetry_auto_get_config"); 
     }else{
         obj.telemetry_auto_get_config = doc["telemetry_auto_get_config"].GetBool();
     }
-    if(!doc.HasMember("last_login_time") && doc["last_login_time"].IsDouble()){
+    if(!doc.HasMember("last_login_time") || !doc["last_login_time"].IsDouble()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_login_time"); 
     }else{
         obj.last_login_time = doc["last_login_time"].GetDouble();
     }
-    if(!doc.HasMember("app_connection") && doc["app_connection"].IsObject()){
+    if(!doc.HasMember("app_connection") || !doc["app_connection"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: app_connection"); 
     }else{
         Deserialize(obj.app_connection, doc["app_connection"]);
     }
-    if(!doc.HasMember("activeTabs") && doc["activeTabs"].IsObject()){
+    if(!doc.HasMember("activeTabs") || !doc["activeTabs"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: activeTabs"); 
     }else{
 		obj.activeTabs.resize(doc["activeTabs"].Size());
@@ -990,7 +990,7 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 				obj.activeTabs[i] = doc["activeTabs"][i].GetString();
 		}
     }
-    if(!doc.HasMember("last_connection_ips") && doc["last_connection_ips"].IsObject()){
+    if(!doc.HasMember("last_connection_ips") || !doc["last_connection_ips"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_connection_ips"); 
     }else{
 		obj.last_connection_ips.resize(doc["last_connection_ips"].Size());
@@ -998,12 +998,12 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 				obj.last_connection_ips[i] = doc["last_connection_ips"][i].GetString();
 		}
     }
-    if(!doc.HasMember("post_proc") && doc["post_proc"].IsObject()){
+    if(!doc.HasMember("post_proc") || !doc["post_proc"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: post_proc"); 
     }else{
         Deserialize(obj.post_proc, doc["post_proc"]);
     }
-    if(!doc.HasMember("events") && doc["events"].IsObject()){
+    if(!doc.HasMember("events") || !doc["events"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: events"); 
     }else{
 		obj.events.resize(doc["events"].Size());
@@ -1011,7 +1011,7 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 				Deserialize(obj.events[i], doc["events"][i]);
 		}
     }
-    if(!doc.HasMember("custom_plots") && doc["custom_plots"].IsObject()){
+    if(!doc.HasMember("custom_plots") || !doc["custom_plots"].IsObject()){
         JSON_LOG_FUNC("app_config MISSING FIELD: custom_plots"); 
     }else{
 		obj.custom_plots.resize(doc["custom_plots"].Size());
@@ -1019,12 +1019,12 @@ void Deserialize(app_config& obj, rapidjson::Value& doc)
 				Deserialize(obj.custom_plots[i], doc["custom_plots"][i]);
 		}
     }
-    if(!doc.HasMember("theme") && doc["theme"].IsUint64()){
+    if(!doc.HasMember("theme") || !doc["theme"].IsUint64()){
         JSON_LOG_FUNC("app_config MISSING FIELD: theme"); 
     }else{
         obj.theme = doc["theme"].GetUint64();
     }
-    if(!doc.HasMember("last_open_mode") && doc["last_open_mode"].IsUint64()){
+    if(!doc.HasMember("last_open_mode") || !doc["last_open_mode"].IsUint64()){
         JSON_LOG_FUNC("app_config MISSING FIELD: last_open_mode"); 
     }else{
         obj.last_open_mode = doc["last_open_mode"].GetUint64();
@@ -1123,27 +1123,27 @@ void Serialize(rapidjson::Document& out, const user_data& obj)
 template<>
 void Deserialize(user_data& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("username") && doc["username"].IsString()){
+    if(!doc.HasMember("username") || !doc["username"].IsString()){
         JSON_LOG_FUNC("user_data MISSING FIELD: username"); 
     }else{
         obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
     }
-    if(!doc.HasMember("token") && doc["token"].IsString()){
+    if(!doc.HasMember("token") || !doc["token"].IsString()){
         JSON_LOG_FUNC("user_data MISSING FIELD: token"); 
     }else{
         obj.token = std::string(doc["token"].GetString(), doc["token"].GetStringLength());
     }
-    if(!doc.HasMember("refresh_token") && doc["refresh_token"].IsString()){
+    if(!doc.HasMember("refresh_token") || !doc["refresh_token"].IsString()){
         JSON_LOG_FUNC("user_data MISSING FIELD: refresh_token"); 
     }else{
         obj.refresh_token = std::string(doc["refresh_token"].GetString(), doc["refresh_token"].GetStringLength());
     }
-    if(!doc.HasMember("expiry") && doc["expiry"].IsDouble()){
+    if(!doc.HasMember("expiry") || !doc["expiry"].IsDouble()){
         JSON_LOG_FUNC("user_data MISSING FIELD: expiry"); 
     }else{
         obj.expiry = doc["expiry"].GetDouble();
     }
-    if(!doc.HasMember("role") && doc["role"].IsUint64()){
+    if(!doc.HasMember("role") || !doc["role"].IsUint64()){
         JSON_LOG_FUNC("user_data MISSING FIELD: role"); 
     }else{
         obj.role = doc["role"].GetUint64();
@@ -1152,27 +1152,27 @@ void Deserialize(user_data& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(user_data& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("username") && doc["username"].IsString()){
+    if(!doc.HasMember("username") || !doc["username"].IsString()){
         JSON_LOG_FUNC("user_data MISSING FIELD: username"); 
     }else{
         obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
     }
-    if(!doc.HasMember("token") && doc["token"].IsString()){
+    if(!doc.HasMember("token") || !doc["token"].IsString()){
         JSON_LOG_FUNC("user_data MISSING FIELD: token"); 
     }else{
         obj.token = std::string(doc["token"].GetString(), doc["token"].GetStringLength());
     }
-    if(!doc.HasMember("refresh_token") && doc["refresh_token"].IsString()){
+    if(!doc.HasMember("refresh_token") || !doc["refresh_token"].IsString()){
         JSON_LOG_FUNC("user_data MISSING FIELD: refresh_token"); 
     }else{
         obj.refresh_token = std::string(doc["refresh_token"].GetString(), doc["refresh_token"].GetStringLength());
     }
-    if(!doc.HasMember("expiry") && doc["expiry"].IsDouble()){
+    if(!doc.HasMember("expiry") || !doc["expiry"].IsDouble()){
         JSON_LOG_FUNC("user_data MISSING FIELD: expiry"); 
     }else{
         obj.expiry = doc["expiry"].GetDouble();
     }
-    if(!doc.HasMember("role") && doc["role"].IsUint64()){
+    if(!doc.HasMember("role") || !doc["role"].IsUint64()){
         JSON_LOG_FUNC("user_data MISSING FIELD: role"); 
     }else{
         obj.role = doc["role"].GetUint64();

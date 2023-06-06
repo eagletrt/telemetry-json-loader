@@ -184,22 +184,22 @@ void Serialize(rapidjson::Value& out, const msgs_per_second_o& obj, rapidjson::D
 template<>
 void Deserialize(msgs_per_second_o& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("device") && doc["device"].IsString()){
+    if(!doc.HasMember("device") || !doc["device"].IsString()){
         JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: device"); 
     }else{
         obj.device = std::string(doc["device"].GetString(), doc["device"].GetStringLength());
     }
-    if(!doc.HasMember("bits_per_second") && doc["bits_per_second"].IsUint64()){
+    if(!doc.HasMember("bits_per_second") || !doc["bits_per_second"].IsUint64()){
         JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: bits_per_second"); 
     }else{
         obj.bits_per_second = doc["bits_per_second"].GetUint64();
     }
-    if(!doc.HasMember("bus_load") && doc["bus_load"].IsDouble()){
+    if(!doc.HasMember("bus_load") || !doc["bus_load"].IsDouble()){
         JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: bus_load"); 
     }else{
         obj.bus_load = doc["bus_load"].GetDouble();
     }
-    if(!doc.HasMember("count") && doc["count"].IsUint64()){
+    if(!doc.HasMember("count") || !doc["count"].IsUint64()){
         JSON_LOG_FUNC("msgs_per_second_o MISSING FIELD: count"); 
     }else{
         obj.count = doc["count"].GetUint64();
@@ -242,22 +242,22 @@ void Serialize(rapidjson::Document& out, const get_telemetry_config& obj)
 template<>
 void Deserialize(get_telemetry_config& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("type") && doc["type"].IsString()){
+    if(!doc.HasMember("type") || !doc["type"].IsString()){
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: type"); 
     }else{
         obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
     }
-    if(!doc.HasMember("telemetry_config") && doc["telemetry_config"].IsString()){
+    if(!doc.HasMember("telemetry_config") || !doc["telemetry_config"].IsString()){
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: telemetry_config"); 
     }else{
         obj.telemetry_config = std::string(doc["telemetry_config"].GetString(), doc["telemetry_config"].GetStringLength());
     }
-    if(!doc.HasMember("session_config") && doc["session_config"].IsString()){
+    if(!doc.HasMember("session_config") || !doc["session_config"].IsString()){
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: session_config"); 
     }else{
         obj.session_config = std::string(doc["session_config"].GetString(), doc["session_config"].GetStringLength());
     }
-    if(!doc.HasMember("car_setup") && doc["car_setup"].IsString()){
+    if(!doc.HasMember("car_setup") || !doc["car_setup"].IsString()){
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: car_setup"); 
     }else{
         obj.car_setup = std::string(doc["car_setup"].GetString(), doc["car_setup"].GetStringLength());
@@ -266,22 +266,22 @@ void Deserialize(get_telemetry_config& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(get_telemetry_config& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("type") && doc["type"].IsString()){
+    if(!doc.HasMember("type") || !doc["type"].IsString()){
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: type"); 
     }else{
         obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
     }
-    if(!doc.HasMember("telemetry_config") && doc["telemetry_config"].IsString()){
+    if(!doc.HasMember("telemetry_config") || !doc["telemetry_config"].IsString()){
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: telemetry_config"); 
     }else{
         obj.telemetry_config = std::string(doc["telemetry_config"].GetString(), doc["telemetry_config"].GetStringLength());
     }
-    if(!doc.HasMember("session_config") && doc["session_config"].IsString()){
+    if(!doc.HasMember("session_config") || !doc["session_config"].IsString()){
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: session_config"); 
     }else{
         obj.session_config = std::string(doc["session_config"].GetString(), doc["session_config"].GetStringLength());
     }
-    if(!doc.HasMember("car_setup") && doc["car_setup"].IsString()){
+    if(!doc.HasMember("car_setup") || !doc["car_setup"].IsString()){
         JSON_LOG_FUNC("get_telemetry_config MISSING FIELD: car_setup"); 
     }else{
         obj.car_setup = std::string(doc["car_setup"].GetString(), doc["car_setup"].GetStringLength());
@@ -365,12 +365,12 @@ void Serialize(rapidjson::Document& out, const basic_message& obj)
 template<>
 void Deserialize(basic_message& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("type") && doc["type"].IsString()){
+    if(!doc.HasMember("type") || !doc["type"].IsString()){
         JSON_LOG_FUNC("basic_message MISSING FIELD: type"); 
     }else{
         obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
     }
-    if(!doc.HasMember("data") && doc["data"].IsString()){
+    if(!doc.HasMember("data") || !doc["data"].IsString()){
         JSON_LOG_FUNC("basic_message MISSING FIELD: data"); 
     }else{
         obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
@@ -379,12 +379,12 @@ void Deserialize(basic_message& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(basic_message& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("type") && doc["type"].IsString()){
+    if(!doc.HasMember("type") || !doc["type"].IsString()){
         JSON_LOG_FUNC("basic_message MISSING FIELD: type"); 
     }else{
         obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
     }
-    if(!doc.HasMember("data") && doc["data"].IsString()){
+    if(!doc.HasMember("data") || !doc["data"].IsString()){
         JSON_LOG_FUNC("basic_message MISSING FIELD: data"); 
     }else{
         obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
@@ -488,32 +488,32 @@ void Serialize(rapidjson::Document& out, const car_data& obj)
 template<>
 void Deserialize(car_data& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("timestamp") && doc["timestamp"].IsUint64()){
+    if(!doc.HasMember("timestamp") || !doc["timestamp"].IsUint64()){
         JSON_LOG_FUNC("car_data MISSING FIELD: timestamp"); 
     }else{
         obj.timestamp = doc["timestamp"].GetUint64();
     }
-    if(!doc.HasMember("primary") && doc["primary"].IsString()){
+    if(!doc.HasMember("primary") || !doc["primary"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: primary"); 
     }else{
         obj.primary = std::string(doc["primary"].GetString(), doc["primary"].GetStringLength());
     }
-    if(!doc.HasMember("secondary") && doc["secondary"].IsString()){
+    if(!doc.HasMember("secondary") || !doc["secondary"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: secondary"); 
     }else{
         obj.secondary = std::string(doc["secondary"].GetString(), doc["secondary"].GetStringLength());
     }
-    if(!doc.HasMember("gps") && doc["gps"].IsString()){
+    if(!doc.HasMember("gps") || !doc["gps"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: gps"); 
     }else{
         obj.gps = std::string(doc["gps"].GetString(), doc["gps"].GetStringLength());
     }
-    if(!doc.HasMember("inverters") && doc["inverters"].IsString()){
+    if(!doc.HasMember("inverters") || !doc["inverters"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: inverters"); 
     }else{
         obj.inverters = std::string(doc["inverters"].GetString(), doc["inverters"].GetStringLength());
     }
-    if(!doc.HasMember("can_frequencies") && doc["can_frequencies"].IsString()){
+    if(!doc.HasMember("can_frequencies") || !doc["can_frequencies"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: can_frequencies"); 
     }else{
         obj.can_frequencies = std::string(doc["can_frequencies"].GetString(), doc["can_frequencies"].GetStringLength());
@@ -522,32 +522,32 @@ void Deserialize(car_data& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(car_data& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("timestamp") && doc["timestamp"].IsUint64()){
+    if(!doc.HasMember("timestamp") || !doc["timestamp"].IsUint64()){
         JSON_LOG_FUNC("car_data MISSING FIELD: timestamp"); 
     }else{
         obj.timestamp = doc["timestamp"].GetUint64();
     }
-    if(!doc.HasMember("primary") && doc["primary"].IsString()){
+    if(!doc.HasMember("primary") || !doc["primary"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: primary"); 
     }else{
         obj.primary = std::string(doc["primary"].GetString(), doc["primary"].GetStringLength());
     }
-    if(!doc.HasMember("secondary") && doc["secondary"].IsString()){
+    if(!doc.HasMember("secondary") || !doc["secondary"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: secondary"); 
     }else{
         obj.secondary = std::string(doc["secondary"].GetString(), doc["secondary"].GetStringLength());
     }
-    if(!doc.HasMember("gps") && doc["gps"].IsString()){
+    if(!doc.HasMember("gps") || !doc["gps"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: gps"); 
     }else{
         obj.gps = std::string(doc["gps"].GetString(), doc["gps"].GetStringLength());
     }
-    if(!doc.HasMember("inverters") && doc["inverters"].IsString()){
+    if(!doc.HasMember("inverters") || !doc["inverters"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: inverters"); 
     }else{
         obj.inverters = std::string(doc["inverters"].GetString(), doc["inverters"].GetStringLength());
     }
-    if(!doc.HasMember("can_frequencies") && doc["can_frequencies"].IsString()){
+    if(!doc.HasMember("can_frequencies") || !doc["can_frequencies"].IsString()){
         JSON_LOG_FUNC("car_data MISSING FIELD: can_frequencies"); 
     }else{
         obj.can_frequencies = std::string(doc["can_frequencies"].GetString(), doc["can_frequencies"].GetStringLength());
@@ -641,22 +641,22 @@ void Serialize(rapidjson::Document& out, const file_chunk& obj)
 template<>
 void Deserialize(file_chunk& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("data") && doc["data"].IsString()){
+    if(!doc.HasMember("data") || !doc["data"].IsString()){
         JSON_LOG_FUNC("file_chunk MISSING FIELD: data"); 
     }else{
         obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
     }
-    if(!doc.HasMember("chunk_n") && doc["chunk_n"].IsUint64()){
+    if(!doc.HasMember("chunk_n") || !doc["chunk_n"].IsUint64()){
         JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_n"); 
     }else{
         obj.chunk_n = doc["chunk_n"].GetUint64();
     }
-    if(!doc.HasMember("chunk_total") && doc["chunk_total"].IsUint64()){
+    if(!doc.HasMember("chunk_total") || !doc["chunk_total"].IsUint64()){
         JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_total"); 
     }else{
         obj.chunk_total = doc["chunk_total"].GetUint64();
     }
-    if(!doc.HasMember("transaction_hash") && doc["transaction_hash"].IsString()){
+    if(!doc.HasMember("transaction_hash") || !doc["transaction_hash"].IsString()){
         JSON_LOG_FUNC("file_chunk MISSING FIELD: transaction_hash"); 
     }else{
         obj.transaction_hash = std::string(doc["transaction_hash"].GetString(), doc["transaction_hash"].GetStringLength());
@@ -665,22 +665,22 @@ void Deserialize(file_chunk& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(file_chunk& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("data") && doc["data"].IsString()){
+    if(!doc.HasMember("data") || !doc["data"].IsString()){
         JSON_LOG_FUNC("file_chunk MISSING FIELD: data"); 
     }else{
         obj.data = std::string(doc["data"].GetString(), doc["data"].GetStringLength());
     }
-    if(!doc.HasMember("chunk_n") && doc["chunk_n"].IsUint64()){
+    if(!doc.HasMember("chunk_n") || !doc["chunk_n"].IsUint64()){
         JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_n"); 
     }else{
         obj.chunk_n = doc["chunk_n"].GetUint64();
     }
-    if(!doc.HasMember("chunk_total") && doc["chunk_total"].IsUint64()){
+    if(!doc.HasMember("chunk_total") || !doc["chunk_total"].IsUint64()){
         JSON_LOG_FUNC("file_chunk MISSING FIELD: chunk_total"); 
     }else{
         obj.chunk_total = doc["chunk_total"].GetUint64();
     }
-    if(!doc.HasMember("transaction_hash") && doc["transaction_hash"].IsString()){
+    if(!doc.HasMember("transaction_hash") || !doc["transaction_hash"].IsString()){
         JSON_LOG_FUNC("file_chunk MISSING FIELD: transaction_hash"); 
     }else{
         obj.transaction_hash = std::string(doc["transaction_hash"].GetString(), doc["transaction_hash"].GetStringLength());
@@ -764,12 +764,12 @@ void Serialize(rapidjson::Document& out, const ping& obj)
 template<>
 void Deserialize(ping& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("type") && doc["type"].IsString()){
+    if(!doc.HasMember("type") || !doc["type"].IsString()){
         JSON_LOG_FUNC("ping MISSING FIELD: type"); 
     }else{
         obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
     }
-    if(!doc.HasMember("time") && doc["time"].IsDouble()){
+    if(!doc.HasMember("time") || !doc["time"].IsDouble()){
         JSON_LOG_FUNC("ping MISSING FIELD: time"); 
     }else{
         obj.time = doc["time"].GetDouble();
@@ -778,12 +778,12 @@ void Deserialize(ping& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(ping& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("type") && doc["type"].IsString()){
+    if(!doc.HasMember("type") || !doc["type"].IsString()){
         JSON_LOG_FUNC("ping MISSING FIELD: type"); 
     }else{
         obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
     }
-    if(!doc.HasMember("time") && doc["time"].IsDouble()){
+    if(!doc.HasMember("time") || !doc["time"].IsDouble()){
         JSON_LOG_FUNC("ping MISSING FIELD: time"); 
     }else{
         obj.time = doc["time"].GetDouble();
@@ -872,17 +872,17 @@ void Serialize(rapidjson::Document& out, const file_transaction_setup& obj)
 template<>
 void Deserialize(file_transaction_setup& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("identifier") && doc["identifier"].IsString()){
+    if(!doc.HasMember("identifier") || !doc["identifier"].IsString()){
         JSON_LOG_FUNC("file_transaction_setup MISSING FIELD: identifier"); 
     }else{
         obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
     }
-    if(!doc.HasMember("transaction_hash") && doc["transaction_hash"].IsString()){
+    if(!doc.HasMember("transaction_hash") || !doc["transaction_hash"].IsString()){
         JSON_LOG_FUNC("file_transaction_setup MISSING FIELD: transaction_hash"); 
     }else{
         obj.transaction_hash = std::string(doc["transaction_hash"].GetString(), doc["transaction_hash"].GetStringLength());
     }
-    if(!doc.HasMember("transaction_topic") && doc["transaction_topic"].IsString()){
+    if(!doc.HasMember("transaction_topic") || !doc["transaction_topic"].IsString()){
         JSON_LOG_FUNC("file_transaction_setup MISSING FIELD: transaction_topic"); 
     }else{
         obj.transaction_topic = std::string(doc["transaction_topic"].GetString(), doc["transaction_topic"].GetStringLength());
@@ -891,17 +891,17 @@ void Deserialize(file_transaction_setup& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(file_transaction_setup& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("identifier") && doc["identifier"].IsString()){
+    if(!doc.HasMember("identifier") || !doc["identifier"].IsString()){
         JSON_LOG_FUNC("file_transaction_setup MISSING FIELD: identifier"); 
     }else{
         obj.identifier = std::string(doc["identifier"].GetString(), doc["identifier"].GetStringLength());
     }
-    if(!doc.HasMember("transaction_hash") && doc["transaction_hash"].IsString()){
+    if(!doc.HasMember("transaction_hash") || !doc["transaction_hash"].IsString()){
         JSON_LOG_FUNC("file_transaction_setup MISSING FIELD: transaction_hash"); 
     }else{
         obj.transaction_hash = std::string(doc["transaction_hash"].GetString(), doc["transaction_hash"].GetStringLength());
     }
-    if(!doc.HasMember("transaction_topic") && doc["transaction_topic"].IsString()){
+    if(!doc.HasMember("transaction_topic") || !doc["transaction_topic"].IsString()){
         JSON_LOG_FUNC("file_transaction_setup MISSING FIELD: transaction_topic"); 
     }else{
         obj.transaction_topic = std::string(doc["transaction_topic"].GetString(), doc["transaction_topic"].GetStringLength());
@@ -985,12 +985,12 @@ void Serialize(rapidjson::Document& out, const command_execution& obj)
 template<>
 void Deserialize(command_execution& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("command") && doc["command"].IsString()){
+    if(!doc.HasMember("command") || !doc["command"].IsString()){
         JSON_LOG_FUNC("command_execution MISSING FIELD: command"); 
     }else{
         obj.command = std::string(doc["command"].GetString(), doc["command"].GetStringLength());
     }
-    if(!doc.HasMember("output") && doc["output"].IsString()){
+    if(!doc.HasMember("output") || !doc["output"].IsString()){
         JSON_LOG_FUNC("command_execution MISSING FIELD: output"); 
     }else{
         obj.output = std::string(doc["output"].GetString(), doc["output"].GetStringLength());
@@ -999,12 +999,12 @@ void Deserialize(command_execution& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(command_execution& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("command") && doc["command"].IsString()){
+    if(!doc.HasMember("command") || !doc["command"].IsString()){
         JSON_LOG_FUNC("command_execution MISSING FIELD: command"); 
     }else{
         obj.command = std::string(doc["command"].GetString(), doc["command"].GetStringLength());
     }
-    if(!doc.HasMember("output") && doc["output"].IsString()){
+    if(!doc.HasMember("output") || !doc["output"].IsString()){
         JSON_LOG_FUNC("command_execution MISSING FIELD: output"); 
     }else{
         obj.output = std::string(doc["output"].GetString(), doc["output"].GetStringLength());
@@ -1093,17 +1093,17 @@ void Serialize(rapidjson::Document& out, const telemetry_error& obj)
 template<>
 void Deserialize(telemetry_error& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("timestamp") && doc["timestamp"].IsUint64()){
+    if(!doc.HasMember("timestamp") || !doc["timestamp"].IsUint64()){
         JSON_LOG_FUNC("telemetry_error MISSING FIELD: timestamp"); 
     }else{
         obj.timestamp = doc["timestamp"].GetUint64();
     }
-    if(!doc.HasMember("function") && doc["function"].IsString()){
+    if(!doc.HasMember("function") || !doc["function"].IsString()){
         JSON_LOG_FUNC("telemetry_error MISSING FIELD: function"); 
     }else{
         obj.function = std::string(doc["function"].GetString(), doc["function"].GetStringLength());
     }
-    if(!doc.HasMember("error") && doc["error"].IsString()){
+    if(!doc.HasMember("error") || !doc["error"].IsString()){
         JSON_LOG_FUNC("telemetry_error MISSING FIELD: error"); 
     }else{
         obj.error = std::string(doc["error"].GetString(), doc["error"].GetStringLength());
@@ -1112,17 +1112,17 @@ void Deserialize(telemetry_error& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(telemetry_error& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("timestamp") && doc["timestamp"].IsUint64()){
+    if(!doc.HasMember("timestamp") || !doc["timestamp"].IsUint64()){
         JSON_LOG_FUNC("telemetry_error MISSING FIELD: timestamp"); 
     }else{
         obj.timestamp = doc["timestamp"].GetUint64();
     }
-    if(!doc.HasMember("function") && doc["function"].IsString()){
+    if(!doc.HasMember("function") || !doc["function"].IsString()){
         JSON_LOG_FUNC("telemetry_error MISSING FIELD: function"); 
     }else{
         obj.function = std::string(doc["function"].GetString(), doc["function"].GetStringLength());
     }
-    if(!doc.HasMember("error") && doc["error"].IsString()){
+    if(!doc.HasMember("error") || !doc["error"].IsString()){
         JSON_LOG_FUNC("telemetry_error MISSING FIELD: error"); 
     }else{
         obj.error = std::string(doc["error"].GetString(), doc["error"].GetStringLength());
@@ -1260,27 +1260,27 @@ void Serialize(rapidjson::Document& out, const telemetry_status& obj)
 template<>
 void Deserialize(telemetry_status& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("type") && doc["type"].IsString()){
+    if(!doc.HasMember("type") || !doc["type"].IsString()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: type"); 
     }else{
         obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
     }
-    if(!doc.HasMember("timestamp") && doc["timestamp"].IsUint64()){
+    if(!doc.HasMember("timestamp") || !doc["timestamp"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: timestamp"); 
     }else{
         obj.timestamp = doc["timestamp"].GetUint64();
     }
-    if(!doc.HasMember("zero_timestamp") && doc["zero_timestamp"].IsUint64()){
+    if(!doc.HasMember("zero_timestamp") || !doc["zero_timestamp"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: zero_timestamp"); 
     }else{
         obj.zero_timestamp = doc["zero_timestamp"].GetUint64();
     }
-    if(!doc.HasMember("data") && doc["data"].IsUint64()){
+    if(!doc.HasMember("data") || !doc["data"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: data"); 
     }else{
         obj.data = doc["data"].GetUint64();
     }
-    if(!doc.HasMember("msgs_per_second") && doc["msgs_per_second"].IsObject()){
+    if(!doc.HasMember("msgs_per_second") || !doc["msgs_per_second"].IsObject()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: msgs_per_second"); 
     }else{
 		obj.msgs_per_second.resize(doc["msgs_per_second"].Size());
@@ -1288,32 +1288,32 @@ void Deserialize(telemetry_status& obj, rapidjson::Document& doc)
 				Deserialize(obj.msgs_per_second[i], doc["msgs_per_second"][i]);
 		}
     }
-    if(!doc.HasMember("camera_status") && doc["camera_status"].IsString()){
+    if(!doc.HasMember("camera_status") || !doc["camera_status"].IsString()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: camera_status"); 
     }else{
         obj.camera_status = std::string(doc["camera_status"].GetString(), doc["camera_status"].GetStringLength());
     }
-    if(!doc.HasMember("camera_error") && doc["camera_error"].IsString()){
+    if(!doc.HasMember("camera_error") || !doc["camera_error"].IsString()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: camera_error"); 
     }else{
         obj.camera_error = std::string(doc["camera_error"].GetString(), doc["camera_error"].GetStringLength());
     }
-    if(!doc.HasMember("cpu_total_load") && doc["cpu_total_load"].IsUint64()){
+    if(!doc.HasMember("cpu_total_load") || !doc["cpu_total_load"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: cpu_total_load"); 
     }else{
         obj.cpu_total_load = doc["cpu_total_load"].GetUint64();
     }
-    if(!doc.HasMember("cpu_process_load") && doc["cpu_process_load"].IsUint64()){
+    if(!doc.HasMember("cpu_process_load") || !doc["cpu_process_load"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: cpu_process_load"); 
     }else{
         obj.cpu_process_load = doc["cpu_process_load"].GetUint64();
     }
-    if(!doc.HasMember("mem_process_load") && doc["mem_process_load"].IsUint64()){
+    if(!doc.HasMember("mem_process_load") || !doc["mem_process_load"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: mem_process_load"); 
     }else{
         obj.mem_process_load = doc["mem_process_load"].GetUint64();
     }
-    if(!doc.HasMember("canlib_build_time") && doc["canlib_build_time"].IsUint64()){
+    if(!doc.HasMember("canlib_build_time") || !doc["canlib_build_time"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: canlib_build_time"); 
     }else{
         obj.canlib_build_time = doc["canlib_build_time"].GetUint64();
@@ -1322,27 +1322,27 @@ void Deserialize(telemetry_status& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(telemetry_status& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("type") && doc["type"].IsString()){
+    if(!doc.HasMember("type") || !doc["type"].IsString()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: type"); 
     }else{
         obj.type = std::string(doc["type"].GetString(), doc["type"].GetStringLength());
     }
-    if(!doc.HasMember("timestamp") && doc["timestamp"].IsUint64()){
+    if(!doc.HasMember("timestamp") || !doc["timestamp"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: timestamp"); 
     }else{
         obj.timestamp = doc["timestamp"].GetUint64();
     }
-    if(!doc.HasMember("zero_timestamp") && doc["zero_timestamp"].IsUint64()){
+    if(!doc.HasMember("zero_timestamp") || !doc["zero_timestamp"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: zero_timestamp"); 
     }else{
         obj.zero_timestamp = doc["zero_timestamp"].GetUint64();
     }
-    if(!doc.HasMember("data") && doc["data"].IsUint64()){
+    if(!doc.HasMember("data") || !doc["data"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: data"); 
     }else{
         obj.data = doc["data"].GetUint64();
     }
-    if(!doc.HasMember("msgs_per_second") && doc["msgs_per_second"].IsObject()){
+    if(!doc.HasMember("msgs_per_second") || !doc["msgs_per_second"].IsObject()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: msgs_per_second"); 
     }else{
 		obj.msgs_per_second.resize(doc["msgs_per_second"].Size());
@@ -1350,32 +1350,32 @@ void Deserialize(telemetry_status& obj, rapidjson::Value& doc)
 				Deserialize(obj.msgs_per_second[i], doc["msgs_per_second"][i]);
 		}
     }
-    if(!doc.HasMember("camera_status") && doc["camera_status"].IsString()){
+    if(!doc.HasMember("camera_status") || !doc["camera_status"].IsString()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: camera_status"); 
     }else{
         obj.camera_status = std::string(doc["camera_status"].GetString(), doc["camera_status"].GetStringLength());
     }
-    if(!doc.HasMember("camera_error") && doc["camera_error"].IsString()){
+    if(!doc.HasMember("camera_error") || !doc["camera_error"].IsString()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: camera_error"); 
     }else{
         obj.camera_error = std::string(doc["camera_error"].GetString(), doc["camera_error"].GetStringLength());
     }
-    if(!doc.HasMember("cpu_total_load") && doc["cpu_total_load"].IsUint64()){
+    if(!doc.HasMember("cpu_total_load") || !doc["cpu_total_load"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: cpu_total_load"); 
     }else{
         obj.cpu_total_load = doc["cpu_total_load"].GetUint64();
     }
-    if(!doc.HasMember("cpu_process_load") && doc["cpu_process_load"].IsUint64()){
+    if(!doc.HasMember("cpu_process_load") || !doc["cpu_process_load"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: cpu_process_load"); 
     }else{
         obj.cpu_process_load = doc["cpu_process_load"].GetUint64();
     }
-    if(!doc.HasMember("mem_process_load") && doc["mem_process_load"].IsUint64()){
+    if(!doc.HasMember("mem_process_load") || !doc["mem_process_load"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: mem_process_load"); 
     }else{
         obj.mem_process_load = doc["mem_process_load"].GetUint64();
     }
-    if(!doc.HasMember("canlib_build_time") && doc["canlib_build_time"].IsUint64()){
+    if(!doc.HasMember("canlib_build_time") || !doc["canlib_build_time"].IsUint64()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: canlib_build_time"); 
     }else{
         obj.canlib_build_time = doc["canlib_build_time"].GetUint64();
@@ -1469,22 +1469,22 @@ void Serialize(rapidjson::Document& out, const file_transaction_status& obj)
 template<>
 void Deserialize(file_transaction_status& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("filename") && doc["filename"].IsString()){
+    if(!doc.HasMember("filename") || !doc["filename"].IsString()){
         JSON_LOG_FUNC("file_transaction_status MISSING FIELD: filename"); 
     }else{
         obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
     }
-    if(!doc.HasMember("dest_path") && doc["dest_path"].IsString()){
+    if(!doc.HasMember("dest_path") || !doc["dest_path"].IsString()){
         JSON_LOG_FUNC("file_transaction_status MISSING FIELD: dest_path"); 
     }else{
         obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
     }
-    if(!doc.HasMember("total_chunks") && doc["total_chunks"].IsUint64()){
+    if(!doc.HasMember("total_chunks") || !doc["total_chunks"].IsUint64()){
         JSON_LOG_FUNC("file_transaction_status MISSING FIELD: total_chunks"); 
     }else{
         obj.total_chunks = doc["total_chunks"].GetUint64();
     }
-    if(!doc.HasMember("transaction_hash") && doc["transaction_hash"].IsString()){
+    if(!doc.HasMember("transaction_hash") || !doc["transaction_hash"].IsString()){
         JSON_LOG_FUNC("file_transaction_status MISSING FIELD: transaction_hash"); 
     }else{
         obj.transaction_hash = std::string(doc["transaction_hash"].GetString(), doc["transaction_hash"].GetStringLength());
@@ -1493,22 +1493,22 @@ void Deserialize(file_transaction_status& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(file_transaction_status& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("filename") && doc["filename"].IsString()){
+    if(!doc.HasMember("filename") || !doc["filename"].IsString()){
         JSON_LOG_FUNC("file_transaction_status MISSING FIELD: filename"); 
     }else{
         obj.filename = std::string(doc["filename"].GetString(), doc["filename"].GetStringLength());
     }
-    if(!doc.HasMember("dest_path") && doc["dest_path"].IsString()){
+    if(!doc.HasMember("dest_path") || !doc["dest_path"].IsString()){
         JSON_LOG_FUNC("file_transaction_status MISSING FIELD: dest_path"); 
     }else{
         obj.dest_path = std::string(doc["dest_path"].GetString(), doc["dest_path"].GetStringLength());
     }
-    if(!doc.HasMember("total_chunks") && doc["total_chunks"].IsUint64()){
+    if(!doc.HasMember("total_chunks") || !doc["total_chunks"].IsUint64()){
         JSON_LOG_FUNC("file_transaction_status MISSING FIELD: total_chunks"); 
     }else{
         obj.total_chunks = doc["total_chunks"].GetUint64();
     }
-    if(!doc.HasMember("transaction_hash") && doc["transaction_hash"].IsString()){
+    if(!doc.HasMember("transaction_hash") || !doc["transaction_hash"].IsString()){
         JSON_LOG_FUNC("file_transaction_status MISSING FIELD: transaction_hash"); 
     }else{
         obj.transaction_hash = std::string(doc["transaction_hash"].GetString(), doc["transaction_hash"].GetStringLength());
