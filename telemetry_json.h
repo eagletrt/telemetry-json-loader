@@ -127,7 +127,7 @@ typedef struct session_config{
     std::string circuit;
     std::string pilot;
     std::string race;
-    std::string configuration;
+    std::string test;
     std::string date;
     std::string time;
     double canlib_Version;
@@ -631,8 +631,8 @@ bool CheckJson(const session_config& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("session_config MISSING FIELD: race"); 
         check = false;
     }
-    if(!doc.HasMember("configuration")){
-        JSON_LOG_FUNC("session_config MISSING FIELD: configuration"); 
+    if(!doc.HasMember("test")){
+        JSON_LOG_FUNC("session_config MISSING FIELD: test"); 
         check = false;
     }
     if(!doc.HasMember("date")){
@@ -658,7 +658,7 @@ void Serialize(rapidjson::Document& out, const session_config& obj)
     out.AddMember("circuit", rapidjson::Value().SetString(obj.circuit.c_str(), obj.circuit.size(), alloc), alloc);
     out.AddMember("pilot", rapidjson::Value().SetString(obj.pilot.c_str(), obj.pilot.size(), alloc), alloc);
     out.AddMember("race", rapidjson::Value().SetString(obj.race.c_str(), obj.race.size(), alloc), alloc);
-    out.AddMember("configuration", rapidjson::Value().SetString(obj.configuration.c_str(), obj.configuration.size(), alloc), alloc);
+    out.AddMember("test", rapidjson::Value().SetString(obj.test.c_str(), obj.test.size(), alloc), alloc);
     out.AddMember("date", rapidjson::Value().SetString(obj.date.c_str(), obj.date.size(), alloc), alloc);
     out.AddMember("time", rapidjson::Value().SetString(obj.time.c_str(), obj.time.size(), alloc), alloc);
     out.AddMember("canlib_Version", rapidjson::Value().SetDouble(obj.canlib_Version), alloc);
@@ -681,10 +681,10 @@ void Deserialize(session_config& obj, rapidjson::Document& doc)
     }else{
         obj.race = std::string(doc["race"].GetString(), doc["race"].GetStringLength());
     }
-    if(!doc.HasMember("configuration") && doc["configuration"].IsString()){
-        JSON_LOG_FUNC("session_config MISSING FIELD: configuration"); 
+    if(!doc.HasMember("test") && doc["test"].IsString()){
+        JSON_LOG_FUNC("session_config MISSING FIELD: test"); 
     }else{
-        obj.configuration = std::string(doc["configuration"].GetString(), doc["configuration"].GetStringLength());
+        obj.test = std::string(doc["test"].GetString(), doc["test"].GetStringLength());
     }
     if(!doc.HasMember("date") && doc["date"].IsString()){
         JSON_LOG_FUNC("session_config MISSING FIELD: date"); 
@@ -720,10 +720,10 @@ void Deserialize(session_config& obj, rapidjson::Value& doc)
     }else{
         obj.race = std::string(doc["race"].GetString(), doc["race"].GetStringLength());
     }
-    if(!doc.HasMember("configuration") && doc["configuration"].IsString()){
-        JSON_LOG_FUNC("session_config MISSING FIELD: configuration"); 
+    if(!doc.HasMember("test") && doc["test"].IsString()){
+        JSON_LOG_FUNC("session_config MISSING FIELD: test"); 
     }else{
-        obj.configuration = std::string(doc["configuration"].GetString(), doc["configuration"].GetStringLength());
+        obj.test = std::string(doc["test"].GetString(), doc["test"].GetStringLength());
     }
     if(!doc.HasMember("date") && doc["date"].IsString()){
         JSON_LOG_FUNC("session_config MISSING FIELD: date"); 
