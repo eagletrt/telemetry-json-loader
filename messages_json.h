@@ -1280,7 +1280,7 @@ void Deserialize(telemetry_status& obj, rapidjson::Document& doc)
     }else{
         obj.data = doc["data"].GetUint64();
     }
-    if(!doc.HasMember("msgs_per_second") || !doc["msgs_per_second"].IsObject()){
+    if(!doc.HasMember("msgs_per_second") || !doc["msgs_per_second"].IsArray()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: msgs_per_second"); 
     }else{
 		obj.msgs_per_second.resize(doc["msgs_per_second"].Size());
@@ -1342,7 +1342,7 @@ void Deserialize(telemetry_status& obj, rapidjson::Value& doc)
     }else{
         obj.data = doc["data"].GetUint64();
     }
-    if(!doc.HasMember("msgs_per_second") || !doc["msgs_per_second"].IsObject()){
+    if(!doc.HasMember("msgs_per_second") || !doc["msgs_per_second"].IsArray()){
         JSON_LOG_FUNC("telemetry_status MISSING FIELD: msgs_per_second"); 
     }else{
 		obj.msgs_per_second.resize(doc["msgs_per_second"].Size());

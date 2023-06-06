@@ -896,7 +896,7 @@ void Deserialize(telemetry_config& obj, rapidjson::Document& doc)
     }else{
         obj.camera_enable = doc["camera_enable"].GetBool();
     }
-    if(!doc.HasMember("can_devices") || !doc["can_devices"].IsObject()){
+    if(!doc.HasMember("can_devices") || !doc["can_devices"].IsArray()){
         JSON_LOG_FUNC("telemetry_config MISSING FIELD: can_devices"); 
     }else{
 		obj.can_devices.resize(doc["can_devices"].Size());
@@ -909,7 +909,7 @@ void Deserialize(telemetry_config& obj, rapidjson::Document& doc)
     }else{
         obj.generate_csv = doc["generate_csv"].GetBool();
     }
-    if(!doc.HasMember("gps_devices") || !doc["gps_devices"].IsObject()){
+    if(!doc.HasMember("gps_devices") || !doc["gps_devices"].IsArray()){
         JSON_LOG_FUNC("telemetry_config MISSING FIELD: gps_devices"); 
     }else{
 		obj.gps_devices.resize(doc["gps_devices"].Size());
@@ -961,7 +961,7 @@ void Deserialize(telemetry_config& obj, rapidjson::Value& doc)
     }else{
         obj.camera_enable = doc["camera_enable"].GetBool();
     }
-    if(!doc.HasMember("can_devices") || !doc["can_devices"].IsObject()){
+    if(!doc.HasMember("can_devices") || !doc["can_devices"].IsArray()){
         JSON_LOG_FUNC("telemetry_config MISSING FIELD: can_devices"); 
     }else{
 		obj.can_devices.resize(doc["can_devices"].Size());
@@ -974,7 +974,7 @@ void Deserialize(telemetry_config& obj, rapidjson::Value& doc)
     }else{
         obj.generate_csv = doc["generate_csv"].GetBool();
     }
-    if(!doc.HasMember("gps_devices") || !doc["gps_devices"].IsObject()){
+    if(!doc.HasMember("gps_devices") || !doc["gps_devices"].IsArray()){
         JSON_LOG_FUNC("telemetry_config MISSING FIELD: gps_devices"); 
     }else{
 		obj.gps_devices.resize(doc["gps_devices"].Size());
