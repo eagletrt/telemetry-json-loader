@@ -1,0 +1,6 @@
+{
+    "fan_speed": 0,
+    "target_voltage": 350,
+    "max_current_out": 1,
+    "max_current_in": 1
+}
