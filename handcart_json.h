@@ -69,40 +69,40 @@ static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
 }
 #endif // __JSON_LOADER_DEFINITION__
 
-typedef struct handcart_settings{
+typedef struct handcart_settings_t{
     uint64_t fan_speed;
     double target_voltage;
     double max_current_out;
     double max_current_in;
-}handcart_settings;
+}handcart_settings_t;
 
 #ifdef __HANDCART_JSON_IMPLEMENTATION__
 
 template <>
-bool CheckJson(const handcart_settings& obj, const rapidjson::Document& doc)
+bool CheckJson(const handcart_settings_t& obj, const rapidjson::Document& doc)
 {
     bool check = true;
     if(!doc.HasMember("fan_speed")){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: fan_speed"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fan_speed"); 
         check = false;
     }
     if(!doc.HasMember("target_voltage")){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: target_voltage"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
         check = false;
     }
     if(!doc.HasMember("max_current_out")){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: max_current_out"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_out"); 
         check = false;
     }
     if(!doc.HasMember("max_current_in")){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: max_current_in"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_in"); 
         check = false;
     }
     return check;
 }
 
 template<>
-void Serialize(rapidjson::Document& out, const handcart_settings& obj)
+void Serialize(rapidjson::Document& out, const handcart_settings_t& obj)
 {
     out.SetObject();
     rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
@@ -112,56 +112,56 @@ void Serialize(rapidjson::Document& out, const handcart_settings& obj)
     out.AddMember("max_current_in", rapidjson::Value().SetDouble(obj.max_current_in), alloc);
 }
 template<>
-void Deserialize(handcart_settings& obj, rapidjson::Document& doc)
+void Deserialize(handcart_settings_t& obj, rapidjson::Document& doc)
 {
     if(!doc.HasMember("fan_speed") || !doc["fan_speed"].IsUint64()){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: fan_speed"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fan_speed"); 
     }else{
         obj.fan_speed = doc["fan_speed"].GetUint64();
     }
     if(!doc.HasMember("target_voltage") || !doc["target_voltage"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: target_voltage"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
     }else{
         obj.target_voltage = doc["target_voltage"].GetDouble();
     }
     if(!doc.HasMember("max_current_out") || !doc["max_current_out"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: max_current_out"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_out"); 
     }else{
         obj.max_current_out = doc["max_current_out"].GetDouble();
     }
     if(!doc.HasMember("max_current_in") || !doc["max_current_in"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: max_current_in"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_in"); 
     }else{
         obj.max_current_in = doc["max_current_in"].GetDouble();
     }
 }
 template<>
-void Deserialize(handcart_settings& obj, rapidjson::Value& doc)
+void Deserialize(handcart_settings_t& obj, rapidjson::Value& doc)
 {
     if(!doc.HasMember("fan_speed") || !doc["fan_speed"].IsUint64()){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: fan_speed"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fan_speed"); 
     }else{
         obj.fan_speed = doc["fan_speed"].GetUint64();
     }
     if(!doc.HasMember("target_voltage") || !doc["target_voltage"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: target_voltage"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
     }else{
         obj.target_voltage = doc["target_voltage"].GetDouble();
     }
     if(!doc.HasMember("max_current_out") || !doc["max_current_out"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: max_current_out"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_out"); 
     }else{
         obj.max_current_out = doc["max_current_out"].GetDouble();
     }
     if(!doc.HasMember("max_current_in") || !doc["max_current_in"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings MISSING FIELD: max_current_in"); 
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_in"); 
     }else{
         obj.max_current_in = doc["max_current_in"].GetDouble();
     }
 }
 
 template<>
-std::string StructToString(const handcart_settings& obj)
+std::string StructToString(const handcart_settings_t& obj)
 {
     rapidjson::Document doc;
     rapidjson::StringBuffer sb;
@@ -172,7 +172,7 @@ std::string StructToString(const handcart_settings& obj)
 }
 
 template<>
-std::string StructToStringPretty(const handcart_settings& obj)
+std::string StructToStringPretty(const handcart_settings_t& obj)
 {
     rapidjson::Document doc;
     rapidjson::StringBuffer sb;
@@ -183,7 +183,7 @@ std::string StructToStringPretty(const handcart_settings& obj)
 }
 
 template<>
-bool StringToStruct(const std::string& obj_str, handcart_settings& out)
+bool StringToStruct(const std::string& obj_str, handcart_settings_t& out)
 {
     rapidjson::Document doc;
     rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
@@ -195,7 +195,7 @@ bool StringToStruct(const std::string& obj_str, handcart_settings& out)
 }
 
 template<>
-bool LoadStruct(handcart_settings& out, const std::string& path)
+bool LoadStruct(handcart_settings_t& out, const std::string& path)
 {
     rapidjson::Document doc;
     LoadJSON(doc, path);
@@ -204,7 +204,7 @@ bool LoadStruct(handcart_settings& out, const std::string& path)
     return check_passed;
 }
 template<>
-void SaveStruct(const handcart_settings& obj, const std::string& path)
+void SaveStruct(const handcart_settings_t& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
