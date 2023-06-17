@@ -133,10 +133,10 @@ def parse_dict(dct: dict)->list:
             vec_type = map_types[type(curr)]
             if isinstance(vec_type, Struct):
                 struct_fields = parse_dict(curr)
-                vec_type = Struct(key+"_o", struct_fields)
+                vec_type = Struct(key+"_a", struct_fields)
             new_fields.append(VectorField(vec_type, recursion_value, key))
         elif isinstance(inst, Struct):
-            new_strct = Struct(key+"_t", parse_dict(value), False, key)
+            new_strct = Struct(key+"_o", parse_dict(value), False, key)
             new_fields.append(new_strct)
     return new_fields
 
@@ -149,7 +149,7 @@ class Schema:
     def __init__(self, schema_model_items: List[SchemaModelItem]):
         self.structs: List[Struct] = []
         for model in schema_model_items:
-            new_struct = Struct(model.name, parse_dict(model.json_model), True)
+            new_struct = Struct(model.name+"_t", parse_dict(model.json_model), True)
             self.structs.append(new_struct)
         self.structs = self.extract_structs(self.structs)
         self.sort()
