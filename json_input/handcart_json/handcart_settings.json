@@ -1,6 +1,8 @@
 {
-    "fan_speed": 0,
-    "target_voltage": 350.0,
-    "max_current_out": 1.0,
-    "max_current_in": 1.0
+    "target_voltage": 0.0,
+    "fans_override": false,
+    "fans_speed": 0.0,
+    "acc_charge_current": 0.0,
+    "grid_max_current": 0.0,
+    "status": 0
 }
