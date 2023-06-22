@@ -159,7 +159,9 @@ typedef struct stat_json_t{
 }stat_json_t;
 
 typedef struct telemetry_config_t{
+    std::string vehicle_id;
     std::string device_id;
+    uint64_t device_role;
     bool camera_enable;
     std::vector<can_devices_a> can_devices;
     bool generate_csv;
@@ -1276,8 +1278,16 @@ template <>
 bool CheckJson(const telemetry_config_t& obj, const rapidjson::Document& doc)
 {
     bool check = true;
+    if(!doc.HasMember("vehicle_id")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
+        check = false;
+    }
     if(!doc.HasMember("device_id")){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
+        check = false;
+    }
+    if(!doc.HasMember("device_role")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
         check = false;
     }
     if(!doc.HasMember("camera_enable")){
@@ -1328,7 +1338,9 @@ void Serialize(rapidjson::Document& out, const telemetry_config_t& obj)
 {
     out.SetObject();
     rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("vehicle_id", rapidjson::Value().SetString(obj.vehicle_id.c_str(), obj.vehicle_id.size(), alloc), alloc);
     out.AddMember("device_id", rapidjson::Value().SetString(obj.device_id.c_str(), obj.device_id.size(), alloc), alloc);
+    out.AddMember("device_role", rapidjson::Value().SetUint64(obj.device_role), alloc);
     out.AddMember("camera_enable", rapidjson::Value().SetBool(obj.camera_enable), alloc);
     {
         rapidjson::Value v0;
@@ -1365,10 +1377,20 @@ void Serialize(rapidjson::Document& out, const telemetry_config_t& obj)
 template<>
 void Deserialize(telemetry_config_t& obj, rapidjson::Document& doc)
 {
+    if(!doc.HasMember("vehicle_id") || !doc["vehicle_id"].IsString()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
+    }else{
+        obj.vehicle_id = std::string(doc["vehicle_id"].GetString(), doc["vehicle_id"].GetStringLength());
+    }
     if(!doc.HasMember("device_id") || !doc["device_id"].IsString()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
     }else{
         obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
+    }
+    if(!doc.HasMember("device_role") || !doc["device_role"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
+    }else{
+        obj.device_role = doc["device_role"].GetUint64();
     }
     if(!doc.HasMember("camera_enable") || !doc["camera_enable"].IsBool()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
@@ -1430,10 +1452,20 @@ void Deserialize(telemetry_config_t& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(telemetry_config_t& obj, rapidjson::Value& doc)
 {
+    if(!doc.HasMember("vehicle_id") || !doc["vehicle_id"].IsString()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
+    }else{
+        obj.vehicle_id = std::string(doc["vehicle_id"].GetString(), doc["vehicle_id"].GetStringLength());
+    }
     if(!doc.HasMember("device_id") || !doc["device_id"].IsString()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
     }else{
         obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
+    }
+    if(!doc.HasMember("device_role") || !doc["device_role"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
+    }else{
+        obj.device_role = doc["device_role"].GetUint64();
     }
     if(!doc.HasMember("camera_enable") || !doc["camera_enable"].IsBool()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
