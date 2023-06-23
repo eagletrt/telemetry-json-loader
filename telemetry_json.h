@@ -88,6 +88,7 @@ typedef struct gps_devices_a{
 
 typedef struct can_devices_a{
     std::string sock;
+    std::string name;
     std::vector<std::string> networks;
 }can_devices_a;
 
@@ -333,6 +334,10 @@ bool CheckJson(const can_devices_a& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: sock"); 
         check = false;
     }
+    if(!doc.HasMember("name")){
+        JSON_LOG_FUNC("can_devices_a MISSING FIELD: name"); 
+        check = false;
+    }
     if(!doc.HasMember("networks")){
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: networks"); 
         check = false;
@@ -345,6 +350,7 @@ void Serialize(rapidjson::Value& out, const can_devices_a& obj, rapidjson::Docum
 {
     out.SetObject();
     out.AddMember("sock", rapidjson::Value().SetString(obj.sock.c_str(), obj.sock.size(), alloc), alloc);
+    out.AddMember("name", rapidjson::Value().SetString(obj.name.c_str(), obj.name.size(), alloc), alloc);
     {
         rapidjson::Value v0;
         v0.SetArray();
@@ -361,6 +367,11 @@ void Deserialize(can_devices_a& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: sock"); 
     }else{
         obj.sock = std::string(doc["sock"].GetString(), doc["sock"].GetStringLength());
+    }
+    if(!doc.HasMember("name") || !doc["name"].IsString()){
+        JSON_LOG_FUNC("can_devices_a MISSING FIELD: name"); 
+    }else{
+        obj.name = std::string(doc["name"].GetString(), doc["name"].GetStringLength());
     }
     if(!doc.HasMember("networks") || !doc["networks"].IsArray()){
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: networks"); 
