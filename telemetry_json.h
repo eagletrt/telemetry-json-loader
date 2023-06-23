@@ -88,7 +88,7 @@ typedef struct gps_devices_a{
 
 typedef struct can_devices_a{
     std::string sock;
-    std::string name;
+    std::vector<std::string> networks;
 }can_devices_a;
 
 typedef struct track_conditions_o{
@@ -333,8 +333,8 @@ bool CheckJson(const can_devices_a& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: sock"); 
         check = false;
     }
-    if(!doc.HasMember("name")){
-        JSON_LOG_FUNC("can_devices_a MISSING FIELD: name"); 
+    if(!doc.HasMember("networks")){
+        JSON_LOG_FUNC("can_devices_a MISSING FIELD: networks"); 
         check = false;
     }
     return check;
@@ -345,7 +345,14 @@ void Serialize(rapidjson::Value& out, const can_devices_a& obj, rapidjson::Docum
 {
     out.SetObject();
     out.AddMember("sock", rapidjson::Value().SetString(obj.sock.c_str(), obj.sock.size(), alloc), alloc);
-    out.AddMember("name", rapidjson::Value().SetString(obj.name.c_str(), obj.name.size(), alloc), alloc);
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.networks.size(); i++){
+        	v0.PushBack(rapidjson::Value().SetString(obj.networks[i].c_str(), obj.networks[i].size(), alloc), alloc);
+    	}
+    	out.AddMember("networks", v0, alloc);
+    }
 }
 template<>
 void Deserialize(can_devices_a& obj, rapidjson::Value& doc)
@@ -355,10 +362,13 @@ void Deserialize(can_devices_a& obj, rapidjson::Value& doc)
     }else{
         obj.sock = std::string(doc["sock"].GetString(), doc["sock"].GetStringLength());
     }
-    if(!doc.HasMember("name") || !doc["name"].IsString()){
-        JSON_LOG_FUNC("can_devices_a MISSING FIELD: name"); 
+    if(!doc.HasMember("networks") || !doc["networks"].IsArray()){
+        JSON_LOG_FUNC("can_devices_a MISSING FIELD: networks"); 
     }else{
-        obj.name = std::string(doc["name"].GetString(), doc["name"].GetStringLength());
+		obj.networks.resize(doc["networks"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["networks"].Size(); i++){
+				obj.networks[i] = doc["networks"][i].GetString();
+		}
     }
 }
 
