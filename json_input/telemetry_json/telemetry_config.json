@@ -5,6 +5,7 @@
   "camera_enable": true,
   "can_devices": [{
       "sock": "can0",
+      "name": "primary",
       "networks": ["primary", "inverters"]
   }],
   "generate_csv": true,
