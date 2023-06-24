@@ -3,7 +3,11 @@
   "device_id": "telemetry",
   "device_role": 128,
   "camera_enable": true,
-  "can_devices": [{"sock": "can0", "name": "primary"}],
+  "can_devices": [{
+      "sock": "can0",
+      "name": "primary",
+      "networks": ["primary", "inverters"]
+  }],
   "generate_csv": true,
   "gps_devices": [{
     "addr": "/dev/ttyACM1",
