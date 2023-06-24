@@ -73,6 +73,7 @@ typedef struct connection_o{
     std::string ip;
     std::string port;
     std::string mode;
+    std::string whoami_url;
     bool tls;
     std::string cafile;
     std::string capath;
@@ -198,6 +199,10 @@ bool CheckJson(const connection_o& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("connection_o MISSING FIELD: mode"); 
         check = false;
     }
+    if(!doc.HasMember("whoami_url")){
+        JSON_LOG_FUNC("connection_o MISSING FIELD: whoami_url"); 
+        check = false;
+    }
     if(!doc.HasMember("tls")){
         JSON_LOG_FUNC("connection_o MISSING FIELD: tls"); 
         check = false;
@@ -228,6 +233,7 @@ void Serialize(rapidjson::Value& out, const connection_o& obj, rapidjson::Docume
     out.AddMember("ip", rapidjson::Value().SetString(obj.ip.c_str(), obj.ip.size(), alloc), alloc);
     out.AddMember("port", rapidjson::Value().SetString(obj.port.c_str(), obj.port.size(), alloc), alloc);
     out.AddMember("mode", rapidjson::Value().SetString(obj.mode.c_str(), obj.mode.size(), alloc), alloc);
+    out.AddMember("whoami_url", rapidjson::Value().SetString(obj.whoami_url.c_str(), obj.whoami_url.size(), alloc), alloc);
     out.AddMember("tls", rapidjson::Value().SetBool(obj.tls), alloc);
     out.AddMember("cafile", rapidjson::Value().SetString(obj.cafile.c_str(), obj.cafile.size(), alloc), alloc);
     out.AddMember("capath", rapidjson::Value().SetString(obj.capath.c_str(), obj.capath.size(), alloc), alloc);
@@ -251,6 +257,11 @@ void Deserialize(connection_o& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("connection_o MISSING FIELD: mode"); 
     }else{
         obj.mode = std::string(doc["mode"].GetString(), doc["mode"].GetStringLength());
+    }
+    if(!doc.HasMember("whoami_url") || !doc["whoami_url"].IsString()){
+        JSON_LOG_FUNC("connection_o MISSING FIELD: whoami_url"); 
+    }else{
+        obj.whoami_url = std::string(doc["whoami_url"].GetString(), doc["whoami_url"].GetStringLength());
     }
     if(!doc.HasMember("tls") || !doc["tls"].IsBool()){
         JSON_LOG_FUNC("connection_o MISSING FIELD: tls"); 
