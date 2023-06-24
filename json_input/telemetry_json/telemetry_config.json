@@ -19,6 +19,7 @@
       "ip": "ws://eagle-telemetry-server.herokuapp.com/",
       "port": "3000",
       "mode": "ZMQ",
+      "whoami_url": "https://leonardopivetta.it/api/v1/auth/whoAmI",
 
       "tls": true,
 
