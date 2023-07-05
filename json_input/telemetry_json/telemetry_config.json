@@ -16,6 +16,7 @@
   }],
   "connection_downsample": false,
   "connection_downsample_mps": 40,
+  "connection_downsample_skip_same_data": true,
   "connection_enabled": true,
   "connection_send_rate": 1000,
   "connection_send_sensor_data": true,
