@@ -70,10 +70,12 @@ static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
 #endif // __JSON_LOADER_DEFINITION__
 
 typedef struct handcart_settings_t{
-    uint64_t fan_speed;
     double target_voltage;
-    double max_current_out;
-    double max_current_in;
+    bool fans_override;
+    double fans_speed;
+    double acc_charge_current;
+    double grid_max_current;
+    uint64_t status;
 }handcart_settings_t;
 
 #ifdef __HANDCART_JSON_IMPLEMENTATION__
@@ -82,20 +84,28 @@ template <>
 bool CheckJson(const handcart_settings_t& obj, const rapidjson::Document& doc)
 {
     bool check = true;
-    if(!doc.HasMember("fan_speed")){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fan_speed"); 
-        check = false;
-    }
     if(!doc.HasMember("target_voltage")){
         JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
         check = false;
     }
-    if(!doc.HasMember("max_current_out")){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_out"); 
+    if(!doc.HasMember("fans_override")){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fans_override"); 
         check = false;
     }
-    if(!doc.HasMember("max_current_in")){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_in"); 
+    if(!doc.HasMember("fans_speed")){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fans_speed"); 
+        check = false;
+    }
+    if(!doc.HasMember("acc_charge_current")){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: acc_charge_current"); 
+        check = false;
+    }
+    if(!doc.HasMember("grid_max_current")){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: grid_max_current"); 
+        check = false;
+    }
+    if(!doc.HasMember("status")){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: status"); 
         check = false;
     }
     return check;
@@ -106,57 +116,79 @@ void Serialize(rapidjson::Document& out, const handcart_settings_t& obj)
 {
     out.SetObject();
     rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("fan_speed", rapidjson::Value().SetUint64(obj.fan_speed), alloc);
     out.AddMember("target_voltage", rapidjson::Value().SetDouble(obj.target_voltage), alloc);
-    out.AddMember("max_current_out", rapidjson::Value().SetDouble(obj.max_current_out), alloc);
-    out.AddMember("max_current_in", rapidjson::Value().SetDouble(obj.max_current_in), alloc);
+    out.AddMember("fans_override", rapidjson::Value().SetBool(obj.fans_override), alloc);
+    out.AddMember("fans_speed", rapidjson::Value().SetDouble(obj.fans_speed), alloc);
+    out.AddMember("acc_charge_current", rapidjson::Value().SetDouble(obj.acc_charge_current), alloc);
+    out.AddMember("grid_max_current", rapidjson::Value().SetDouble(obj.grid_max_current), alloc);
+    out.AddMember("status", rapidjson::Value().SetUint64(obj.status), alloc);
 }
 template<>
 void Deserialize(handcart_settings_t& obj, rapidjson::Document& doc)
 {
-    if(!doc.HasMember("fan_speed") || !doc["fan_speed"].IsUint64()){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fan_speed"); 
-    }else{
-        obj.fan_speed = doc["fan_speed"].GetUint64();
-    }
     if(!doc.HasMember("target_voltage") || !doc["target_voltage"].IsDouble()){
         JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
     }else{
         obj.target_voltage = doc["target_voltage"].GetDouble();
     }
-    if(!doc.HasMember("max_current_out") || !doc["max_current_out"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_out"); 
+    if(!doc.HasMember("fans_override") || !doc["fans_override"].IsBool()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fans_override"); 
     }else{
-        obj.max_current_out = doc["max_current_out"].GetDouble();
+        obj.fans_override = doc["fans_override"].GetBool();
     }
-    if(!doc.HasMember("max_current_in") || !doc["max_current_in"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_in"); 
+    if(!doc.HasMember("fans_speed") || !doc["fans_speed"].IsDouble()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fans_speed"); 
     }else{
-        obj.max_current_in = doc["max_current_in"].GetDouble();
+        obj.fans_speed = doc["fans_speed"].GetDouble();
+    }
+    if(!doc.HasMember("acc_charge_current") || !doc["acc_charge_current"].IsDouble()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: acc_charge_current"); 
+    }else{
+        obj.acc_charge_current = doc["acc_charge_current"].GetDouble();
+    }
+    if(!doc.HasMember("grid_max_current") || !doc["grid_max_current"].IsDouble()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: grid_max_current"); 
+    }else{
+        obj.grid_max_current = doc["grid_max_current"].GetDouble();
+    }
+    if(!doc.HasMember("status") || !doc["status"].IsUint64()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: status"); 
+    }else{
+        obj.status = doc["status"].GetUint64();
     }
 }
 template<>
 void Deserialize(handcart_settings_t& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("fan_speed") || !doc["fan_speed"].IsUint64()){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fan_speed"); 
-    }else{
-        obj.fan_speed = doc["fan_speed"].GetUint64();
-    }
     if(!doc.HasMember("target_voltage") || !doc["target_voltage"].IsDouble()){
         JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
     }else{
         obj.target_voltage = doc["target_voltage"].GetDouble();
     }
-    if(!doc.HasMember("max_current_out") || !doc["max_current_out"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_out"); 
+    if(!doc.HasMember("fans_override") || !doc["fans_override"].IsBool()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fans_override"); 
     }else{
-        obj.max_current_out = doc["max_current_out"].GetDouble();
+        obj.fans_override = doc["fans_override"].GetBool();
     }
-    if(!doc.HasMember("max_current_in") || !doc["max_current_in"].IsDouble()){
-        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: max_current_in"); 
+    if(!doc.HasMember("fans_speed") || !doc["fans_speed"].IsDouble()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: fans_speed"); 
     }else{
-        obj.max_current_in = doc["max_current_in"].GetDouble();
+        obj.fans_speed = doc["fans_speed"].GetDouble();
+    }
+    if(!doc.HasMember("acc_charge_current") || !doc["acc_charge_current"].IsDouble()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: acc_charge_current"); 
+    }else{
+        obj.acc_charge_current = doc["acc_charge_current"].GetDouble();
+    }
+    if(!doc.HasMember("grid_max_current") || !doc["grid_max_current"].IsDouble()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: grid_max_current"); 
+    }else{
+        obj.grid_max_current = doc["grid_max_current"].GetDouble();
+    }
+    if(!doc.HasMember("status") || !doc["status"].IsUint64()){
+        JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: status"); 
+    }else{
+        obj.status = doc["status"].GetUint64();
     }
 }
 

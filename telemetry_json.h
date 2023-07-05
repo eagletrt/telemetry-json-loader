@@ -73,6 +73,7 @@ typedef struct connection_o{
     std::string ip;
     std::string port;
     std::string mode;
+    std::string whoami_url;
     bool tls;
     std::string cafile;
     std::string capath;
@@ -89,6 +90,7 @@ typedef struct gps_devices_a{
 typedef struct can_devices_a{
     std::string sock;
     std::string name;
+    std::vector<std::string> networks;
 }can_devices_a;
 
 typedef struct track_conditions_o{
@@ -148,13 +150,16 @@ typedef struct csv_parser_config_t{
 }csv_parser_config_t;
 
 typedef struct telemetry_config_t{
+    std::string vehicle_id;
     std::string device_id;
+    uint64_t device_role;
     bool camera_enable;
     std::vector<can_devices_a> can_devices;
     bool generate_csv;
     std::vector<gps_devices_a> gps_devices;
     bool connection_downsample;
     uint64_t connection_downsample_mps;
+    bool connection_downsample_skip_same_data;
     bool connection_enabled;
     uint64_t connection_send_rate;
     bool connection_send_sensor_data;
@@ -195,6 +200,10 @@ bool CheckJson(const connection_o& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("connection_o MISSING FIELD: mode"); 
         check = false;
     }
+    if(!doc.HasMember("whoami_url")){
+        JSON_LOG_FUNC("connection_o MISSING FIELD: whoami_url"); 
+        check = false;
+    }
     if(!doc.HasMember("tls")){
         JSON_LOG_FUNC("connection_o MISSING FIELD: tls"); 
         check = false;
@@ -225,6 +234,7 @@ void Serialize(rapidjson::Value& out, const connection_o& obj, rapidjson::Docume
     out.AddMember("ip", rapidjson::Value().SetString(obj.ip.c_str(), obj.ip.size(), alloc), alloc);
     out.AddMember("port", rapidjson::Value().SetString(obj.port.c_str(), obj.port.size(), alloc), alloc);
     out.AddMember("mode", rapidjson::Value().SetString(obj.mode.c_str(), obj.mode.size(), alloc), alloc);
+    out.AddMember("whoami_url", rapidjson::Value().SetString(obj.whoami_url.c_str(), obj.whoami_url.size(), alloc), alloc);
     out.AddMember("tls", rapidjson::Value().SetBool(obj.tls), alloc);
     out.AddMember("cafile", rapidjson::Value().SetString(obj.cafile.c_str(), obj.cafile.size(), alloc), alloc);
     out.AddMember("capath", rapidjson::Value().SetString(obj.capath.c_str(), obj.capath.size(), alloc), alloc);
@@ -248,6 +258,11 @@ void Deserialize(connection_o& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("connection_o MISSING FIELD: mode"); 
     }else{
         obj.mode = std::string(doc["mode"].GetString(), doc["mode"].GetStringLength());
+    }
+    if(!doc.HasMember("whoami_url") || !doc["whoami_url"].IsString()){
+        JSON_LOG_FUNC("connection_o MISSING FIELD: whoami_url"); 
+    }else{
+        obj.whoami_url = std::string(doc["whoami_url"].GetString(), doc["whoami_url"].GetStringLength());
     }
     if(!doc.HasMember("tls") || !doc["tls"].IsBool()){
         JSON_LOG_FUNC("connection_o MISSING FIELD: tls"); 
@@ -335,6 +350,10 @@ bool CheckJson(const can_devices_a& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: name"); 
         check = false;
     }
+    if(!doc.HasMember("networks")){
+        JSON_LOG_FUNC("can_devices_a MISSING FIELD: networks"); 
+        check = false;
+    }
     return check;
 }
 
@@ -344,6 +363,14 @@ void Serialize(rapidjson::Value& out, const can_devices_a& obj, rapidjson::Docum
     out.SetObject();
     out.AddMember("sock", rapidjson::Value().SetString(obj.sock.c_str(), obj.sock.size(), alloc), alloc);
     out.AddMember("name", rapidjson::Value().SetString(obj.name.c_str(), obj.name.size(), alloc), alloc);
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.networks.size(); i++){
+        	v0.PushBack(rapidjson::Value().SetString(obj.networks[i].c_str(), obj.networks[i].size(), alloc), alloc);
+    	}
+    	out.AddMember("networks", v0, alloc);
+    }
 }
 template<>
 void Deserialize(can_devices_a& obj, rapidjson::Value& doc)
@@ -357,6 +384,14 @@ void Deserialize(can_devices_a& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: name"); 
     }else{
         obj.name = std::string(doc["name"].GetString(), doc["name"].GetStringLength());
+    }
+    if(!doc.HasMember("networks") || !doc["networks"].IsArray()){
+        JSON_LOG_FUNC("can_devices_a MISSING FIELD: networks"); 
+    }else{
+		obj.networks.resize(doc["networks"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["networks"].Size(); i++){
+				obj.networks[i] = doc["networks"][i].GetString();
+		}
     }
 }
 
@@ -1083,8 +1118,16 @@ template <>
 bool CheckJson(const telemetry_config_t& obj, const rapidjson::Document& doc)
 {
     bool check = true;
+    if(!doc.HasMember("vehicle_id")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
+        check = false;
+    }
     if(!doc.HasMember("device_id")){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
+        check = false;
+    }
+    if(!doc.HasMember("device_role")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
         check = false;
     }
     if(!doc.HasMember("camera_enable")){
@@ -1111,6 +1154,10 @@ bool CheckJson(const telemetry_config_t& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
         check = false;
     }
+    if(!doc.HasMember("connection_downsample_skip_same_data")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_skip_same_data"); 
+        check = false;
+    }
     if(!doc.HasMember("connection_enabled")){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
         check = false;
@@ -1135,7 +1182,9 @@ void Serialize(rapidjson::Document& out, const telemetry_config_t& obj)
 {
     out.SetObject();
     rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("vehicle_id", rapidjson::Value().SetString(obj.vehicle_id.c_str(), obj.vehicle_id.size(), alloc), alloc);
     out.AddMember("device_id", rapidjson::Value().SetString(obj.device_id.c_str(), obj.device_id.size(), alloc), alloc);
+    out.AddMember("device_role", rapidjson::Value().SetUint64(obj.device_role), alloc);
     out.AddMember("camera_enable", rapidjson::Value().SetBool(obj.camera_enable), alloc);
     {
         rapidjson::Value v0;
@@ -1160,6 +1209,7 @@ void Serialize(rapidjson::Document& out, const telemetry_config_t& obj)
     }
     out.AddMember("connection_downsample", rapidjson::Value().SetBool(obj.connection_downsample), alloc);
     out.AddMember("connection_downsample_mps", rapidjson::Value().SetUint64(obj.connection_downsample_mps), alloc);
+    out.AddMember("connection_downsample_skip_same_data", rapidjson::Value().SetBool(obj.connection_downsample_skip_same_data), alloc);
     out.AddMember("connection_enabled", rapidjson::Value().SetBool(obj.connection_enabled), alloc);
     out.AddMember("connection_send_rate", rapidjson::Value().SetUint64(obj.connection_send_rate), alloc);
     out.AddMember("connection_send_sensor_data", rapidjson::Value().SetBool(obj.connection_send_sensor_data), alloc);
@@ -1172,10 +1222,20 @@ void Serialize(rapidjson::Document& out, const telemetry_config_t& obj)
 template<>
 void Deserialize(telemetry_config_t& obj, rapidjson::Document& doc)
 {
+    if(!doc.HasMember("vehicle_id") || !doc["vehicle_id"].IsString()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
+    }else{
+        obj.vehicle_id = std::string(doc["vehicle_id"].GetString(), doc["vehicle_id"].GetStringLength());
+    }
     if(!doc.HasMember("device_id") || !doc["device_id"].IsString()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
     }else{
         obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
+    }
+    if(!doc.HasMember("device_role") || !doc["device_role"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
+    }else{
+        obj.device_role = doc["device_role"].GetUint64();
     }
     if(!doc.HasMember("camera_enable") || !doc["camera_enable"].IsBool()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
@@ -1212,6 +1272,11 @@ void Deserialize(telemetry_config_t& obj, rapidjson::Document& doc)
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
     }else{
         obj.connection_downsample_mps = doc["connection_downsample_mps"].GetUint64();
+    }
+    if(!doc.HasMember("connection_downsample_skip_same_data") || !doc["connection_downsample_skip_same_data"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_skip_same_data"); 
+    }else{
+        obj.connection_downsample_skip_same_data = doc["connection_downsample_skip_same_data"].GetBool();
     }
     if(!doc.HasMember("connection_enabled") || !doc["connection_enabled"].IsBool()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
@@ -1237,10 +1302,20 @@ void Deserialize(telemetry_config_t& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(telemetry_config_t& obj, rapidjson::Value& doc)
 {
+    if(!doc.HasMember("vehicle_id") || !doc["vehicle_id"].IsString()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
+    }else{
+        obj.vehicle_id = std::string(doc["vehicle_id"].GetString(), doc["vehicle_id"].GetStringLength());
+    }
     if(!doc.HasMember("device_id") || !doc["device_id"].IsString()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
     }else{
         obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
+    }
+    if(!doc.HasMember("device_role") || !doc["device_role"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
+    }else{
+        obj.device_role = doc["device_role"].GetUint64();
     }
     if(!doc.HasMember("camera_enable") || !doc["camera_enable"].IsBool()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
@@ -1277,6 +1352,11 @@ void Deserialize(telemetry_config_t& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
     }else{
         obj.connection_downsample_mps = doc["connection_downsample_mps"].GetUint64();
+    }
+    if(!doc.HasMember("connection_downsample_skip_same_data") || !doc["connection_downsample_skip_same_data"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_skip_same_data"); 
+    }else{
+        obj.connection_downsample_skip_same_data = doc["connection_downsample_skip_same_data"].GetBool();
     }
     if(!doc.HasMember("connection_enabled") || !doc["connection_enabled"].IsBool()){
         JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
