@@ -73,7 +73,6 @@ typedef struct connection_o{
     std::string ip;
     std::string port;
     std::string mode;
-    std::string whoami_url;
     bool tls;
     std::string cafile;
     std::string capath;
@@ -90,7 +89,6 @@ typedef struct gps_devices_a{
 typedef struct can_devices_a{
     std::string sock;
     std::string name;
-    std::vector<std::string> networks;
 }can_devices_a;
 
 typedef struct track_conditions_o{
@@ -137,6 +135,11 @@ typedef struct car_config_t{
     std::string other;
 }car_config_t;
 
+typedef struct telemetry_login_data_t{
+    std::string username;
+    std::string password;
+}telemetry_login_data_t;
+
 typedef struct csv_parser_config_t{
     std::string subfolder_name;
     bool parse_candump;
@@ -144,26 +147,8 @@ typedef struct csv_parser_config_t{
     bool generate_report;
 }csv_parser_config_t;
 
-typedef struct session_config_t{
-    std::string circuit;
-    std::string pilot;
-    std::string race;
-    std::string test;
-    std::string date;
-    std::string time;
-    double canlib_version;
-}session_config_t;
-
-typedef struct stat_json_t{
-    uint64_t Messages;
-    uint64_t Average_Frequency_Hz;
-    double Duration_seconds;
-}stat_json_t;
-
 typedef struct telemetry_config_t{
-    std::string vehicle_id;
     std::string device_id;
-    uint64_t device_role;
     bool camera_enable;
     std::vector<can_devices_a> can_devices;
     bool generate_csv;
@@ -176,10 +161,21 @@ typedef struct telemetry_config_t{
     connection_o connection;
 }telemetry_config_t;
 
-typedef struct telemetry_login_data_t{
-    std::string username;
-    std::string password;
-}telemetry_login_data_t;
+typedef struct stat_json_t{
+    uint64_t Messages;
+    uint64_t Average_Frequency_Hz;
+    double Duration_seconds;
+}stat_json_t;
+
+typedef struct session_config_t{
+    std::string circuit;
+    std::string pilot;
+    std::string race;
+    std::string test;
+    std::string date;
+    std::string time;
+    double canlib_version;
+}session_config_t;
 
 #ifdef __TELEMETRY_JSON_IMPLEMENTATION__
 
@@ -197,10 +193,6 @@ bool CheckJson(const connection_o& obj, const rapidjson::Document& doc)
     }
     if(!doc.HasMember("mode")){
         JSON_LOG_FUNC("connection_o MISSING FIELD: mode"); 
-        check = false;
-    }
-    if(!doc.HasMember("whoami_url")){
-        JSON_LOG_FUNC("connection_o MISSING FIELD: whoami_url"); 
         check = false;
     }
     if(!doc.HasMember("tls")){
@@ -233,7 +225,6 @@ void Serialize(rapidjson::Value& out, const connection_o& obj, rapidjson::Docume
     out.AddMember("ip", rapidjson::Value().SetString(obj.ip.c_str(), obj.ip.size(), alloc), alloc);
     out.AddMember("port", rapidjson::Value().SetString(obj.port.c_str(), obj.port.size(), alloc), alloc);
     out.AddMember("mode", rapidjson::Value().SetString(obj.mode.c_str(), obj.mode.size(), alloc), alloc);
-    out.AddMember("whoami_url", rapidjson::Value().SetString(obj.whoami_url.c_str(), obj.whoami_url.size(), alloc), alloc);
     out.AddMember("tls", rapidjson::Value().SetBool(obj.tls), alloc);
     out.AddMember("cafile", rapidjson::Value().SetString(obj.cafile.c_str(), obj.cafile.size(), alloc), alloc);
     out.AddMember("capath", rapidjson::Value().SetString(obj.capath.c_str(), obj.capath.size(), alloc), alloc);
@@ -257,11 +248,6 @@ void Deserialize(connection_o& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("connection_o MISSING FIELD: mode"); 
     }else{
         obj.mode = std::string(doc["mode"].GetString(), doc["mode"].GetStringLength());
-    }
-    if(!doc.HasMember("whoami_url") || !doc["whoami_url"].IsString()){
-        JSON_LOG_FUNC("connection_o MISSING FIELD: whoami_url"); 
-    }else{
-        obj.whoami_url = std::string(doc["whoami_url"].GetString(), doc["whoami_url"].GetStringLength());
     }
     if(!doc.HasMember("tls") || !doc["tls"].IsBool()){
         JSON_LOG_FUNC("connection_o MISSING FIELD: tls"); 
@@ -349,10 +335,6 @@ bool CheckJson(const can_devices_a& obj, const rapidjson::Document& doc)
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: name"); 
         check = false;
     }
-    if(!doc.HasMember("networks")){
-        JSON_LOG_FUNC("can_devices_a MISSING FIELD: networks"); 
-        check = false;
-    }
     return check;
 }
 
@@ -362,14 +344,6 @@ void Serialize(rapidjson::Value& out, const can_devices_a& obj, rapidjson::Docum
     out.SetObject();
     out.AddMember("sock", rapidjson::Value().SetString(obj.sock.c_str(), obj.sock.size(), alloc), alloc);
     out.AddMember("name", rapidjson::Value().SetString(obj.name.c_str(), obj.name.size(), alloc), alloc);
-    {
-        rapidjson::Value v0;
-        v0.SetArray();
-        for(size_t i = 0; i < obj.networks.size(); i++){
-        	v0.PushBack(rapidjson::Value().SetString(obj.networks[i].c_str(), obj.networks[i].size(), alloc), alloc);
-    	}
-    	out.AddMember("networks", v0, alloc);
-    }
 }
 template<>
 void Deserialize(can_devices_a& obj, rapidjson::Value& doc)
@@ -383,14 +357,6 @@ void Deserialize(can_devices_a& obj, rapidjson::Value& doc)
         JSON_LOG_FUNC("can_devices_a MISSING FIELD: name"); 
     }else{
         obj.name = std::string(doc["name"].GetString(), doc["name"].GetStringLength());
-    }
-    if(!doc.HasMember("networks") || !doc["networks"].IsArray()){
-        JSON_LOG_FUNC("can_devices_a MISSING FIELD: networks"); 
-    }else{
-		obj.networks.resize(doc["networks"].Size());
-		for(rapidjson::SizeType i = 0; i < doc["networks"].Size(); i++){
-				obj.networks[i] = doc["networks"][i].GetString();
-		}
     }
 }
 
@@ -878,6 +844,109 @@ void SaveStruct(const car_config_t& obj, const std::string& path)
 }
 
 template <>
+bool CheckJson(const telemetry_login_data_t& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("username")){
+        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: username"); 
+        check = false;
+    }
+    if(!doc.HasMember("password")){
+        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: password"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const telemetry_login_data_t& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("username", rapidjson::Value().SetString(obj.username.c_str(), obj.username.size(), alloc), alloc);
+    out.AddMember("password", rapidjson::Value().SetString(obj.password.c_str(), obj.password.size(), alloc), alloc);
+}
+template<>
+void Deserialize(telemetry_login_data_t& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("username") || !doc["username"].IsString()){
+        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: username"); 
+    }else{
+        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
+    }
+    if(!doc.HasMember("password") || !doc["password"].IsString()){
+        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: password"); 
+    }else{
+        obj.password = std::string(doc["password"].GetString(), doc["password"].GetStringLength());
+    }
+}
+template<>
+void Deserialize(telemetry_login_data_t& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("username") || !doc["username"].IsString()){
+        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: username"); 
+    }else{
+        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
+    }
+    if(!doc.HasMember("password") || !doc["password"].IsString()){
+        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: password"); 
+    }else{
+        obj.password = std::string(doc["password"].GetString(), doc["password"].GetStringLength());
+    }
+}
+
+template<>
+std::string StructToString(const telemetry_login_data_t& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const telemetry_login_data_t& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, telemetry_login_data_t& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(telemetry_login_data_t& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const telemetry_login_data_t& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
 bool CheckJson(const csv_parser_config_t& obj, const rapidjson::Document& doc)
 {
     bool check = true;
@@ -1004,6 +1073,396 @@ bool LoadStruct(csv_parser_config_t& out, const std::string& path)
 }
 template<>
 void SaveStruct(const csv_parser_config_t& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const telemetry_config_t& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("device_id")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
+        check = false;
+    }
+    if(!doc.HasMember("camera_enable")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
+        check = false;
+    }
+    if(!doc.HasMember("can_devices")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: can_devices"); 
+        check = false;
+    }
+    if(!doc.HasMember("generate_csv")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: generate_csv"); 
+        check = false;
+    }
+    if(!doc.HasMember("gps_devices")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: gps_devices"); 
+        check = false;
+    }
+    if(!doc.HasMember("connection_downsample")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample"); 
+        check = false;
+    }
+    if(!doc.HasMember("connection_downsample_mps")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
+        check = false;
+    }
+    if(!doc.HasMember("connection_enabled")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
+        check = false;
+    }
+    if(!doc.HasMember("connection_send_rate")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_rate"); 
+        check = false;
+    }
+    if(!doc.HasMember("connection_send_sensor_data")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_sensor_data"); 
+        check = false;
+    }
+    if(!doc.HasMember("connection")){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const telemetry_config_t& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("device_id", rapidjson::Value().SetString(obj.device_id.c_str(), obj.device_id.size(), alloc), alloc);
+    out.AddMember("camera_enable", rapidjson::Value().SetBool(obj.camera_enable), alloc);
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.can_devices.size(); i++){
+        	rapidjson::Value new_obj;
+        	Serialize(new_obj, obj.can_devices[i], alloc);
+        	v0.PushBack(new_obj, alloc);
+    	}
+    	out.AddMember("can_devices", v0, alloc);
+    }
+    out.AddMember("generate_csv", rapidjson::Value().SetBool(obj.generate_csv), alloc);
+    {
+        rapidjson::Value v0;
+        v0.SetArray();
+        for(size_t i = 0; i < obj.gps_devices.size(); i++){
+        	rapidjson::Value new_obj;
+        	Serialize(new_obj, obj.gps_devices[i], alloc);
+        	v0.PushBack(new_obj, alloc);
+    	}
+    	out.AddMember("gps_devices", v0, alloc);
+    }
+    out.AddMember("connection_downsample", rapidjson::Value().SetBool(obj.connection_downsample), alloc);
+    out.AddMember("connection_downsample_mps", rapidjson::Value().SetUint64(obj.connection_downsample_mps), alloc);
+    out.AddMember("connection_enabled", rapidjson::Value().SetBool(obj.connection_enabled), alloc);
+    out.AddMember("connection_send_rate", rapidjson::Value().SetUint64(obj.connection_send_rate), alloc);
+    out.AddMember("connection_send_sensor_data", rapidjson::Value().SetBool(obj.connection_send_sensor_data), alloc);
+    {
+        rapidjson::Value v;
+        Serialize(v, obj.connection, alloc);
+        out.AddMember("connection", v, alloc);
+    }
+}
+template<>
+void Deserialize(telemetry_config_t& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("device_id") || !doc["device_id"].IsString()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
+    }else{
+        obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
+    }
+    if(!doc.HasMember("camera_enable") || !doc["camera_enable"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
+    }else{
+        obj.camera_enable = doc["camera_enable"].GetBool();
+    }
+    if(!doc.HasMember("can_devices") || !doc["can_devices"].IsArray()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: can_devices"); 
+    }else{
+		obj.can_devices.resize(doc["can_devices"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["can_devices"].Size(); i++){
+				Deserialize(obj.can_devices[i], doc["can_devices"][i]);
+		}
+    }
+    if(!doc.HasMember("generate_csv") || !doc["generate_csv"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: generate_csv"); 
+    }else{
+        obj.generate_csv = doc["generate_csv"].GetBool();
+    }
+    if(!doc.HasMember("gps_devices") || !doc["gps_devices"].IsArray()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: gps_devices"); 
+    }else{
+		obj.gps_devices.resize(doc["gps_devices"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["gps_devices"].Size(); i++){
+				Deserialize(obj.gps_devices[i], doc["gps_devices"][i]);
+		}
+    }
+    if(!doc.HasMember("connection_downsample") || !doc["connection_downsample"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample"); 
+    }else{
+        obj.connection_downsample = doc["connection_downsample"].GetBool();
+    }
+    if(!doc.HasMember("connection_downsample_mps") || !doc["connection_downsample_mps"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
+    }else{
+        obj.connection_downsample_mps = doc["connection_downsample_mps"].GetUint64();
+    }
+    if(!doc.HasMember("connection_enabled") || !doc["connection_enabled"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
+    }else{
+        obj.connection_enabled = doc["connection_enabled"].GetBool();
+    }
+    if(!doc.HasMember("connection_send_rate") || !doc["connection_send_rate"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_rate"); 
+    }else{
+        obj.connection_send_rate = doc["connection_send_rate"].GetUint64();
+    }
+    if(!doc.HasMember("connection_send_sensor_data") || !doc["connection_send_sensor_data"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_sensor_data"); 
+    }else{
+        obj.connection_send_sensor_data = doc["connection_send_sensor_data"].GetBool();
+    }
+    if(!doc.HasMember("connection") || !doc["connection"].IsObject()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection"); 
+    }else{
+        Deserialize(obj.connection, doc["connection"]);
+    }
+}
+template<>
+void Deserialize(telemetry_config_t& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("device_id") || !doc["device_id"].IsString()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
+    }else{
+        obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
+    }
+    if(!doc.HasMember("camera_enable") || !doc["camera_enable"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
+    }else{
+        obj.camera_enable = doc["camera_enable"].GetBool();
+    }
+    if(!doc.HasMember("can_devices") || !doc["can_devices"].IsArray()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: can_devices"); 
+    }else{
+		obj.can_devices.resize(doc["can_devices"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["can_devices"].Size(); i++){
+				Deserialize(obj.can_devices[i], doc["can_devices"][i]);
+		}
+    }
+    if(!doc.HasMember("generate_csv") || !doc["generate_csv"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: generate_csv"); 
+    }else{
+        obj.generate_csv = doc["generate_csv"].GetBool();
+    }
+    if(!doc.HasMember("gps_devices") || !doc["gps_devices"].IsArray()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: gps_devices"); 
+    }else{
+		obj.gps_devices.resize(doc["gps_devices"].Size());
+		for(rapidjson::SizeType i = 0; i < doc["gps_devices"].Size(); i++){
+				Deserialize(obj.gps_devices[i], doc["gps_devices"][i]);
+		}
+    }
+    if(!doc.HasMember("connection_downsample") || !doc["connection_downsample"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample"); 
+    }else{
+        obj.connection_downsample = doc["connection_downsample"].GetBool();
+    }
+    if(!doc.HasMember("connection_downsample_mps") || !doc["connection_downsample_mps"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
+    }else{
+        obj.connection_downsample_mps = doc["connection_downsample_mps"].GetUint64();
+    }
+    if(!doc.HasMember("connection_enabled") || !doc["connection_enabled"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
+    }else{
+        obj.connection_enabled = doc["connection_enabled"].GetBool();
+    }
+    if(!doc.HasMember("connection_send_rate") || !doc["connection_send_rate"].IsUint64()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_rate"); 
+    }else{
+        obj.connection_send_rate = doc["connection_send_rate"].GetUint64();
+    }
+    if(!doc.HasMember("connection_send_sensor_data") || !doc["connection_send_sensor_data"].IsBool()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_sensor_data"); 
+    }else{
+        obj.connection_send_sensor_data = doc["connection_send_sensor_data"].GetBool();
+    }
+    if(!doc.HasMember("connection") || !doc["connection"].IsObject()){
+        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection"); 
+    }else{
+        Deserialize(obj.connection, doc["connection"]);
+    }
+}
+
+template<>
+std::string StructToString(const telemetry_config_t& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const telemetry_config_t& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, telemetry_config_t& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(telemetry_config_t& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const telemetry_config_t& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
+bool CheckJson(const stat_json_t& obj, const rapidjson::Document& doc)
+{
+    bool check = true;
+    if(!doc.HasMember("Messages")){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Messages"); 
+        check = false;
+    }
+    if(!doc.HasMember("Average_Frequency_Hz")){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Average_Frequency_Hz"); 
+        check = false;
+    }
+    if(!doc.HasMember("Duration_seconds")){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Duration_seconds"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const stat_json_t& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("Messages", rapidjson::Value().SetUint64(obj.Messages), alloc);
+    out.AddMember("Average_Frequency_Hz", rapidjson::Value().SetUint64(obj.Average_Frequency_Hz), alloc);
+    out.AddMember("Duration_seconds", rapidjson::Value().SetDouble(obj.Duration_seconds), alloc);
+}
+template<>
+void Deserialize(stat_json_t& obj, rapidjson::Document& doc)
+{
+    if(!doc.HasMember("Messages") || !doc["Messages"].IsUint64()){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Messages"); 
+    }else{
+        obj.Messages = doc["Messages"].GetUint64();
+    }
+    if(!doc.HasMember("Average_Frequency_Hz") || !doc["Average_Frequency_Hz"].IsUint64()){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Average_Frequency_Hz"); 
+    }else{
+        obj.Average_Frequency_Hz = doc["Average_Frequency_Hz"].GetUint64();
+    }
+    if(!doc.HasMember("Duration_seconds") || !doc["Duration_seconds"].IsDouble()){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Duration_seconds"); 
+    }else{
+        obj.Duration_seconds = doc["Duration_seconds"].GetDouble();
+    }
+}
+template<>
+void Deserialize(stat_json_t& obj, rapidjson::Value& doc)
+{
+    if(!doc.HasMember("Messages") || !doc["Messages"].IsUint64()){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Messages"); 
+    }else{
+        obj.Messages = doc["Messages"].GetUint64();
+    }
+    if(!doc.HasMember("Average_Frequency_Hz") || !doc["Average_Frequency_Hz"].IsUint64()){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Average_Frequency_Hz"); 
+    }else{
+        obj.Average_Frequency_Hz = doc["Average_Frequency_Hz"].GetUint64();
+    }
+    if(!doc.HasMember("Duration_seconds") || !doc["Duration_seconds"].IsDouble()){
+        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Duration_seconds"); 
+    }else{
+        obj.Duration_seconds = doc["Duration_seconds"].GetDouble();
+    }
+}
+
+template<>
+std::string StructToString(const stat_json_t& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const stat_json_t& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, stat_json_t& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+
+template<>
+bool LoadStruct(stat_json_t& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    bool check_passed = CheckJson(out, doc);
+    Deserialize(out, doc);
+    return check_passed;
+}
+template<>
+void SaveStruct(const stat_json_t& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
@@ -1182,529 +1641,6 @@ bool LoadStruct(session_config_t& out, const std::string& path)
 }
 template<>
 void SaveStruct(const session_config_t& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const stat_json_t& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("Messages")){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Messages"); 
-        check = false;
-    }
-    if(!doc.HasMember("Average_Frequency_Hz")){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Average_Frequency_Hz"); 
-        check = false;
-    }
-    if(!doc.HasMember("Duration_seconds")){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Duration_seconds"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const stat_json_t& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("Messages", rapidjson::Value().SetUint64(obj.Messages), alloc);
-    out.AddMember("Average_Frequency_Hz", rapidjson::Value().SetUint64(obj.Average_Frequency_Hz), alloc);
-    out.AddMember("Duration_seconds", rapidjson::Value().SetDouble(obj.Duration_seconds), alloc);
-}
-template<>
-void Deserialize(stat_json_t& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("Messages") || !doc["Messages"].IsUint64()){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Messages"); 
-    }else{
-        obj.Messages = doc["Messages"].GetUint64();
-    }
-    if(!doc.HasMember("Average_Frequency_Hz") || !doc["Average_Frequency_Hz"].IsUint64()){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Average_Frequency_Hz"); 
-    }else{
-        obj.Average_Frequency_Hz = doc["Average_Frequency_Hz"].GetUint64();
-    }
-    if(!doc.HasMember("Duration_seconds") || !doc["Duration_seconds"].IsDouble()){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Duration_seconds"); 
-    }else{
-        obj.Duration_seconds = doc["Duration_seconds"].GetDouble();
-    }
-}
-template<>
-void Deserialize(stat_json_t& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("Messages") || !doc["Messages"].IsUint64()){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Messages"); 
-    }else{
-        obj.Messages = doc["Messages"].GetUint64();
-    }
-    if(!doc.HasMember("Average_Frequency_Hz") || !doc["Average_Frequency_Hz"].IsUint64()){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Average_Frequency_Hz"); 
-    }else{
-        obj.Average_Frequency_Hz = doc["Average_Frequency_Hz"].GetUint64();
-    }
-    if(!doc.HasMember("Duration_seconds") || !doc["Duration_seconds"].IsDouble()){
-        JSON_LOG_FUNC("stat_json_t MISSING FIELD: Duration_seconds"); 
-    }else{
-        obj.Duration_seconds = doc["Duration_seconds"].GetDouble();
-    }
-}
-
-template<>
-std::string StructToString(const stat_json_t& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const stat_json_t& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, stat_json_t& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(stat_json_t& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const stat_json_t& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const telemetry_config_t& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("vehicle_id")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
-        check = false;
-    }
-    if(!doc.HasMember("device_id")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
-        check = false;
-    }
-    if(!doc.HasMember("device_role")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
-        check = false;
-    }
-    if(!doc.HasMember("camera_enable")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
-        check = false;
-    }
-    if(!doc.HasMember("can_devices")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: can_devices"); 
-        check = false;
-    }
-    if(!doc.HasMember("generate_csv")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: generate_csv"); 
-        check = false;
-    }
-    if(!doc.HasMember("gps_devices")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: gps_devices"); 
-        check = false;
-    }
-    if(!doc.HasMember("connection_downsample")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample"); 
-        check = false;
-    }
-    if(!doc.HasMember("connection_downsample_mps")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
-        check = false;
-    }
-    if(!doc.HasMember("connection_enabled")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
-        check = false;
-    }
-    if(!doc.HasMember("connection_send_rate")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_rate"); 
-        check = false;
-    }
-    if(!doc.HasMember("connection_send_sensor_data")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_sensor_data"); 
-        check = false;
-    }
-    if(!doc.HasMember("connection")){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const telemetry_config_t& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("vehicle_id", rapidjson::Value().SetString(obj.vehicle_id.c_str(), obj.vehicle_id.size(), alloc), alloc);
-    out.AddMember("device_id", rapidjson::Value().SetString(obj.device_id.c_str(), obj.device_id.size(), alloc), alloc);
-    out.AddMember("device_role", rapidjson::Value().SetUint64(obj.device_role), alloc);
-    out.AddMember("camera_enable", rapidjson::Value().SetBool(obj.camera_enable), alloc);
-    {
-        rapidjson::Value v0;
-        v0.SetArray();
-        for(size_t i = 0; i < obj.can_devices.size(); i++){
-        	rapidjson::Value new_obj;
-        	Serialize(new_obj, obj.can_devices[i], alloc);
-        	v0.PushBack(new_obj, alloc);
-    	}
-    	out.AddMember("can_devices", v0, alloc);
-    }
-    out.AddMember("generate_csv", rapidjson::Value().SetBool(obj.generate_csv), alloc);
-    {
-        rapidjson::Value v0;
-        v0.SetArray();
-        for(size_t i = 0; i < obj.gps_devices.size(); i++){
-        	rapidjson::Value new_obj;
-        	Serialize(new_obj, obj.gps_devices[i], alloc);
-        	v0.PushBack(new_obj, alloc);
-    	}
-    	out.AddMember("gps_devices", v0, alloc);
-    }
-    out.AddMember("connection_downsample", rapidjson::Value().SetBool(obj.connection_downsample), alloc);
-    out.AddMember("connection_downsample_mps", rapidjson::Value().SetUint64(obj.connection_downsample_mps), alloc);
-    out.AddMember("connection_enabled", rapidjson::Value().SetBool(obj.connection_enabled), alloc);
-    out.AddMember("connection_send_rate", rapidjson::Value().SetUint64(obj.connection_send_rate), alloc);
-    out.AddMember("connection_send_sensor_data", rapidjson::Value().SetBool(obj.connection_send_sensor_data), alloc);
-    {
-        rapidjson::Value v;
-        Serialize(v, obj.connection, alloc);
-        out.AddMember("connection", v, alloc);
-    }
-}
-template<>
-void Deserialize(telemetry_config_t& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("vehicle_id") || !doc["vehicle_id"].IsString()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
-    }else{
-        obj.vehicle_id = std::string(doc["vehicle_id"].GetString(), doc["vehicle_id"].GetStringLength());
-    }
-    if(!doc.HasMember("device_id") || !doc["device_id"].IsString()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
-    }else{
-        obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
-    }
-    if(!doc.HasMember("device_role") || !doc["device_role"].IsUint64()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
-    }else{
-        obj.device_role = doc["device_role"].GetUint64();
-    }
-    if(!doc.HasMember("camera_enable") || !doc["camera_enable"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
-    }else{
-        obj.camera_enable = doc["camera_enable"].GetBool();
-    }
-    if(!doc.HasMember("can_devices") || !doc["can_devices"].IsArray()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: can_devices"); 
-    }else{
-		obj.can_devices.resize(doc["can_devices"].Size());
-		for(rapidjson::SizeType i = 0; i < doc["can_devices"].Size(); i++){
-				Deserialize(obj.can_devices[i], doc["can_devices"][i]);
-		}
-    }
-    if(!doc.HasMember("generate_csv") || !doc["generate_csv"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: generate_csv"); 
-    }else{
-        obj.generate_csv = doc["generate_csv"].GetBool();
-    }
-    if(!doc.HasMember("gps_devices") || !doc["gps_devices"].IsArray()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: gps_devices"); 
-    }else{
-		obj.gps_devices.resize(doc["gps_devices"].Size());
-		for(rapidjson::SizeType i = 0; i < doc["gps_devices"].Size(); i++){
-				Deserialize(obj.gps_devices[i], doc["gps_devices"][i]);
-		}
-    }
-    if(!doc.HasMember("connection_downsample") || !doc["connection_downsample"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample"); 
-    }else{
-        obj.connection_downsample = doc["connection_downsample"].GetBool();
-    }
-    if(!doc.HasMember("connection_downsample_mps") || !doc["connection_downsample_mps"].IsUint64()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
-    }else{
-        obj.connection_downsample_mps = doc["connection_downsample_mps"].GetUint64();
-    }
-    if(!doc.HasMember("connection_enabled") || !doc["connection_enabled"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
-    }else{
-        obj.connection_enabled = doc["connection_enabled"].GetBool();
-    }
-    if(!doc.HasMember("connection_send_rate") || !doc["connection_send_rate"].IsUint64()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_rate"); 
-    }else{
-        obj.connection_send_rate = doc["connection_send_rate"].GetUint64();
-    }
-    if(!doc.HasMember("connection_send_sensor_data") || !doc["connection_send_sensor_data"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_sensor_data"); 
-    }else{
-        obj.connection_send_sensor_data = doc["connection_send_sensor_data"].GetBool();
-    }
-    if(!doc.HasMember("connection") || !doc["connection"].IsObject()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection"); 
-    }else{
-        Deserialize(obj.connection, doc["connection"]);
-    }
-}
-template<>
-void Deserialize(telemetry_config_t& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("vehicle_id") || !doc["vehicle_id"].IsString()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: vehicle_id"); 
-    }else{
-        obj.vehicle_id = std::string(doc["vehicle_id"].GetString(), doc["vehicle_id"].GetStringLength());
-    }
-    if(!doc.HasMember("device_id") || !doc["device_id"].IsString()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_id"); 
-    }else{
-        obj.device_id = std::string(doc["device_id"].GetString(), doc["device_id"].GetStringLength());
-    }
-    if(!doc.HasMember("device_role") || !doc["device_role"].IsUint64()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: device_role"); 
-    }else{
-        obj.device_role = doc["device_role"].GetUint64();
-    }
-    if(!doc.HasMember("camera_enable") || !doc["camera_enable"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: camera_enable"); 
-    }else{
-        obj.camera_enable = doc["camera_enable"].GetBool();
-    }
-    if(!doc.HasMember("can_devices") || !doc["can_devices"].IsArray()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: can_devices"); 
-    }else{
-		obj.can_devices.resize(doc["can_devices"].Size());
-		for(rapidjson::SizeType i = 0; i < doc["can_devices"].Size(); i++){
-				Deserialize(obj.can_devices[i], doc["can_devices"][i]);
-		}
-    }
-    if(!doc.HasMember("generate_csv") || !doc["generate_csv"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: generate_csv"); 
-    }else{
-        obj.generate_csv = doc["generate_csv"].GetBool();
-    }
-    if(!doc.HasMember("gps_devices") || !doc["gps_devices"].IsArray()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: gps_devices"); 
-    }else{
-		obj.gps_devices.resize(doc["gps_devices"].Size());
-		for(rapidjson::SizeType i = 0; i < doc["gps_devices"].Size(); i++){
-				Deserialize(obj.gps_devices[i], doc["gps_devices"][i]);
-		}
-    }
-    if(!doc.HasMember("connection_downsample") || !doc["connection_downsample"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample"); 
-    }else{
-        obj.connection_downsample = doc["connection_downsample"].GetBool();
-    }
-    if(!doc.HasMember("connection_downsample_mps") || !doc["connection_downsample_mps"].IsUint64()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_downsample_mps"); 
-    }else{
-        obj.connection_downsample_mps = doc["connection_downsample_mps"].GetUint64();
-    }
-    if(!doc.HasMember("connection_enabled") || !doc["connection_enabled"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_enabled"); 
-    }else{
-        obj.connection_enabled = doc["connection_enabled"].GetBool();
-    }
-    if(!doc.HasMember("connection_send_rate") || !doc["connection_send_rate"].IsUint64()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_rate"); 
-    }else{
-        obj.connection_send_rate = doc["connection_send_rate"].GetUint64();
-    }
-    if(!doc.HasMember("connection_send_sensor_data") || !doc["connection_send_sensor_data"].IsBool()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection_send_sensor_data"); 
-    }else{
-        obj.connection_send_sensor_data = doc["connection_send_sensor_data"].GetBool();
-    }
-    if(!doc.HasMember("connection") || !doc["connection"].IsObject()){
-        JSON_LOG_FUNC("telemetry_config_t MISSING FIELD: connection"); 
-    }else{
-        Deserialize(obj.connection, doc["connection"]);
-    }
-}
-
-template<>
-std::string StructToString(const telemetry_config_t& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const telemetry_config_t& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, telemetry_config_t& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(telemetry_config_t& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const telemetry_config_t& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const telemetry_login_data_t& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("username")){
-        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: username"); 
-        check = false;
-    }
-    if(!doc.HasMember("password")){
-        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: password"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const telemetry_login_data_t& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("username", rapidjson::Value().SetString(obj.username.c_str(), obj.username.size(), alloc), alloc);
-    out.AddMember("password", rapidjson::Value().SetString(obj.password.c_str(), obj.password.size(), alloc), alloc);
-}
-template<>
-void Deserialize(telemetry_login_data_t& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("username") || !doc["username"].IsString()){
-        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: username"); 
-    }else{
-        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
-    }
-    if(!doc.HasMember("password") || !doc["password"].IsString()){
-        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: password"); 
-    }else{
-        obj.password = std::string(doc["password"].GetString(), doc["password"].GetStringLength());
-    }
-}
-template<>
-void Deserialize(telemetry_login_data_t& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("username") || !doc["username"].IsString()){
-        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: username"); 
-    }else{
-        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
-    }
-    if(!doc.HasMember("password") || !doc["password"].IsString()){
-        JSON_LOG_FUNC("telemetry_login_data_t MISSING FIELD: password"); 
-    }else{
-        obj.password = std::string(doc["password"].GetString(), doc["password"].GetStringLength());
-    }
-}
-
-template<>
-std::string StructToString(const telemetry_login_data_t& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const telemetry_login_data_t& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, telemetry_login_data_t& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(telemetry_login_data_t& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const telemetry_login_data_t& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);
