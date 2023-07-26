@@ -1,18 +1,23 @@
 {
   "aero": {
     "angle_of_incidence_front": 0.0,
-    "angle_of_incidence_rear": 0.0
+    "angle_of_incidence_rear": 0.0,
+    "flap": ""
   },
   "wheel_front": {
     "camber": 0.0,
-    "toe": 0.0,
+    "toe": 0.0
+  },
+  "wheel_rear": {
+    "camber": 0.0,
+    "toe": 0.0
+  },
+  "damper_front": {
     "bound": 0.0,
     "rebound": 0.0,
     "preload": 0.0
   },
-  "wheel_rear": {
-    "camber": 0.0,
-    "toe": 0.0,
+  "damper_rear": {
     "bound": 0.0,
     "rebound": 0.0,
     "preload": 0.0
