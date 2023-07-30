@@ -124,7 +124,7 @@ typedef struct app_connection_o{
 }app_connection_o;
 
 typedef struct paths_a{
-    std::string id;
+    std::string key;
     std::string value;
 }paths_a;
 
@@ -650,8 +650,8 @@ template <>
 bool CheckJson(const paths_a& obj, const rapidjson::Document& doc)
 {
     bool check = true;
-    if(!doc.HasMember("id")){
-        JSON_LOG_FUNC("paths_a MISSING FIELD: id"); 
+    if(!doc.HasMember("key")){
+        JSON_LOG_FUNC("paths_a MISSING FIELD: key"); 
         check = false;
     }
     if(!doc.HasMember("value")){
@@ -665,16 +665,16 @@ template<>
 void Serialize(rapidjson::Value& out, const paths_a& obj, rapidjson::Document::AllocatorType& alloc)
 {
     out.SetObject();
-    out.AddMember("id", rapidjson::Value().SetString(obj.id.c_str(), obj.id.size(), alloc), alloc);
+    out.AddMember("key", rapidjson::Value().SetString(obj.key.c_str(), obj.key.size(), alloc), alloc);
     out.AddMember("value", rapidjson::Value().SetString(obj.value.c_str(), obj.value.size(), alloc), alloc);
 }
 template<>
 void Deserialize(paths_a& obj, rapidjson::Value& doc)
 {
-    if(!doc.HasMember("id") || !doc["id"].IsString()){
-        JSON_LOG_FUNC("paths_a MISSING FIELD: id"); 
+    if(!doc.HasMember("key") || !doc["key"].IsString()){
+        JSON_LOG_FUNC("paths_a MISSING FIELD: key"); 
     }else{
-        obj.id = std::string(doc["id"].GetString(), doc["id"].GetStringLength());
+        obj.key = std::string(doc["key"].GetString(), doc["key"].GetStringLength());
     }
     if(!doc.HasMember("value") || !doc["value"].IsString()){
         JSON_LOG_FUNC("paths_a MISSING FIELD: value"); 
