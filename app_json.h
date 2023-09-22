@@ -55,6 +55,10 @@ bool StringToStruct(const std::string& obj_str, T& obj);
 #define __JSON_LOADER_DEFINITION__
 static void LoadJSON(rapidjson::Document& out, const std::string& path){
     std::ifstream f(path);
+    if(!f.is_open()){
+        JSON_LOG_FUNC("LoadJSON: Failed to open file");
+        return;
+    }
     std::stringstream buffer;
     buffer << f.rdbuf();
     out.Parse(buffer.str().c_str());
@@ -62,6 +66,10 @@ static void LoadJSON(rapidjson::Document& out, const std::string& path){
 static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
     char writeBuffer[65536];
     FILE* fp = fopen(path.c_str(), "w");
+    if(!fp){
+        JSON_LOG_FUNC("SaveJSON: Failed to open file");
+        return;
+    }
     rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
     rapidjson::PrettyWriter<rapidjson::FileWriteStream> writer(os);
     doc.Accept(writer);
@@ -133,6 +141,14 @@ typedef struct generic_key_value_a{
     std::string value;
 }generic_key_value_a;
 
+typedef struct user_data_t{
+    std::string username;
+    std::string token;
+    std::string refresh_token;
+    double expiry;
+    uint64_t role;
+}user_data_t;
+
 typedef struct app_config_t{
     std::vector<generic_key_value_a> generic_key_value;
     std::vector<paths_a> paths;
@@ -149,19 +165,15 @@ typedef struct app_config_t{
     uint64_t last_open_mode;
 }app_config_t;
 
-typedef struct user_data_t{
-    std::string username;
-    std::string token;
-    std::string refresh_token;
-    double expiry;
-    uint64_t role;
-}user_data_t;
-
 #ifdef __APP_JSON_IMPLEMENTATION__
 
 template <>
 bool CheckJson(const fields_a& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("fields_a NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("message")){
         JSON_LOG_FUNC("fields_a MISSING FIELD: message"); 
@@ -184,6 +196,10 @@ void Serialize(rapidjson::Value& out, const fields_a& obj, rapidjson::Document::
 template<>
 void Deserialize(fields_a& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("fields_a NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("message") || !doc["message"].IsString()){
         JSON_LOG_FUNC("fields_a MISSING FIELD: message"); 
     }else{
@@ -199,6 +215,10 @@ void Deserialize(fields_a& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const axis_a& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("axis_a NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("axis_name")){
         JSON_LOG_FUNC("axis_a MISSING FIELD: axis_name"); 
@@ -230,6 +250,10 @@ void Serialize(rapidjson::Value& out, const axis_a& obj, rapidjson::Document::Al
 template<>
 void Deserialize(axis_a& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("axis_a NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("axis_name") || !doc["axis_name"].IsString()){
         JSON_LOG_FUNC("axis_a MISSING FIELD: axis_name"); 
     }else{
@@ -248,6 +272,10 @@ void Deserialize(axis_a& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const custom_plots_a& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("custom_plots_a NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("plot_name")){
         JSON_LOG_FUNC("custom_plots_a MISSING FIELD: plot_name"); 
@@ -279,6 +307,10 @@ void Serialize(rapidjson::Value& out, const custom_plots_a& obj, rapidjson::Docu
 template<>
 void Deserialize(custom_plots_a& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("custom_plots_a NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("plot_name") || !doc["plot_name"].IsString()){
         JSON_LOG_FUNC("custom_plots_a MISSING FIELD: plot_name"); 
     }else{
@@ -297,6 +329,10 @@ void Deserialize(custom_plots_a& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const color_o& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("color_o NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("r")){
         JSON_LOG_FUNC("color_o MISSING FIELD: r"); 
@@ -329,6 +365,10 @@ void Serialize(rapidjson::Value& out, const color_o& obj, rapidjson::Document::A
 template<>
 void Deserialize(color_o& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("color_o NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("r") || !doc["r"].IsDouble()){
         JSON_LOG_FUNC("color_o MISSING FIELD: r"); 
     }else{
@@ -354,6 +394,10 @@ void Deserialize(color_o& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const json_trigger_o& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("json_trigger_o NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("message")){
         JSON_LOG_FUNC("json_trigger_o MISSING FIELD: message"); 
@@ -395,6 +439,10 @@ void Serialize(rapidjson::Value& out, const json_trigger_o& obj, rapidjson::Docu
 template<>
 void Deserialize(json_trigger_o& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("json_trigger_o NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("message") || !doc["message"].IsString()){
         JSON_LOG_FUNC("json_trigger_o MISSING FIELD: message"); 
     }else{
@@ -425,6 +473,10 @@ void Deserialize(json_trigger_o& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const events_a& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("events_a NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("json_trigger")){
         JSON_LOG_FUNC("events_a MISSING FIELD: json_trigger"); 
@@ -446,6 +498,10 @@ void Serialize(rapidjson::Value& out, const events_a& obj, rapidjson::Document::
 template<>
 void Deserialize(events_a& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("events_a NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("json_trigger") || !doc["json_trigger"].IsObject()){
         JSON_LOG_FUNC("events_a MISSING FIELD: json_trigger"); 
     }else{
@@ -456,6 +512,10 @@ void Deserialize(events_a& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const post_proc_o& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("post_proc_o NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("last_sample_freq")){
         JSON_LOG_FUNC("post_proc_o MISSING FIELD: last_sample_freq"); 
@@ -497,6 +557,10 @@ void Serialize(rapidjson::Value& out, const post_proc_o& obj, rapidjson::Documen
 template<>
 void Deserialize(post_proc_o& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("post_proc_o NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("last_sample_freq") || !doc["last_sample_freq"].IsUint64()){
         JSON_LOG_FUNC("post_proc_o MISSING FIELD: last_sample_freq"); 
     }else{
@@ -523,6 +587,10 @@ void Deserialize(post_proc_o& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const saved_confs_a& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("saved_confs_a NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("name")){
         JSON_LOG_FUNC("saved_confs_a MISSING FIELD: name"); 
@@ -555,6 +623,10 @@ void Serialize(rapidjson::Value& out, const saved_confs_a& obj, rapidjson::Docum
 template<>
 void Deserialize(saved_confs_a& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("saved_confs_a NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("name") || !doc["name"].IsString()){
         JSON_LOG_FUNC("saved_confs_a MISSING FIELD: name"); 
     }else{
@@ -580,6 +652,10 @@ void Deserialize(saved_confs_a& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const app_connection_o& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("app_connection_o NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("ip")){
         JSON_LOG_FUNC("app_connection_o MISSING FIELD: ip"); 
@@ -621,6 +697,10 @@ void Serialize(rapidjson::Value& out, const app_connection_o& obj, rapidjson::Do
 template<>
 void Deserialize(app_connection_o& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("app_connection_o NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("ip") || !doc["ip"].IsString()){
         JSON_LOG_FUNC("app_connection_o MISSING FIELD: ip"); 
     }else{
@@ -649,6 +729,10 @@ void Deserialize(app_connection_o& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const paths_a& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("paths_a NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("key")){
         JSON_LOG_FUNC("paths_a MISSING FIELD: key"); 
@@ -671,6 +755,10 @@ void Serialize(rapidjson::Value& out, const paths_a& obj, rapidjson::Document::A
 template<>
 void Deserialize(paths_a& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("paths_a NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("key") || !doc["key"].IsString()){
         JSON_LOG_FUNC("paths_a MISSING FIELD: key"); 
     }else{
@@ -686,6 +774,10 @@ void Deserialize(paths_a& obj, rapidjson::Value& doc)
 template <>
 bool CheckJson(const generic_key_value_a& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("generic_key_value_a NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("key")){
         JSON_LOG_FUNC("generic_key_value_a MISSING FIELD: key"); 
@@ -708,6 +800,10 @@ void Serialize(rapidjson::Value& out, const generic_key_value_a& obj, rapidjson:
 template<>
 void Deserialize(generic_key_value_a& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("generic_key_value_a NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("key") || !doc["key"].IsString()){
         JSON_LOG_FUNC("generic_key_value_a MISSING FIELD: key"); 
     }else{
@@ -721,8 +817,176 @@ void Deserialize(generic_key_value_a& obj, rapidjson::Value& doc)
 }
 
 template <>
+bool CheckJson(const user_data_t& obj, const rapidjson::Document& doc)
+{
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("user_data_t NOT AN OBJECT");
+        return false;
+    }
+    bool check = true;
+    if(!doc.HasMember("username")){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: username"); 
+        check = false;
+    }
+    if(!doc.HasMember("token")){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: token"); 
+        check = false;
+    }
+    if(!doc.HasMember("refresh_token")){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: refresh_token"); 
+        check = false;
+    }
+    if(!doc.HasMember("expiry")){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: expiry"); 
+        check = false;
+    }
+    if(!doc.HasMember("role")){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: role"); 
+        check = false;
+    }
+    return check;
+}
+
+template<>
+void Serialize(rapidjson::Document& out, const user_data_t& obj)
+{
+    out.SetObject();
+    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
+    out.AddMember("username", rapidjson::Value().SetString(obj.username.c_str(), obj.username.size(), alloc), alloc);
+    out.AddMember("token", rapidjson::Value().SetString(obj.token.c_str(), obj.token.size(), alloc), alloc);
+    out.AddMember("refresh_token", rapidjson::Value().SetString(obj.refresh_token.c_str(), obj.refresh_token.size(), alloc), alloc);
+    out.AddMember("expiry", rapidjson::Value().SetDouble(obj.expiry), alloc);
+    out.AddMember("role", rapidjson::Value().SetUint64(obj.role), alloc);
+}
+template<>
+void Deserialize(user_data_t& obj, rapidjson::Document& doc)
+{
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("user_data_t NOT AN OBJECT");
+        return;
+    }
+    if(!doc.HasMember("username") || !doc["username"].IsString()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: username"); 
+    }else{
+        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
+    }
+    if(!doc.HasMember("token") || !doc["token"].IsString()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: token"); 
+    }else{
+        obj.token = std::string(doc["token"].GetString(), doc["token"].GetStringLength());
+    }
+    if(!doc.HasMember("refresh_token") || !doc["refresh_token"].IsString()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: refresh_token"); 
+    }else{
+        obj.refresh_token = std::string(doc["refresh_token"].GetString(), doc["refresh_token"].GetStringLength());
+    }
+    if(!doc.HasMember("expiry") || !doc["expiry"].IsDouble()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: expiry"); 
+    }else{
+        obj.expiry = doc["expiry"].GetDouble();
+    }
+    if(!doc.HasMember("role") || !doc["role"].IsUint64()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: role"); 
+    }else{
+        obj.role = doc["role"].GetUint64();
+    }
+}
+template<>
+void Deserialize(user_data_t& obj, rapidjson::Value& doc)
+{
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("user_data_t NOT AN OBJECT");
+        return;
+    }
+    if(!doc.HasMember("username") || !doc["username"].IsString()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: username"); 
+    }else{
+        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
+    }
+    if(!doc.HasMember("token") || !doc["token"].IsString()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: token"); 
+    }else{
+        obj.token = std::string(doc["token"].GetString(), doc["token"].GetStringLength());
+    }
+    if(!doc.HasMember("refresh_token") || !doc["refresh_token"].IsString()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: refresh_token"); 
+    }else{
+        obj.refresh_token = std::string(doc["refresh_token"].GetString(), doc["refresh_token"].GetStringLength());
+    }
+    if(!doc.HasMember("expiry") || !doc["expiry"].IsDouble()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: expiry"); 
+    }else{
+        obj.expiry = doc["expiry"].GetDouble();
+    }
+    if(!doc.HasMember("role") || !doc["role"].IsUint64()){
+        JSON_LOG_FUNC("user_data_t MISSING FIELD: role"); 
+    }else{
+        obj.role = doc["role"].GetUint64();
+    }
+}
+
+template<>
+std::string StructToString(const user_data_t& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+std::string StructToStringPretty(const user_data_t& obj)
+{
+    rapidjson::Document doc;
+    rapidjson::StringBuffer sb;
+    Serialize(doc, obj);
+    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
+    doc.Accept(writer);
+    return sb.GetString();;
+}
+
+template<>
+bool StringToStruct(const std::string& obj_str, user_data_t& out)
+{
+    rapidjson::Document doc;
+    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
+    if(!ok)
+        return false;
+    if(!CheckJson(out, doc)) {
+        return false;
+    }
+    Deserialize(out, doc);
+    return true;
+}
+
+template<>
+bool LoadStruct(user_data_t& out, const std::string& path)
+{
+    rapidjson::Document doc;
+    LoadJSON(doc, path);
+    if(!CheckJson(out, doc)) {
+        return false;
+    }
+    Deserialize(out, doc);
+    return true;
+}
+template<>
+void SaveStruct(const user_data_t& obj, const std::string& path)
+{
+    rapidjson::Document doc;
+    Serialize(doc, obj);
+    SaveJSON(doc, path);
+}
+
+template <>
 bool CheckJson(const app_config_t& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("app_config_t NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("generic_key_value")){
         JSON_LOG_FUNC("app_config_t MISSING FIELD: generic_key_value"); 
@@ -859,6 +1123,10 @@ void Serialize(rapidjson::Document& out, const app_config_t& obj)
 template<>
 void Deserialize(app_config_t& obj, rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("app_config_t NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("generic_key_value") || !doc["generic_key_value"].IsArray()){
         JSON_LOG_FUNC("app_config_t MISSING FIELD: generic_key_value"); 
     }else{
@@ -946,6 +1214,10 @@ void Deserialize(app_config_t& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(app_config_t& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("app_config_t NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("generic_key_value") || !doc["generic_key_value"].IsArray()){
         JSON_LOG_FUNC("app_config_t MISSING FIELD: generic_key_value"); 
     }else{
@@ -1060,9 +1332,11 @@ bool StringToStruct(const std::string& obj_str, app_config_t& out)
     rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
     if(!ok)
         return false;
-    bool check_passed = CheckJson(out, doc);
+    if(!CheckJson(out, doc)) {
+        return false;
+    }
     Deserialize(out, doc);
-    return check_passed;
+    return true;
 }
 
 template<>
@@ -1070,160 +1344,14 @@ bool LoadStruct(app_config_t& out, const std::string& path)
 {
     rapidjson::Document doc;
     LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
+    if(!CheckJson(out, doc)) {
+        return false;
+    }
     Deserialize(out, doc);
-    return check_passed;
+    return true;
 }
 template<>
 void SaveStruct(const app_config_t& obj, const std::string& path)
-{
-    rapidjson::Document doc;
-    Serialize(doc, obj);
-    SaveJSON(doc, path);
-}
-
-template <>
-bool CheckJson(const user_data_t& obj, const rapidjson::Document& doc)
-{
-    bool check = true;
-    if(!doc.HasMember("username")){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: username"); 
-        check = false;
-    }
-    if(!doc.HasMember("token")){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: token"); 
-        check = false;
-    }
-    if(!doc.HasMember("refresh_token")){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: refresh_token"); 
-        check = false;
-    }
-    if(!doc.HasMember("expiry")){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: expiry"); 
-        check = false;
-    }
-    if(!doc.HasMember("role")){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: role"); 
-        check = false;
-    }
-    return check;
-}
-
-template<>
-void Serialize(rapidjson::Document& out, const user_data_t& obj)
-{
-    out.SetObject();
-    rapidjson::Document::AllocatorType& alloc = out.GetAllocator();
-    out.AddMember("username", rapidjson::Value().SetString(obj.username.c_str(), obj.username.size(), alloc), alloc);
-    out.AddMember("token", rapidjson::Value().SetString(obj.token.c_str(), obj.token.size(), alloc), alloc);
-    out.AddMember("refresh_token", rapidjson::Value().SetString(obj.refresh_token.c_str(), obj.refresh_token.size(), alloc), alloc);
-    out.AddMember("expiry", rapidjson::Value().SetDouble(obj.expiry), alloc);
-    out.AddMember("role", rapidjson::Value().SetUint64(obj.role), alloc);
-}
-template<>
-void Deserialize(user_data_t& obj, rapidjson::Document& doc)
-{
-    if(!doc.HasMember("username") || !doc["username"].IsString()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: username"); 
-    }else{
-        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
-    }
-    if(!doc.HasMember("token") || !doc["token"].IsString()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: token"); 
-    }else{
-        obj.token = std::string(doc["token"].GetString(), doc["token"].GetStringLength());
-    }
-    if(!doc.HasMember("refresh_token") || !doc["refresh_token"].IsString()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: refresh_token"); 
-    }else{
-        obj.refresh_token = std::string(doc["refresh_token"].GetString(), doc["refresh_token"].GetStringLength());
-    }
-    if(!doc.HasMember("expiry") || !doc["expiry"].IsDouble()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: expiry"); 
-    }else{
-        obj.expiry = doc["expiry"].GetDouble();
-    }
-    if(!doc.HasMember("role") || !doc["role"].IsUint64()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: role"); 
-    }else{
-        obj.role = doc["role"].GetUint64();
-    }
-}
-template<>
-void Deserialize(user_data_t& obj, rapidjson::Value& doc)
-{
-    if(!doc.HasMember("username") || !doc["username"].IsString()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: username"); 
-    }else{
-        obj.username = std::string(doc["username"].GetString(), doc["username"].GetStringLength());
-    }
-    if(!doc.HasMember("token") || !doc["token"].IsString()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: token"); 
-    }else{
-        obj.token = std::string(doc["token"].GetString(), doc["token"].GetStringLength());
-    }
-    if(!doc.HasMember("refresh_token") || !doc["refresh_token"].IsString()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: refresh_token"); 
-    }else{
-        obj.refresh_token = std::string(doc["refresh_token"].GetString(), doc["refresh_token"].GetStringLength());
-    }
-    if(!doc.HasMember("expiry") || !doc["expiry"].IsDouble()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: expiry"); 
-    }else{
-        obj.expiry = doc["expiry"].GetDouble();
-    }
-    if(!doc.HasMember("role") || !doc["role"].IsUint64()){
-        JSON_LOG_FUNC("user_data_t MISSING FIELD: role"); 
-    }else{
-        obj.role = doc["role"].GetUint64();
-    }
-}
-
-template<>
-std::string StructToString(const user_data_t& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::Writer<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-std::string StructToStringPretty(const user_data_t& obj)
-{
-    rapidjson::Document doc;
-    rapidjson::StringBuffer sb;
-    Serialize(doc, obj);
-    rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(sb);
-    doc.Accept(writer);
-    return sb.GetString();;
-}
-
-template<>
-bool StringToStruct(const std::string& obj_str, user_data_t& out)
-{
-    rapidjson::Document doc;
-    rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
-    if(!ok)
-        return false;
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-
-template<>
-bool LoadStruct(user_data_t& out, const std::string& path)
-{
-    rapidjson::Document doc;
-    LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
-    Deserialize(out, doc);
-    return check_passed;
-}
-template<>
-void SaveStruct(const user_data_t& obj, const std::string& path)
 {
     rapidjson::Document doc;
     Serialize(doc, obj);

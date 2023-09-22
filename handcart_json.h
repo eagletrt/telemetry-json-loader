@@ -55,6 +55,10 @@ bool StringToStruct(const std::string& obj_str, T& obj);
 #define __JSON_LOADER_DEFINITION__
 static void LoadJSON(rapidjson::Document& out, const std::string& path){
     std::ifstream f(path);
+    if(!f.is_open()){
+        JSON_LOG_FUNC("LoadJSON: Failed to open file");
+        return;
+    }
     std::stringstream buffer;
     buffer << f.rdbuf();
     out.Parse(buffer.str().c_str());
@@ -62,6 +66,10 @@ static void LoadJSON(rapidjson::Document& out, const std::string& path){
 static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
     char writeBuffer[65536];
     FILE* fp = fopen(path.c_str(), "w");
+    if(!fp){
+        JSON_LOG_FUNC("SaveJSON: Failed to open file");
+        return;
+    }
     rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
     rapidjson::PrettyWriter<rapidjson::FileWriteStream> writer(os);
     doc.Accept(writer);
@@ -83,6 +91,10 @@ typedef struct handcart_settings_t{
 template <>
 bool CheckJson(const handcart_settings_t& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("handcart_settings_t NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
     if(!doc.HasMember("target_voltage")){
         JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
@@ -126,6 +138,10 @@ void Serialize(rapidjson::Document& out, const handcart_settings_t& obj)
 template<>
 void Deserialize(handcart_settings_t& obj, rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("handcart_settings_t NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("target_voltage") || !doc["target_voltage"].IsDouble()){
         JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
     }else{
@@ -160,6 +176,10 @@ void Deserialize(handcart_settings_t& obj, rapidjson::Document& doc)
 template<>
 void Deserialize(handcart_settings_t& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("handcart_settings_t NOT AN OBJECT");
+        return;
+    }
     if(!doc.HasMember("target_voltage") || !doc["target_voltage"].IsDouble()){
         JSON_LOG_FUNC("handcart_settings_t MISSING FIELD: target_voltage"); 
     }else{
@@ -221,9 +241,11 @@ bool StringToStruct(const std::string& obj_str, handcart_settings_t& out)
     rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
     if(!ok)
         return false;
-    bool check_passed = CheckJson(out, doc);
+    if(!CheckJson(out, doc)) {
+        return false;
+    }
     Deserialize(out, doc);
-    return check_passed;
+    return true;
 }
 
 template<>
@@ -231,9 +253,11 @@ bool LoadStruct(handcart_settings_t& out, const std::string& path)
 {
     rapidjson::Document doc;
     LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
+    if(!CheckJson(out, doc)) {
+        return false;
+    }
     Deserialize(out, doc);
-    return check_passed;
+    return true;
 }
 template<>
 void SaveStruct(const handcart_settings_t& obj, const std::string& path)
