@@ -55,6 +55,10 @@ bool StringToStruct(const std::string& obj_str, T& obj);
 #define __JSON_LOADER_DEFINITION__
 static void LoadJSON(rapidjson::Document& out, const std::string& path){
     std::ifstream f(path);
+    if(!f.is_open()){
+        JSON_LOG_FUNC("LoadJSON: Failed to open file");
+        return;
+    }
     std::stringstream buffer;
     buffer << f.rdbuf();
     out.Parse(buffer.str().c_str());
@@ -62,6 +66,10 @@ static void LoadJSON(rapidjson::Document& out, const std::string& path){
 static void SaveJSON(const rapidjson::Document& doc, const std::string& path){
     char writeBuffer[65536];
     FILE* fp = fopen(path.c_str(), "w");
+    if(!fp){
+        JSON_LOG_FUNC("SaveJSON: Failed to open file");
+        return;
+    }
     rapidjson::FileWriteStream os(fp, writeBuffer, sizeof(writeBuffer));
     rapidjson::PrettyWriter<rapidjson::FileWriteStream> writer(os);
     doc.Accept(writer);
@@ -88,6 +96,10 @@ typedef struct {{ struct.typename }}{
 template <>
 bool CheckJson(const {{struct.typename}}& obj, const rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("{{struct.typename}} NOT AN OBJECT");
+        return false;
+    }
     bool check = true;
 {%- for field in struct.fields %}
     if(!doc.HasMember("{{field.name}}")){
@@ -162,6 +174,10 @@ void Serialize(rapidjson::Value& out, const {{struct.typename}}& obj, rapidjson:
 template<>
 void Deserialize({{struct.typename}}& obj, rapidjson::Document& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("{{struct.typename}} NOT AN OBJECT");
+        return;
+    }
 {%- for field in struct.fields %}
 {%- if isinstance(field, BasicField)%}
     if(!doc.HasMember("{{field.name}}") || !doc["{{field.name}}"].Is{{field.get_rapidjson_type()}}()){
@@ -192,6 +208,10 @@ void Deserialize({{struct.typename}}& obj, rapidjson::Document& doc)
 template<>
 void Deserialize({{struct.typename}}& obj, rapidjson::Value& doc)
 {
+    if(!doc.IsObject()){
+        JSON_LOG_FUNC("{{struct.typename}} NOT AN OBJECT");
+        return;
+    }
 {%- for field in struct.fields %}
 {%- if isinstance(field, BasicField)%}
     if(!doc.HasMember("{{field.name}}") || !doc["{{field.name}}"].Is{{field.get_rapidjson_type()}}()){
@@ -250,9 +270,11 @@ bool StringToStruct(const std::string& obj_str, {{struct.typename}}& out)
     rapidjson::ParseResult ok = doc.Parse(obj_str.c_str(), obj_str.size());
     if(!ok)
         return false;
-    bool check_passed = CheckJson(out, doc);
+    if(!CheckJson(out, doc)) {
+        return false;
+    }
     Deserialize(out, doc);
-    return check_passed;
+    return true;
 }
 
 template<>
@@ -260,9 +282,11 @@ bool LoadStruct({{struct.typename}}& out, const std::string& path)
 {
     rapidjson::Document doc;
     LoadJSON(doc, path);
-    bool check_passed = CheckJson(out, doc);
+    if(!CheckJson(out, doc)) {
+        return false;
+    }
     Deserialize(out, doc);
-    return check_passed;
+    return true;
 }
 template<>
 void SaveStruct(const {{struct.typename}}& obj, const std::string& path)
